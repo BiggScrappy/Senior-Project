@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Builder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .question {
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Survey Builder</h1>
+
+  <div>
+    <label for="surveyTitle">Survey Title:</label>
+    <input type="text" id="surveyTitle">
+  </div>
+
+  <div>
+    <label for="evaluationPeriod">Evaluation Period:</label>
+    <input type="date" id="evaluationPeriod">
+  </div>
+
+  <div>
+    <label for="lockSurvey">Lock Survey:</label>
+    <input type="checkbox" id="lockSurvey">
+  </div>
+
+  <div id="questionsContainer">
+    <!-- Questions will be dynamically added here -->
+  </div>
+
+  <button onclick="addQuestion('open-ended')">Add Open-Ended Question</button>
+  <button onclick="addQuestion('boolean')">Add Boolean Question</button>
+  <button onclick="addQuestion('likert')">Add Likert Scale Question</button>
+  <button onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
+  <button onclick="saveSurvey()">Save Survey</button>
+
+  <script>
+    let questionCount = 0;
+
+    function addQuestion(questionType) {
+      questionCount++;
+
+      const questionsContainer = document.getElementById('questionsContainer');
+
+      const questionDiv = document.createElement('div');
+      questionDiv.classList.add('question');
+
+      let questionInput;
+      if (questionType === 'open-ended') {
+        questionInput = `<input type="text" id="question${questionCount}" placeholder="Enter your open-ended question">`;
+      } else if (questionType === 'boolean') {
+        questionInput = `<label for="question${questionCount}">Boolean Question ${questionCount}:</label>
+                        <input type="radio" name="question${questionCount}" value="true"> True
+                        <input type="radio" name="question${questionCount}" value="false"> False`;
+      } else if (questionType === 'likert') {
+        questionInput = `<label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
+                        <select id="question${questionCount}">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                        </select>`;
+      } else if (questionType === 'multiple-choice') {
+        questionInput = `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
+                        <input type="text" id="question${questionCount}">
+                        <button onclick="addOption('question${questionCount}')">Add Option</button>`;
+      }
+
+      questionDiv.innerHTML = questionInput;
+
+      questionsContainer.appendChild(questionDiv);
+    }
+
+    function addOption(questionId) {
+      const questionDiv = document.querySelector(`#${questionId}`);
+      const optionInput = document.createElement('input');
+      optionInput.type = 'text';
+      questionDiv.appendChild(optionInput);
+    }
+
+    function saveSurvey() {
+      const surveyTitle = document.getElementById('surveyTitle').value;
+      const evaluationPeriod = document.getElementById('evaluationPeriod').value;
+      const lockSurvey = document.getElementById('lockSurvey').checked;
+
+      const questions = [];
+      for (let i = 1; i <= questionCount; i++) {
+        const questionText = document.getElementById(`question${i}`).value;
+        questions.push({ questionText });
+      }
+
+      const survey = {
+        title: surveyTitle,
+        evaluationPeriod: evaluationPeriod,
+        lockSurvey: lockSurvey,
+        questions: questions
+      };
+
+      console.log('Survey Data:', survey);
+
+      // In a real application, you would send this data to a server for storage.
+      // You would also need user authentication and a server-side application to handle surveys.
+    }
+  </script>
+</body>
+</html>
