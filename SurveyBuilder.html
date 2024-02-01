@@ -13,6 +13,11 @@
       margin-bottom: 10px;
     }
 
+    .answer {
+      margin-left: 20px;
+      margin-bottom: 5px;
+    }
+
     button {
       margin-top: 10px;
     }
@@ -68,7 +73,9 @@
 
       let questionInput;
       if (questionType === 'open-ended') {
-        questionInput = `<input type="text" id="question${questionCount}" placeholder="Enter your open-ended question">`;
+        questionInput = `<label for="question${questionCount}">Open-Ended Question ${questionCount}:</label>
+                        <input type="text" id="question${questionCount}" placeholder="Enter your open-ended question">
+                        <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
       } else if (questionType === 'boolean') {
         questionInput = `<label for="question${questionCount}">Boolean Question ${questionCount}:</label>
                         <input type="radio" name="question${questionCount}" value="true"> True
@@ -85,7 +92,7 @@
       } else if (questionType === 'multiple-choice') {
         questionInput = `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
                         <input type="text" id="question${questionCount}">
-                        <button onclick="addOption('question${questionCount}')">Add Option</button>`;
+                        <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
       }
 
       questionDiv.innerHTML = questionInput;
@@ -93,11 +100,16 @@
       questionsContainer.appendChild(questionDiv);
     }
 
-    function addOption(questionId) {
-      const questionDiv = document.querySelector(`#${questionId}`);
-      const optionInput = document.createElement('input');
-      optionInput.type = 'text';
-      questionDiv.appendChild(optionInput);
+    function addAnswer(questionId) {
+      const userAnswer = prompt('Enter your answer:');
+      if (userAnswer !== null && userAnswer !== '') {
+        const questionDiv = document.querySelector(`#${questionId}`);
+        const answerInput = document.createElement('input');
+        answerInput.type = 'text';
+        answerInput.classList.add('answer');
+        answerInput.value = userAnswer;
+        questionDiv.appendChild(answerInput);
+      }
     }
 
     function saveSurvey() {
@@ -109,7 +121,8 @@
       const questions = [];
       for (let i = 1; i <= questionCount; i++) {
         const questionText = document.getElementById(`question${i}`).value;
-        questions.push({ questionText });
+        const answers = getAnswers(`question${i}`);
+        questions.push({ questionText, answers });
       }
 
       const survey = {
@@ -121,7 +134,18 @@
 
       console.log('Survey Data:', survey);
 
-    
+      // In a real application, you would send this data to a server for storage.
+      // You would also need user authentication and a server-side application to handle surveys.
+    }
+
+    // Helper function to get answers for a multiple-choice question
+    function getAnswers(questionId) {
+      const answerInputs = document.querySelectorAll(`#${questionId} input.answer`);
+      const answers = [];
+      answerInputs.forEach(input => {
+        answers.push(input.value);
+      });
+      return answers;
     }
 
     // Dynamically add options for the evaluationMonth dropdown
@@ -141,6 +165,11 @@
       option.textContent = i;
       evaluationDayDropdown.appendChild(option);
     }
+
+    // Now, when the "Add Answer" button is clicked, a prompt will appear for the user to enter their answer. 
+    //The entered answer will be added as an input field to the corresponding question.
+    // 2/1/24 9:30 
   </script>
 </body>
 </html>
+
