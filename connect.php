@@ -1,31 +1,29 @@
 <?php
-if (isset($_POST['user'])&&isset($_POST['user_pass']))
-{
+    $email= $_POST['email'];
+    $password= $_POST['password'];
+    //echo $email;
+    //db connection
 
-    function validate($data){
-        $data= trim($data);
-        $data = stripslashes($data);
-        $data= htmlspecialchars($data);
-        return $data;
-    }
-
-    $username=validate ($_POST['username']);
-    $password=validate($_POST['user_pass']);
-    
-    //make sure username and password isnt blank
-    if(empty($username)){
-        header("Location: Login.html?error=Username required");
-        exit();
-    }elseif(empty($password)){
-        header("Location: Login.html?error=Password required");
-        exit();
+    $con = new mysqli("localhost", "root", "", "test");
+    //where its stored, sql username, password, db name
+    if($con->connect_error){
+        die("Connection failure : ".$con->connect_error);
     }else{
-        echo "Valid";
+        //see if username is in db
+        $stmt= $con->prepare(("select * from UserInfo where email=?"));
+        $stmt= $bind_param("s", $email);
+        $stmt->execute();
+        $stmt_result=$stmt->get_result();
+        //check if password from username matches the one in the db
+        if($stmt_result->num_rows>0){
+            $data=$stmt_result->fetch_assoc();
+            if($data['password']===$password){
+                header("Location: SampleForm.html");
+            }else{
+                echo "<h2>Invalid Email or Password</h2>";
+            }
+        }else{
+            echo "<h2>Invalid Email or Password</h2>";
+        }
     }
-}
-else
-{
-    header("Location: Login.html");
-    exit();
-}
 ?>
