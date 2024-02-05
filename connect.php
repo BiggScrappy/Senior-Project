@@ -4,13 +4,13 @@
     //echo $email;
     //db connection
 
-    $con = new mysqli("localhost", "root", "", "test");
+    $con = new mysqli("damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com", "admin", "adminPass", "damDatabase");
     //where its stored, sql username, password, db name
     if($con->connect_error){
         die("Connection failure : ".$con->connect_error);
     }else{
         //see if username is in db
-        $stmt= $con->prepare(("select * from UserInfo where email=?"));
+        $stmt= $con->prepare(("select * from survey_user_table where email=?"));
         $stmt= $bind_param("s", $email);
         $stmt->execute();
         $stmt_result=$stmt->get_result();
