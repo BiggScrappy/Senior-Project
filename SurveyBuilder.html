@@ -26,6 +26,7 @@
 <body>
   <h1>Survey Builder</h1>
 
+  <!-- Survey Setup Section -->
   <div>
     <label for="surveyTitle">Survey Title:</label>
     <input type="text" id="surveyTitle">
@@ -33,16 +34,12 @@
 
   <div>
     <label for="evaluationMonth">Evaluation Month:</label>
-    <select id="evaluationMonth">
-      <!-- Options will be dynamically added here -->
-    </select>
+    <select id="evaluationMonth"></select>
   </div>
 
   <div>
     <label for="evaluationDay">Evaluation Day:</label>
-    <select id="evaluationDay">
-      <!-- Options will be dynamically added here -->
-    </select>
+    <select id="evaluationDay"></select>
   </div>
 
   <div>
@@ -50,19 +47,25 @@
     <input type="checkbox" id="lockSurvey">
   </div>
 
-  <div id="questionsContainer">
-    <!-- Questions will be dynamically added here -->
-  </div>
+  <!-- Questions Container -->
+  <div id="questionsContainer"></div>
 
+  <!-- Action Buttons -->
   <button onclick="addQuestion('open-ended')">Add Open-Ended Question</button>
-  <button onclick="addQuestion('boolean')">Add Boolean Question</button>
+  <button onclick="addQuestion('boolean')">Add True/False Question</button>
   <button onclick="addQuestion('likert')">Add Likert Scale Question</button>
   <button onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
   <button onclick="saveSurvey()">Save Survey</button>
+  <button onclick="previewSurvey()">Preview Survey</button>
+  <button onclick="customizeSurvey()">Customize Survey</button>
+
+  <!-- Survey Preview Container -->
+  <div id="surveyPreview"></div>
 
   <script>
     let questionCount = 0;
 
+    // Function to add a question based on the type
     function addQuestion(questionType) {
       questionCount++;
 
@@ -71,28 +74,16 @@
       const questionDiv = document.createElement('div');
       questionDiv.classList.add('question');
 
+      // Determine the question input based on the type
       let questionInput;
       if (questionType === 'open-ended') {
-        questionInput = `<label for="question${questionCount}">Open-Ended Question ${questionCount}:</label>
-                        <input type="text" id="question${questionCount}" placeholder="Enter your open-ended question">
-                        <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
+        questionInput = createOpenEndedQuestion();
       } else if (questionType === 'boolean') {
-        questionInput = `<label for="question${questionCount}">Boolean Question ${questionCount}:</label>
-                        <input type="radio" name="question${questionCount}" value="true"> True
-                        <input type="radio" name="question${questionCount}" value="false"> False`;
+        questionInput = createBooleanQuestion();
       } else if (questionType === 'likert') {
-        questionInput = `<label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
-                        <select id="question${questionCount}">
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
-                        </select>`;
+        questionInput = createLikertQuestion();
       } else if (questionType === 'multiple-choice') {
-        questionInput = `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
-                        <input type="text" id="question${questionCount}">
-                        <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
+        questionInput = createMultipleChoiceQuestion();
       }
 
       questionDiv.innerHTML = questionInput;
@@ -100,6 +91,40 @@
       questionsContainer.appendChild(questionDiv);
     }
 
+    // Helper function to create an open-ended question input
+    function createOpenEndedQuestion() {
+      return `<label for="question${questionCount}">Open-Ended Question ${questionCount}:</label>
+              <input type="text" id="question${questionCount}" placeholder="Enter your open-ended question">
+              <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
+    }
+
+    // Helper function to create a boolean question input
+    function createBooleanQuestion() {
+      return `<label for="question${questionCount}">True/False Question ${questionCount}:</label>
+              <input type="radio" name="question${questionCount}" value="true"> True
+              <input type="radio" name="question${questionCount}" value="false"> False`;
+    }
+
+    // Helper function to create a Likert scale question input
+    function createLikertQuestion() {
+      return `<label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
+              <select id="question${questionCount}">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>`;
+    }
+
+    // Helper function to create a multiple-choice question input
+    function createMultipleChoiceQuestion() {
+      return `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
+              <input type="text" id="question${questionCount}">
+              <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
+    }
+
+    // Function to add an answer to a question
     function addAnswer(questionId) {
       const userAnswer = prompt('Enter your answer:');
       if (userAnswer !== null && userAnswer !== '') {
@@ -112,6 +137,7 @@
       }
     }
 
+    // Function to save the survey data
     function saveSurvey() {
       const surveyTitle = document.getElementById('surveyTitle').value;
       const evaluationMonth = document.getElementById('evaluationMonth').value;
@@ -133,12 +159,9 @@
       };
 
       console.log('Survey Data:', survey);
-
-      // In a real application, you would send this data to a server for storage.
-      // You would also need user authentication and a server-side application to handle surveys.
     }
 
-    // Helper function to get answers for a multiple-choice question
+    // Function to get answers for a multiple-choice question
     function getAnswers(questionId) {
       const answerInputs = document.querySelectorAll(`#${questionId} input.answer`);
       const answers = [];
@@ -146,6 +169,28 @@
         answers.push(input.value);
       });
       return answers;
+    }
+
+    // Function to preview the survey
+    function previewSurvey() {
+      const previewContainer = document.getElementById('surveyPreview');
+      previewContainer.innerHTML = '';
+
+      for (let i = 1; i <= questionCount; i++) {
+        const questionText = document.getElementById(`question${i}`).value;
+        const previewQuestion = document.createElement('p');
+        previewQuestion.textContent = `Q${i}: ${questionText}`;
+        previewContainer.appendChild(previewQuestion);
+      }
+    }
+
+    // Function to customize the survey (change background and font color)
+    function customizeSurvey() {
+      const backgroundColor = prompt('Enter background color:');
+      document.body.style.backgroundColor = backgroundColor;
+
+      const fontColor = prompt('Enter font color:');
+      document.body.style.color = fontColor;
     }
 
     // Dynamically add options for the evaluationMonth dropdown
@@ -161,14 +206,11 @@
     const evaluationDayDropdown = document.getElementById('evaluationDay');
     for (let i = 1; i <= 31; i++) {
       const option = document.createElement('option');
-      option.value = i;
+     option.value = i;
       option.textContent = i;
       evaluationDayDropdown.appendChild(option);
     }
-
-    // Now, when the "Add Answer" button is clicked, a prompt will appear for the user to enter their answer. 
-    //The entered answer will be added as an input field to the corresponding question.
-    // 2/1/24 9:30 
+    // updated 2/13/24
   </script>
 </body>
 </html>
