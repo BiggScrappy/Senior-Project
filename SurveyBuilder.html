@@ -53,7 +53,8 @@
   <!-- Action Buttons -->
   <button onclick="addQuestion('open-ended')">Add Open-Ended Question</button>
   <button onclick="addQuestion('boolean')">Add True/False Question</button>
-  <button onclick="addQuestion('likert')">Add Likert Scale Question</button>
+  <button onclick="addLikertSeries()">Add Likert Scale Series</button>
+  <button onclick="addMultipleSeries()">Add Multiple Series Question</button>
   <button onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
   <button onclick="saveSurvey()">Save Survey</button>
   <button onclick="previewSurvey()">Preview Survey</button>
@@ -109,11 +110,11 @@
     function createLikertQuestion() {
       return `<label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
               <select id="question${questionCount}">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
+                <option value="1">Agree</option>
+                <option value="2">Strongly Agree</option>
+                <option value="3">Neutral</option>
+                <option value="4">Disagree</option>
+                <option value="5">Strongly Disagree</option>
               </select>`;
     }
 
@@ -134,6 +135,22 @@
         answerInput.classList.add('answer');
         answerInput.value = userAnswer;
         questionDiv.appendChild(answerInput);
+      }
+    }
+
+    // Function to add a series of Likert scale questions
+    function addLikertSeries() {
+      const numberOfQuestions = prompt('Enter the number of Likert scale questions:');
+      for (let i = 1; i <= numberOfQuestions; i++) {
+        addQuestion('likert');
+      }
+    }
+
+    // Function to add a series of multiple-choice questions
+    function addMultipleSeries() {
+      const numberOfQuestions = prompt('Enter the number of multiple-choice questions in the series:');
+      for (let i = 1; i <= numberOfQuestions; i++) {
+        addQuestion('multiple-choice');
       }
     }
 
@@ -178,8 +195,19 @@
 
       for (let i = 1; i <= questionCount; i++) {
         const questionText = document.getElementById(`question${i}`).value;
+
+        // Check if it's a Likert Scale question and get the selected option value
+        let answer;
+        if (document.getElementById(`question${i}`).nodeName === 'SELECT') {
+          const selectedOption = document.getElementById(`question${i}`).value;
+          answer = document.getElementById(`question${i}`).options[selectedOption - 1].text;
+        } else {
+          // For other question types, get the input value
+          answer = questionText;
+        }
+
         const previewQuestion = document.createElement('p');
-        previewQuestion.textContent = `Q${i}: ${questionText}`;
+        previewQuestion.textContent = `Q${i}: ${answer}`;
         previewContainer.appendChild(previewQuestion);
       }
     }
@@ -206,12 +234,13 @@
     const evaluationDayDropdown = document.getElementById('evaluationDay');
     for (let i = 1; i <= 31; i++) {
       const option = document.createElement('option');
-     option.value = i;
+      option.value = i;
       option.textContent = i;
       evaluationDayDropdown.appendChild(option);
     }
-    // updated 2/13/24
+
+    // Now, users can use the "Add Multiple Series Question" button to add a specified number of multiple-choice questions in a series. 
+    // The Likert scale options are still available for Likert scale questions.
   </script>
 </body>
 </html>
-
