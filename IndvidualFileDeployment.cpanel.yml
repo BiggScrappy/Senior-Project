@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home1/missysme/public_html/
+    - /bin/cp SampleForm.html $DEPLOYPATH
