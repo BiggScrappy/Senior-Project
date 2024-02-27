@@ -10,6 +10,20 @@ $users = [
 $userInputUsername = isset($_POST['username']) ? $_POST['username'] : '';
 $userInputPassword = isset($_POST['password']) ? $_POST['password'] : '';
 
+// Database connection parameters
+$servername = "your_database_host";
+$username = "your_database_username";
+$password = "your_database_password";
+$database = "your_database_name";
+
+// Connect to MySQL database
+$conn = new mysqli($servername, $username, $password, $database);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 // Check if the provided credentials are valid
 if (array_key_exists($userInputUsername, $users) && $userInputPassword === $users[$userInputUsername]['password']) {
     // Successful login, redirect based on user role
