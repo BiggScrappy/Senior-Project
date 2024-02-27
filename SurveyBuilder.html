@@ -56,7 +56,8 @@
   <button onclick="addLikertSeries()">Add Likert Scale Series</button>
   <button onclick="addMultipleSeries()">Add Multiple Series Question</button>
   <button onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
-  <button onclick="saveSurvey()">Save Survey</button>
+  <button onclick="saveSurvey()">Save Survey Locally</button>
+  <button onclick="saveSurveyToDatabase()">Save Survey to Database</button>
   <button onclick="previewSurvey()">Preview Survey</button>
   <button onclick="customizeSurvey()">Customize Survey</button>
 
@@ -101,21 +102,29 @@
 
     // Helper function to create a boolean question input
     function createBooleanQuestion() {
-      return `<label for="question${questionCount}">True/False Question ${questionCount}:</label>
-              <input type="radio" name="question${questionCount}" value="true"> True
-              <input type="radio" name="question${questionCount}" value="false"> False`;
+      return `<div>
+                <label for="question${questionCount}">True/False Question ${questionCount}:</label>
+                <input type="text" id="question${questionCount}" placeholder="Enter your True/False question">
+                <select id="response${questionCount}">
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </div>`;
     }
 
     // Helper function to create a Likert scale question input
     function createLikertQuestion() {
-      return `<label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
-              <select id="question${questionCount}">
-                <option value="1">Agree</option>
-                <option value="2">Strongly Agree</option>
-                <option value="3">Neutral</option>
-                <option value="4">Disagree</option>
-                <option value="5">Strongly Disagree</option>
-              </select>`;
+      return `<div>
+                <label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
+                <input type="text" id="question${questionCount}" placeholder="Enter your Likert scale question">
+                <select id="response${questionCount}">
+                  <option value="1">Agree</option>
+                  <option value="2">Strongly Agree</option>
+                  <option value="3">Neutral</option>
+                  <option value="4">Disagree</option>
+                  <option value="5">Strongly Disagree</option>
+                </select>
+              </div>`;
     }
 
     // Helper function to create a multiple-choice question input
@@ -154,7 +163,7 @@
       }
     }
 
-    // Function to save the survey data
+    // Function to save the survey data locally
     function saveSurvey() {
       const surveyTitle = document.getElementById('surveyTitle').value;
       const evaluationMonth = document.getElementById('evaluationMonth').value;
@@ -164,8 +173,9 @@
       const questions = [];
       for (let i = 1; i <= questionCount; i++) {
         const questionText = document.getElementById(`question${i}`).value;
+        const response = document.getElementById(`response${i}`).value;
         const answers = getAnswers(`question${i}`);
-        questions.push({ questionText, answers });
+        questions.push({ questionText, response, answers });
       }
 
       const survey = {
@@ -176,6 +186,40 @@
       };
 
       console.log('Survey Data:', survey);
+    }
+
+    // Function to save the survey data to the database
+    function saveSurveyToDatabase() {
+      const surveyData = {
+        title: document.getElementById('surveyTitle').value,
+        evaluationMonth: document.getElementById('evaluationMonth').value,
+        evaluationDay: document.getElementById('evaluationDay').value,
+        lockSurvey: document.getElementById('lockSurvey').checked,
+        questions: [],
+      };
+
+      for (let i = 1; i <= questionCount; i++) {
+        const questionText = document.getElementById(`question${i}`).value;
+        const response = document.getElementById(`response${i}`).value;
+        const answers = getAnswers(`question${i}`);
+        surveyData.questions.push({ questionText, response, answers });
+      }
+
+      // Send survey data to the server
+      fetch('http://localhost:3000/saveSurvey', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(surveyData),
+      })
+        .then((response) => response.text())
+        .then((message) => {
+          console.log(message);
+        })
+        .catch((error) => {
+          console.error('Error saving survey data to the database:', error);
+        });
     }
 
     // Function to get answers for a multiple-choice question
@@ -195,6 +239,7 @@
 
       for (let i = 1; i <= questionCount; i++) {
         const questionText = document.getElementById(`question${i}`).value;
+        const response = document.getElementById(`response${i}`).value;
 
         // Check if it's a Likert Scale question and get the selected option value
         let answer;
@@ -207,7 +252,7 @@
         }
 
         const previewQuestion = document.createElement('p');
-        previewQuestion.textContent = `Q${i}: ${answer}`;
+        previewQuestion.textContent = `Q${i}: ${answer} - Response: ${response}`;
         previewContainer.appendChild(previewQuestion);
       }
     }
@@ -238,9 +283,7 @@
       option.textContent = i;
       evaluationDayDropdown.appendChild(option);
     }
-
-    // Now, users can use the "Add Multiple Series Question" button to add a specified number of multiple-choice questions in a series. 
-    // The Likert scale options are still available for Likert scale questions.
   </script>
 </body>
 </html>
+  
