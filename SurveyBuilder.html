@@ -188,39 +188,61 @@
       console.log('Survey Data:', survey);
     }
 
-    // Function to save the survey data to the database
     function saveSurveyToDatabase() {
-      const surveyData = {
-        title: document.getElementById('surveyTitle').value,
-        evaluationMonth: document.getElementById('evaluationMonth').value,
-        evaluationDay: document.getElementById('evaluationDay').value,
-        lockSurvey: document.getElementById('lockSurvey').checked,
-        questions: [],
-      };
+  const surveyData = {
+    title: document.getElementById('surveyTitle').value,
+    evaluationMonth: document.getElementById('evaluationMonth').value,
+    evaluationDay: document.getElementById('evaluationDay').value,
+    lockSurvey: document.getElementById('lockSurvey').checked,
+    questions: [],
+  };
 
-      for (let i = 1; i <= questionCount; i++) {
-        const questionText = document.getElementById(`question${i}`).value;
-        const response = document.getElementById(`response${i}`).value;
-        const answers = getAnswers(`question${i}`);
-        surveyData.questions.push({ questionText, response, answers });
-      }
+  for (let i = 1; i <= questionCount; i++) {
+    const questionElement = document.getElementById(`question${i}`);
+    const responseElement = document.getElementById(`response${i}`);
 
-      // Send survey data to the server
-      fetch('http://localhost:3000/saveSurvey', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(surveyData),
-      })
-        .then((response) => response.text())
-        .then((message) => {
-          console.log(message);
-        })
-        .catch((error) => {
-          console.error('Error saving survey data to the database:', error);
-        });
+    // Check if the elements exist before accessing their value property
+    if (!questionElement || !responseElement) {
+      console.error(`Element with ID question${i} or response${i} not found.`);
+      continue; // Skip to the next iteration
     }
+
+    const questionText = questionElement.value || "";
+    const response = responseElement.value || "";
+    
+    const answers = getAnswers(`question${i}`);
+    surveyData.questions.push({ questionText, response, answers });
+  }
+
+  // Log survey data for debugging
+  console.log('Survey Data:', surveyData);
+
+  // Send survey data to the server
+  fetch('http://localhost:3000/saveSurvey', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(surveyData),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then((message) => {
+      console.log(message);
+    })
+
+    .catch((error) => {
+  console.error('Error saving survey data to the database:', error);
+  console.log('Request Details:', error.request); // Log the request details
+  console.log('Response Details:', error.response); // Log the response details
+});
+
+}
+
 
     // Function to get answers for a multiple-choice question
     function getAnswers(questionId) {
