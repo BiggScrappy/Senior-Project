@@ -9,7 +9,7 @@ const port = 3000;
 const db = mysql.createConnection({
   host: "damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com",
   user: "admin",
-  password: "AdminPass",
+  password: "adminPass",
   database: "dam_database"
 });
 
