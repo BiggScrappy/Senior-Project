@@ -13,39 +13,42 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Calculate the date 10 days ago from survey creation
-// how get survey creation??
-// $ten_days_ago = date('Y-m-d', strtotime('-10 days'));
+//Calculate the date 10 days ago from survey creation
+//how get survey creation??
+$sql = "SELECT created_at FROM surveys WHERE created_at < '$ten_days_ago'";
+$result = $conn->query($sql);
 
-// // Query to select users whose last email sent date is older than 10 days
+$ten_days_ago = date('Y-m-d', strtotime('-10 days'));
 
-// $result = $conn->query($sql);
+//querry to find survey made 10 days ago
 
-// if ($result->num_rows > 0) {
-//     // Loop through each row
-//     while($row = $result->fetch_assoc()) {
-//         // Send email to each user
-//         $to = $row['email'];
-//         $subject = "YOUR_EMAIL_SUBJECT";
-//         $message = "YOUR_EMAIL_BODY";
-//         $headers = "From: YOUR_EMAIL_ADDRESS" . "\r\n" .
-//                    "Reply-To: YOUR_EMAIL_ADDRESS" . "\r\n" .
-//                    "X-Mailer: PHP/" . phpversion();
+$result = $conn->query($sql);
 
-//         // Send email
-//         if (mail($to, $subject, $message, $headers)) {
-//             echo "Email sent successfully to: $to<br>";
-//             // Update the last email sent date for the user
-//             $update_sql = "UPDATE users SET last_email_sent_date = CURDATE() WHERE email = '$to'";
-//             $conn->query($update_sql);
-//         } else {
-//             echo "Failed to send email to: $to<br>";
-//         }
-//     }
-// } else {
-//     echo "No users found in the database whose last email sent date is older than 10 days";
-// }
+if ($result->num_rows > 0) {
+    // Loop through each row
+    while($row = $result->fetch_assoc()) {
+        // Send email to each user
+        $to = $row['email'];
+        $subject = "Take Survey";
+        $message = "Take the survey";
+        $headers = "From: YOUR_EMAIL_ADDRESS" . "\r\n" .
+                   "Reply-To: YOUR_EMAIL_ADDRESS" . "\r\n" .
+                   "X-Mailer: PHP/" . phpversion();
 
-// Close MySQL connection
+        // Send email
+        if (mail($to, $subject, $message, $headers)) {
+            echo "Email sent successfully to: $to<br>";
+            // Update the last email sent date for the user
+            $update_sql = "UPDATE users SET last_email_sent_date = CURDATE() WHERE email = '$to'";
+            $conn->query($update_sql);
+        } else {
+            echo "Failed to send email to: $to<br>";
+        }
+    }
+} else {
+    echo "No users found in the database whose last email sent date is older than 10 days";
+}
+
+//Close MySQL connection
 $conn->close();
 ?>
