@@ -188,7 +188,8 @@
       console.log('Survey Data:', survey);
     }
 
-    function saveSurveyToDatabase() {
+// Function to save the survey data to the database
+function saveSurveyToDatabase() {
   const surveyData = {
     title: document.getElementById('surveyTitle').value,
     evaluationMonth: document.getElementById('evaluationMonth').value,
@@ -209,7 +210,7 @@
 
     const questionText = questionElement.value || "";
     const response = responseElement.value || "";
-    
+
     const answers = getAnswers(`question${i}`);
     surveyData.questions.push({ questionText, response, answers });
   }
@@ -233,15 +234,16 @@
     })
     .then((message) => {
       console.log(message);
+      // Display a success message to the user
+      alert('Survey data saved successfully!');
     })
-
     .catch((error) => {
-  console.error('Error saving survey data to the database:', error);
-  console.log('Request Details:', error.request); // Log the request details
-  console.log('Response Details:', error.response); // Log the response details
-});
-
+      console.error('Error saving survey data to the database:', error);
+      // Display an error message to the user
+      alert('Error saving survey data to the database. Please try again.');
+    });
 }
+
 
 
     // Function to get answers for a multiple-choice question
@@ -308,4 +310,4 @@
   </script>
 </body>
 </html>
-  
+ 
