@@ -1,0 +1,34 @@
+* CANT SAVE SURVEYS *
+POSSBLE ISSUES: 
+
+The error messages you provided indicate two issues:
+
+Element Not Found Error:
+
+    The error message "Element with ID question1 or response1 not found" suggests that the script is unable to find the elements with the IDs question1 or response1. This issue occurs in the saveSurveyToDatabase function when attempting to retrieve values from these elements.
+Network Error:
+
+    The error "POST http://localhost:3000/saveSurvey net::ERR_CONNECTION_REFUSED" indicates a network error. It suggests that the browser is unable to establish a connection to the specified URL (http://localhost:3000/saveSurvey). This could be due to various reasons, such as the server not running, the server refusing connections, or network issues.
+Let's address these issues:
+
+Element Not Found Error:
+    In your saveSurveyToDatabase function, you are trying to access elements with IDs like question1 and response1. Ensure that these elements exist in your HTML, and their IDs are correctly specified. Also, make sure these elements are present before the saveSurveyToDatabase function is called.
+
+Network Error:
+    The network error indicates that the browser is unable to connect to http://localhost:3000/saveSurvey. Here are a few things to check:
+
+Server Running:
+
+    Make sure that the server (listening on http://localhost:3000) is running and can accept requests. Check the server logs for any errors.
+CORS (Cross-Origin Resource Sharing):
+
+    If your frontend and backend are on different domains, ensure that the server is configured to accept requests from the frontend. You might need to configure CORS headers on the server.
+Connection Refused:
+
+    The "ERR_CONNECTION_REFUSED" error suggests that the browser is unable to establish a connection to the server. Ensure that the server is running, and there are no firewall or network issues preventing the connection.
+
+    Once you've addressed these issues, the saveSurveyToDatabase function should work more smoothly. If you continue to face issues, consider checking the server-side code for any errors or logs related to incoming requests.
+
+
+
+
