@@ -94,22 +94,21 @@
     }
 
     // Helper function to create an open-ended question input
-    
     function createOpenEndedQuestion() {
-  const questionId = `question${questionCount}`;
-  const responseId = `response${questionCount}`;
+      const questionId = `question${questionCount}`;
+      const responseId = `response${questionCount}`;
 
-  return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
-          <input type="text" id="${questionId}" placeholder="Enter your open-ended question">
-          <button onclick="addAnswer('${questionId}')">Add Answer</button>`;
-}
+      return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
+              <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your open-ended question">
+              <button onclick="addAnswer('${questionId}')">Add Answer</button>`;
+    }
 
     // Helper function to create a boolean question input
     function createBooleanQuestion() {
       return `<div>
                 <label for="question${questionCount}">True/False Question ${questionCount}:</label>
-                <input type="text" id="question${questionCount}" placeholder="Enter your True/False question">
-                <select id="response${questionCount}">
+                <input type="text" id="question${questionCount}" name="question${questionCount}" placeholder="Enter your True/False question">
+                <select id="response${questionCount}" name="response${questionCount}">
                   <option value="true">True</option>
                   <option value="false">False</option>
                 </select>
@@ -120,8 +119,8 @@
     function createLikertQuestion() {
       return `<div>
                 <label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
-                <input type="text" id="question${questionCount}" placeholder="Enter your Likert scale question">
-                <select id="response${questionCount}">
+                <input type="text" id="question${questionCount}" name="question${questionCount}" placeholder="Enter your Likert scale question">
+                <select id="response${questionCount}" name="response${questionCount}">
                   <option value="1">Agree</option>
                   <option value="2">Strongly Agree</option>
                   <option value="3">Neutral</option>
@@ -134,7 +133,7 @@
     // Helper function to create a multiple-choice question input
     function createMultipleChoiceQuestion() {
       return `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
-              <input type="text" id="question${questionCount}">
+              <input type="text" id="question${questionCount}" name="question${questionCount}">
               <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
     }
 
@@ -193,57 +192,55 @@
     }
 
     async function saveSurveyToDatabase() {
-  const surveyData = {
-    title: document.getElementById('surveyTitle').value,
-    evaluationMonth: document.getElementById('evaluationMonth').value,
-    evaluationDay: document.getElementById('evaluationDay').value,
-    lockSurvey: document.getElementById('lockSurvey').checked,
-    questions: [],
-  };
+      const surveyData = {
+        title: document.getElementById('surveyTitle').value,
+        evaluationMonth: document.getElementById('evaluationMonth').value,
+        evaluationDay: document.getElementById('evaluationDay').value,
+        lockSurvey: document.getElementById('lockSurvey').checked,
+        questions: [],
+      };
 
-  for (let i = 1; i <= questionCount; i++) {
-    const questionElement = document.getElementById(`question${i}`);
-    const responseElement = document.getElementById(`response${i}`);
+      for (let i = 1; i <= questionCount; i++) {
+        const questionElement = document.getElementById(`question${i}`);
+        const responseElement = document.getElementById(`response${i}`);
 
-    if (!questionElement || !responseElement) {
-      console.error('Elements not found. Check your HTML structure.');
-      return;
+        if (!questionElement || !responseElement) {
+          console.error('Elements not found. Check your HTML structure.');
+          return;
+        }
+
+        const questionText = questionElement.value || "";
+        const response = responseElement.value || "";
+
+        // Fetch answers for the question (assuming they are stored in an array)
+        const answers = getAnswers(`question${i}`);
+
+        surveyData.questions.push({
+          questionText,
+          response,
+          answers,
+        });
+      }
+
+      try {
+        // Save survey data to the server
+        const response = await fetch('http://localhost:3000/saveSurvey', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(surveyData),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        console.log('Survey data saved to the database');
+      } catch (error) {
+        console.error('Error saving survey data to the database:', error);
+      }
     }
-
-    const questionText = questionElement.value || "";
-    const response = responseElement.value || "";
-
-    // Fetch answers for the question (assuming they are stored in an array)
-    const answers = getAnswers(`question${i}`);
-
-    surveyData.questions.push({
-      questionText,
-      response,
-      answers,
-    });
-  }
-
-  try {
-    // Save survey data to the server
-    const response = await fetch('http://localhost:3000/saveSurvey', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(surveyData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    console.log('Survey data saved to the database');
-  } catch (error) {
-    console.error('Error saving survey data to the database:', error);
-  }
-}
-
-
 
     // Function to get answers for a multiple-choice question
     function getAnswers(questionId) {
@@ -309,4 +306,3 @@
   </script>
 </body>
 </html>
- 
