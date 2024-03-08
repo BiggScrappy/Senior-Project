@@ -15,6 +15,7 @@ pool.query('SELECT * FROM surveys', (err, results) => {
     console.error('Error fetching survey data from the database:', err);
   } else {
     console.log('Survey data fetched successfully:', results);
+    // Do something with the fetched survey data
   }
 
   // Close the database connection
