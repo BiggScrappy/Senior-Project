@@ -44,7 +44,34 @@ pool.getConnection((err, db) => {
 
 // Save survey data to the database
 app.post('/saveSurvey', (req, res) => {
+  const surveyData = req.body;
+
+  // Extract survey data
+  const {
+    title,
+    evaluationMonth,
+    evaluationDay,
+    lockSurvey,
+    questions
+  } = surveyData;
+
   // Rest of your existing code for saving survey data
+  // ...
+
+  // Example: Insert survey data into surveys table
+  const insertSurveyQuery = `
+    INSERT INTO surveys (survey_template_id, surveyor_id, organization_id, project_id, surveyor_role_id, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by)
+    VALUES (?, ?, ?, ?, ?, NOW(), ?, NOW(), ?, NULL, NULL)`;
+
+  pool.query(insertSurveyQuery, [1, 1, 1, 1, 1, 1, 1], (err, results) => {
+    if (err) {
+      console.error('Error inserting survey data:', err);
+      res.status(500).json({ error: 'Error saving survey data to the database' });
+    } else {
+      console.log('Survey data saved to the database');
+      res.status(200).json({ message: 'Survey data saved successfully' });
+    }
+  });
 });
 
 // Start the server
