@@ -94,11 +94,15 @@
     }
 
     // Helper function to create an open-ended question input
+    
     function createOpenEndedQuestion() {
-      return `<label for="question${questionCount}">Open-Ended Question ${questionCount}:</label>
-              <input type="text" id="question${questionCount}" placeholder="Enter your open-ended question">
-              <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
-    }
+  const questionId = `question${questionCount}`;
+  const responseId = `response${questionCount}`;
+
+  return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
+          <input type="text" id="${questionId}" placeholder="Enter your open-ended question">
+          <button onclick="addAnswer('${questionId}')">Add Answer</button>`;
+}
 
     // Helper function to create a boolean question input
     function createBooleanQuestion() {
@@ -188,8 +192,7 @@
       console.log('Survey Data:', survey);
     }
 
-// Function to save the survey data to the database
-function saveSurveyToDatabase() {
+    async function saveSurveyToDatabase() {
   const surveyData = {
     title: document.getElementById('surveyTitle').value,
     evaluationMonth: document.getElementById('evaluationMonth').value,
@@ -202,46 +205,42 @@ function saveSurveyToDatabase() {
     const questionElement = document.getElementById(`question${i}`);
     const responseElement = document.getElementById(`response${i}`);
 
-    // Check if the elements exist before accessing their value property
     if (!questionElement || !responseElement) {
-      console.error(`Element with ID question${i} or response${i} not found.`);
-      continue; // Skip to the next iteration
+      console.error('Elements not found. Check your HTML structure.');
+      return;
     }
 
     const questionText = questionElement.value || "";
     const response = responseElement.value || "";
 
+    // Fetch answers for the question (assuming they are stored in an array)
     const answers = getAnswers(`question${i}`);
-    surveyData.questions.push({ questionText, response, answers });
+
+    surveyData.questions.push({
+      questionText,
+      response,
+      answers,
+    });
   }
 
-  // Log survey data for debugging
-  console.log('Survey Data:', surveyData);
-
-  // Send survey data to the server
-  fetch('http://localhost:3000/saveSurvey', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(surveyData),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.text();
-    })
-    .then((message) => {
-      console.log(message);
-      // Display a success message to the user
-      alert('Survey data saved successfully!');
-    })
-    .catch((error) => {
-      console.error('Error saving survey data to the database:', error);
-      // Display an error message to the user
-      alert('Error saving survey data to the database. Please try again.');
+  try {
+    // Save survey data to the server
+    const response = await fetch('http://localhost:3000/saveSurvey', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(surveyData),
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    console.log('Survey data saved to the database');
+  } catch (error) {
+    console.error('Error saving survey data to the database:', error);
+  }
 }
 
 
