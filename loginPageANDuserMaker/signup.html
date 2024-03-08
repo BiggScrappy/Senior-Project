@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+<body>
+
+    <h1>Make New User</h1>
+
+    <form action="process-signup.php" method="post">
+        <!--input user -->
+        <div>
+            <label for="name">name</label>
+            <input type="text" id="name" name="name">
+        </div>
+        <!--put email-->
+        <div>
+            <label for="email">email</label>
+            <input type="email" id="email" name="email">
+        </div>
+        <!--assign password-->
+        <div>
+            <label for="password">password</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <!--double check password-->
+        <div>
+            <label for="password_confirmation">Repeat Password</label>
+            <input type="password" id="password_confirmation" name="password_confirmation">
+        </div>
+        <!--input userID-->
+        <div>
+            <label for="userID">userID</label>
+            <input type="text" id="userID" name="userID">
+        </div>
+        <!--select user role-->
+        <div>
+            <label for="role">Select User Role</label>
+            <select name="role", id="role">
+                <option value="Admin">Admin</option>
+                <option value="Surveyor">Surveyor</option>
+                <option value="Respondent">Respondent</option>
+            </select>
+        </div>
+
+        <button>Make User</button>
+        
+    </form>
+
+</body>
+</html>
