@@ -51,15 +51,15 @@
   <div id="questionsContainer"></div>
 
   <!-- Action Buttons -->
-  <button onclick="addQuestion('open-ended')">Add Open-Ended Question</button>
-  <button onclick="addQuestion('boolean')">Add True/False Question</button>
-  <button onclick="addLikertSeries()">Add Likert Scale Series</button>
-  <button onclick="addMultipleSeries()">Add Multiple Series Question</button>
-  <button onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
-  <button onclick="saveSurvey()">Save Survey Locally</button>
-  <button onclick="saveSurveyToDatabase()">Save Survey to Database</button>
-  <button onclick="previewSurvey()">Preview Survey</button>
-  <button onclick="customizeSurvey()">Customize Survey</button>
+  <button type="button" onclick="addQuestion('open-ended')">Add Open-Ended Question</button>
+  <button type="button" onclick="addQuestion('boolean')">Add True/False Question</button>
+  <button type="button" onclick="addLikertSeries()">Add Likert Scale Series</button>
+  <button type="button" onclick="addMultipleSeries()">Add Multiple Series Question</button>
+  <button type="button" onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
+  <button type="button" onclick="saveSurvey()">Save Survey Locally</button>
+  <button type="button" onclick="saveSurveyToDatabase()">Save Survey to Database</button>
+  <button type="button" onclick="previewSurvey()">Preview Survey</button>
+  <button type="button" onclick="customizeSurvey()">Customize Survey</button>
 
   <!-- Survey Preview Container -->
   <div id="surveyPreview"></div>
@@ -100,7 +100,7 @@
 
       return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
               <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your open-ended question">
-              <button onclick="addAnswer('${questionId}')">Add Answer</button>`;
+              <button type="button" onclick="addAnswer('${questionId}')">Add Answer</button>`;
     }
 
     // Helper function to create a boolean question input
@@ -134,7 +134,7 @@
     function createMultipleChoiceQuestion() {
       return `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
               <input type="text" id="question${questionCount}" name="question${questionCount}">
-              <button onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
+              <button type="button" onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
     }
 
     // Function to add an answer to a question
@@ -183,7 +183,8 @@
 
       const survey = {
         title: surveyTitle,
-        evaluationPeriod: `${evaluationMonth}-${evaluationDay}`,
+        evaluationMonth: evaluationMonth,
+        evaluationDay: evaluationDay,
         lockSurvey: lockSurvey,
         questions: questions
       };
@@ -191,6 +192,7 @@
       console.log('Survey Data:', survey);
     }
 
+    // Function to save the survey data to the server
     async function saveSurveyToDatabase() {
       const surveyData = {
         title: document.getElementById('surveyTitle').value,
@@ -224,7 +226,7 @@
 
       try {
         // Save survey data to the server
-        const response = await fetch('http://localhost:3000/saveSurvey', {
+        const response = await fetch('http://localhost:3000/surveys', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
