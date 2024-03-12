@@ -34,12 +34,12 @@
 
   <div>
     <label for="evaluationMonth">Evaluation Month:</label>
-    <select id="evaluationMonth"></select>
+    <select id="evaluationMonth" name="evaluationMonth"></select>
   </div>
 
   <div>
     <label for="evaluationDay">Evaluation Day:</label>
-    <select id="evaluationDay"></select>
+    <select id="evaluationDay" name="evaluationDay"></select>
   </div>
 
   <div>
@@ -77,13 +77,13 @@
       // Determine the question input based on the type
       let questionInput;
       if (questionType === 'open-ended') {
-        questionInput = createOpenEndedQuestion();
+        questionInput = createOpenEndedQuestion(questionCount);
       } else if (questionType === 'boolean') {
-        questionInput = createBooleanQuestion();
+        questionInput = createBooleanQuestion(questionCount);
       } else if (questionType === 'likert') {
-        questionInput = createLikertQuestion();
+        questionInput = createLikertQuestion(questionCount);
       } else if (questionType === 'multiple-choice') {
-        questionInput = createMultipleChoiceQuestion();
+        questionInput = createMultipleChoiceQuestion(questionCount);
       }
 
       questionDiv.innerHTML = questionInput;
@@ -91,22 +91,26 @@
       questionsContainer.appendChild(questionDiv);
     }
 
-// Helper function to create an open-ended question input
-function createOpenEndedQuestion() {
-  const questionId = `question${questionCount}`;
-  const responseId = `response${questionCount}`;
+    // Helper function to create an open-ended question input
+    function createOpenEndedQuestion(questionCount) {
+      const questionId = `question${questionCount}`;
+      const responseId = `response${questionCount}`;
 
-  return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
-          <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your open-ended question">
-          <button type="button" onclick="addAnswer('${questionId}', '${responseId}')">Add Answer</button>`;
-}
+      return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
+              <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your open-ended question">
+              <button type="button" onclick="addAnswer('${questionId}', '${responseId}')">Add Answer</button>
+              <div id="${responseId}"></div>`;
+    }
 
     // Helper function to create a boolean question input
-    function createBooleanQuestion() {
+    function createBooleanQuestion(questionCount) {
+      const questionId = `question${questionCount}`;
+      const responseId = `response${questionCount}`;
+
       return `<div>
-                <label for="question${questionCount}">True/False Question ${questionCount}:</label>
-                <input type="text" id="question${questionCount}" name="question${questionCount}" placeholder="Enter your True/False question">
-                <select id="response${questionCount}" name="response${questionCount}">
+                <label for="${questionId}">True/False Question ${questionCount}:</label>
+                <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your True/False question">
+                <select id="${responseId}" name="${responseId}">
                   <option value="true">True</option>
                   <option value="false">False</option>
                 </select>
@@ -114,42 +118,43 @@ function createOpenEndedQuestion() {
     }
 
     // Helper function to create a Likert scale question input
-    function createLikertQuestion() {
+    function createLikertQuestion(questionCount) {
+      const questionId = `question${questionCount}`;
+      const responseId = `response${questionCount}`;
+
       return `<div>
-                <label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
-                <input type="text" id="question${questionCount}" name="question${questionCount}" placeholder="Enter your Likert scale question">
-                <select id="response${questionCount}" name="response${questionCount}">
-                  <option value="1">Agree</option>
-                  <option value="2">Strongly Agree</option>
+                <label for="${questionId}">Likert Scale Question ${questionCount}:</label>
+                <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your Likert scale question">
+                <select id="${responseId}" name="${responseId}">
+                  <option value="1">Strongly Disagree</option>
+                  <option value="2">Disagree</option>
                   <option value="3">Neutral</option>
-                  <option value="4">Disagree</option>
-                  <option value="5">Strongly Disagree</option>
+                  <option value="4">Agree</option>
+                  <option value="5">Strongly Agree</option>
                 </select>
               </div>`;
     }
 
     // Helper function to create a multiple-choice question input
-    function createMultipleChoiceQuestion() {
-      return `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
-              <input type="text" id="question${questionCount}" name="question${questionCount}">
-              <button type="button" onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
+    function createMultipleChoiceQuestion(questionCount) {
+      const questionId = `question${questionCount}`;
+      const responseId = `response${questionCount}`;
+
+      return `<label for="${questionId}">Multiple Choice Question ${questionCount}:</label>
+              <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your multiple-choice question">
+              <button type="button" onclick="addAnswer('${questionId}', '${responseId}')">Add Answer</button>
+              <div id="${responseId}"></div>`;
     }
 
-// Function to add an answer to a question
-function addAnswer(questionId, responseId) {
-  const userAnswer = prompt('Enter your answer:');
-
-  if (userAnswer !== null && userAnswer !== '') {
-    const questionDiv = document.querySelector(`#${questionId}`);
-    const responseInput = document.createElement('input');
-    responseInput.type = 'text';
-    responseInput.classList.add('answer');
-    responseInput.value = userAnswer;
-    responseInput.name = responseId; // Attach the ID to the response input
-    questionDiv.appendChild(responseInput);
-  }
-}
-
+    // Function to add an answer to a question
+    function addAnswer(questionId, responseId) {
+      const responseDiv = document.getElementById(responseId);
+      const answerInput = document.createElement('input');
+      answerInput.type = 'text';
+      answerInput.classList.add('answer');
+      answerInput.placeholder = 'Enter an answer';
+      responseDiv.appendChild(answerInput);
+    }
 
     // Function to add a series of Likert scale questions
     function addLikertSeries() {
@@ -171,88 +176,61 @@ function addAnswer(questionId, responseId) {
 async function submitSurvey() {
   const surveyData = {
     title: document.getElementById('surveyTitle').value,
-    // ... (other survey-level details as needed)
+    evaluationMonth: document.getElementById('evaluationMonth').value,
+    evaluationDay: document.getElementById('evaluationDay').value,
     questions: [],
   };
 
+  // Loop through each question and its answers
   for (let i = 1; i <= questionCount; i++) {
-    // ... (code to populate surveyData.questions)
+    const questionId = `question${i}`;
+    const responseId = `response${i}`;
+    const questionText = document.getElementById(questionId).value; // Assuming the question text is stored in the input element itself
+    const questionType = document.getElementById(questionId).name; // Use the name attribute to store the question type
+
+    const question = {
+      questionText,
+      type: questionType,
+    };
+
+    // Handle different question types
+    if (questionType === 'open-ended') {
+      const answerInputs = document.querySelectorAll(`#${responseId} input.answer`);
+      const answers = Array.from(answerInputs).map(input => input.value);
+      question.answers = answers;
+    } else if (questionType === 'boolean' || questionType === 'likert') {
+      const selectedOption = document.getElementById(responseId).value;
+      question.response = selectedOption;
+    } else if (questionType === 'multiple-choice') {
+      const answerInputs = document.querySelectorAll(`#${responseId} input.answer`);
+      const answers = Array.from(answerInputs).map(input => input.value);
+      question.answers = answers;
+    }
+
+    surveyData.questions.push(question);
   }
 
   try {
-    // Save survey data to the server
-    const response = await fetch('http://localhost:3000/submitSurvey', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(surveyData),
-    });
+  const response = await fetch('http://localhost:3000/submit-survey', { // Replace with your server's URL and port
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(surveyData),
+  });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    console.log('Survey data saved to the database');
-  } catch (error) {
-    console.error('Error saving survey data to the database:', error);
+  if (response.ok) {
+    console.log('Survey data received and stored successfully');
+    // You can add additional success handling here, such as displaying a success message
+  } else {
+    console.error('Error saving survey data to the database');
+    // You can add additional error handling here, such as displaying an error message
   }
+} catch (error) {
+  console.error('Error:', error);
+  // You can add additional error handling here, such as checking for a specific CORS error
 }
-
-
-    // Function to get survey data from the form
-// Function to save the answer to the survey data
-function saveAnswer(questionId, answerId) {
-  const userAnswer = document.getElementById(answerId).value;
-
-  if (userAnswer !== null && userAnswer !== '') {
-    const questionDiv = document.querySelector(`#${questionId}`);
-    const answerInput = document.createElement('input');
-    answerInput.type = 'text';
-    answerInput.classList.add('answer');
-    answerInput.value = userAnswer;
-    answerInput.name = answerId; // Attach the ID to the answer input
-    questionDiv.appendChild(answerInput);
-  }
 }
-
-
-
-    // Function to get answers for a multiple-choice question
-    function getAnswers(questionId) {
-      const answerInputs = document.querySelectorAll(`#${questionId} input.answer`);
-      const answers = [];
-      answerInputs.forEach(input => {
-        answers.push(input.value);
-      });
-      return answers;
-    }
-
-    // Function to populate the preview container with survey data
-    function populatePreviewContainer(surveyData) {
-      const previewContainer = document.getElementById('surveyPreview');
-      previewContainer.innerHTML = '';
-
-      for (let i = 1; i <= surveyData.questions.length; i++) {
-        const questionText = surveyData.questions[i - 1].questionText;
-        const response = surveyData.questions[i - 1].response;
-
-        // Check if it's a Likert Scale question and get the selected option value
-        let answer;
-        if (document.getElementById(`question${i}`).nodeName === 'SELECT') {
-          const selectedOption = response;
-          answer = document.getElementById(`question${i}`).options[selectedOption - 1].text;
-        } else {
-          // For other question types, get the input value
-          answer = questionText;
-        }
-
-        const previewQuestion = document.createElement('p');
-        previewQuestion.textContent = `Q${i}: ${answer} - Response: ${response}`;
-        previewContainer.appendChild(previewQuestion);
-      }
-    }
-
     // Function to customize the survey (change background and font color)
     function customizeSurvey() {
       const backgroundColor = prompt('Enter background color:');
@@ -281,4 +259,4 @@ function saveAnswer(questionId, answerId) {
     }
   </script>
 </body>
-</html>
+</html> 
