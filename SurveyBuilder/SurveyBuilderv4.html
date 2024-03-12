@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Builder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .question {
+      margin-bottom: 10px;
+    }
+
+    .answer {
+      margin-left: 20px;
+      margin-bottom: 5px;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Survey Builder</h1>
+
+  <!-- Survey Setup Section -->
+  <div>
+    <label for="surveyTitle">Survey Title:</label>
+    <input type="text" id="surveyTitle">
+  </div>
+
+  <div>
+    <label for="evaluationMonth">Evaluation Month:</label>
+    <select id="evaluationMonth"></select>
+  </div>
+
+  <div>
+    <label for="evaluationDay">Evaluation Day:</label>
+    <select id="evaluationDay"></select>
+  </div>
+
+  <div>
+    <label for="lockSurvey">Lock Survey:</label>
+    <input type="checkbox" id="lockSurvey">
+  </div>
+
+  <!-- Questions Container -->
+  <div id="questionsContainer"></div>
+
+  <!-- Action Buttons -->
+  <button type="button" onclick="addQuestion('open-ended')">Add Open-Ended Question</button>
+  <button type="button" onclick="addQuestion('boolean')">Add True/False Question</button>
+  <button type="button" onclick="addLikertSeries()">Add Likert Scale Series</button>
+  <button type="button" onclick="addMultipleSeries()">Add Multiple Series Question</button>
+  <button type="button" onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
+  <button type="button" onclick="submitSurvey()">Submit Survey</button>
+  <button type="button" onclick="customizeSurvey()">Customize Survey</button>
+
+  <!-- Survey Preview Container -->
+  <div id="surveyPreview"></div>
+
+  <script>
+    let questionCount = 0;
+
+    // Function to add a question based on the type
+    function addQuestion(questionType) {
+      questionCount++;
+
+      const questionsContainer = document.getElementById('questionsContainer');
+
+      const questionDiv = document.createElement('div');
+      questionDiv.classList.add('question');
+
+      // Determine the question input based on the type
+      let questionInput;
+      if (questionType === 'open-ended') {
+        questionInput = createOpenEndedQuestion();
+      } else if (questionType === 'boolean') {
+        questionInput = createBooleanQuestion();
+      } else if (questionType === 'likert') {
+        questionInput = createLikertQuestion();
+      } else if (questionType === 'multiple-choice') {
+        questionInput = createMultipleChoiceQuestion();
+      }
+
+      questionDiv.innerHTML = questionInput;
+
+      questionsContainer.appendChild(questionDiv);
+    }
+
+// Helper function to create an open-ended question input
+function createOpenEndedQuestion() {
+  const questionId = `question${questionCount}`;
+  const responseId = `response${questionCount}`;
+
+  return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
+          <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your open-ended question">
+          <button type="button" onclick="addAnswer('${questionId}', '${responseId}')">Add Answer</button>`;
+}
+
+    // Helper function to create a boolean question input
+    function createBooleanQuestion() {
+      return `<div>
+                <label for="question${questionCount}">True/False Question ${questionCount}:</label>
+                <input type="text" id="question${questionCount}" name="question${questionCount}" placeholder="Enter your True/False question">
+                <select id="response${questionCount}" name="response${questionCount}">
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </div>`;
+    }
+
+    // Helper function to create a Likert scale question input
+    function createLikertQuestion() {
+      return `<div>
+                <label for="question${questionCount}">Likert Scale Question ${questionCount}:</label>
+                <input type="text" id="question${questionCount}" name="question${questionCount}" placeholder="Enter your Likert scale question">
+                <select id="response${questionCount}" name="response${questionCount}">
+                  <option value="1">Agree</option>
+                  <option value="2">Strongly Agree</option>
+                  <option value="3">Neutral</option>
+                  <option value="4">Disagree</option>
+                  <option value="5">Strongly Disagree</option>
+                </select>
+              </div>`;
+    }
+
+    // Helper function to create a multiple-choice question input
+    function createMultipleChoiceQuestion() {
+      return `<label for="question${questionCount}">Multiple Choice Question ${questionCount}:</label>
+              <input type="text" id="question${questionCount}" name="question${questionCount}">
+              <button type="button" onclick="addAnswer('question${questionCount}')">Add Answer</button>`;
+    }
+
+// Function to add an answer to a question
+function addAnswer(questionId, responseId) {
+  const userAnswer = prompt('Enter your answer:');
+
+  if (userAnswer !== null && userAnswer !== '') {
+    const questionDiv = document.querySelector(`#${questionId}`);
+    const responseInput = document.createElement('input');
+    responseInput.type = 'text';
+    responseInput.classList.add('answer');
+    responseInput.value = userAnswer;
+    responseInput.name = responseId; // Attach the ID to the response input
+    questionDiv.appendChild(responseInput);
+  }
+}
+
+
+    // Function to add a series of Likert scale questions
+    function addLikertSeries() {
+      const numberOfQuestions = prompt('Enter the number of Likert scale questions:');
+      for (let i = 1; i <= numberOfQuestions; i++) {
+        addQuestion('likert');
+      }
+    }
+
+    // Function to add a series of multiple-choice questions
+    function addMultipleSeries() {
+      const numberOfQuestions = prompt('Enter the number of multiple-choice questions in the series:');
+      for (let i = 1; i <= numberOfQuestions; i++) {
+        addQuestion('multiple-choice');
+      }
+    }
+
+// Function to submit the survey data to the server
+async function submitSurvey() {
+  const surveyData = {
+    title: document.getElementById('surveyTitle').value,
+    // ... (other survey-level details as needed)
+    questions: [],
+  };
+
+  for (let i = 1; i <= questionCount; i++) {
+    // ... (code to populate surveyData.questions)
+  }
+
+  try {
+    // Save survey data to the server
+    const response = await fetch('http://localhost:3000/submitSurvey', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(surveyData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    console.log('Survey data saved to the database');
+  } catch (error) {
+    console.error('Error saving survey data to the database:', error);
+  }
+}
+
+
+    // Function to get survey data from the form
+// Function to save the answer to the survey data
+function saveAnswer(questionId, answerId) {
+  const userAnswer = document.getElementById(answerId).value;
+
+  if (userAnswer !== null && userAnswer !== '') {
+    const questionDiv = document.querySelector(`#${questionId}`);
+    const answerInput = document.createElement('input');
+    answerInput.type = 'text';
+    answerInput.classList.add('answer');
+    answerInput.value = userAnswer;
+    answerInput.name = answerId; // Attach the ID to the answer input
+    questionDiv.appendChild(answerInput);
+  }
+}
+
+
+
+    // Function to get answers for a multiple-choice question
+    function getAnswers(questionId) {
+      const answerInputs = document.querySelectorAll(`#${questionId} input.answer`);
+      const answers = [];
+      answerInputs.forEach(input => {
+        answers.push(input.value);
+      });
+      return answers;
+    }
+
+    // Function to populate the preview container with survey data
+    function populatePreviewContainer(surveyData) {
+      const previewContainer = document.getElementById('surveyPreview');
+      previewContainer.innerHTML = '';
+
+      for (let i = 1; i <= surveyData.questions.length; i++) {
+        const questionText = surveyData.questions[i - 1].questionText;
+        const response = surveyData.questions[i - 1].response;
+
+        // Check if it's a Likert Scale question and get the selected option value
+        let answer;
+        if (document.getElementById(`question${i}`).nodeName === 'SELECT') {
+          const selectedOption = response;
+          answer = document.getElementById(`question${i}`).options[selectedOption - 1].text;
+        } else {
+          // For other question types, get the input value
+          answer = questionText;
+        }
+
+        const previewQuestion = document.createElement('p');
+        previewQuestion.textContent = `Q${i}: ${answer} - Response: ${response}`;
+        previewContainer.appendChild(previewQuestion);
+      }
+    }
+
+    // Function to customize the survey (change background and font color)
+    function customizeSurvey() {
+      const backgroundColor = prompt('Enter background color:');
+      document.body.style.backgroundColor = backgroundColor;
+
+      const fontColor = prompt('Enter font color:');
+      document.body.style.color = fontColor;
+    }
+
+    // Dynamically add options for the evaluationMonth dropdown
+    const evaluationMonthDropdown = document.getElementById('evaluationMonth');
+    for (let i = 1; i <= 12; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = new Date(0, i - 1).toLocaleString('default', { month: 'long' });
+      evaluationMonthDropdown.appendChild(option);
+    }
+
+    // Dynamically add options for the evaluationDay dropdown (assuming 31 days for simplicity)
+    const evaluationDayDropdown = document.getElementById('evaluationDay');
+    for (let i = 1; i <= 31; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+      evaluationDayDropdown.appendChild(option);
+    }
+  </script>
+</body>
+</html>
