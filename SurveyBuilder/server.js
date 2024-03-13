@@ -1,12 +1,15 @@
 const express = require('express');
 const cors = require('cors'); // Import the cors library
-
+const proxy = require('http-proxy-middleware');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
 
 const app = express();
 const port = 3000;
 
+// Proxy middleware configuration (replace with your Live Server details)
+const liveServerProxy = proxy('/your-html-path', { target: 'http://localhost:5500' });
+app.use(liveServerProxy);
 // Database connection details (replace with your actual credentials)
 const dbConfig = {
   host: "damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com",
