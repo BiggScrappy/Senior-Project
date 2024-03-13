@@ -31,8 +31,8 @@ if ($result->num_rows > 0) {
         $to = $row['email'];
         $subject = "Take Survey";
         $message = "Take the survey";
-        $headers = "From: YOUR_EMAIL_ADDRESS" . "\r\n" .
-                   "Reply-To: YOUR_EMAIL_ADDRESS" . "\r\n" .
+        $headers = "From: smith2834@marshall.edu" . "\r\n" .
+                   "Reply-To: smith2834@marshall.edu" . "\r\n" .
                    "X-Mailer: PHP/" . phpversion();
 
         // Send email
