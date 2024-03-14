@@ -13,42 +13,37 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-//Calculate the date 10 days ago from survey creation
-//how get survey creation??
-$sql = "SELECT created_at FROM surveys WHERE created_at < '$ten_days_ago'";
-$result = $conn->query($sql);
-
+// Calculate the date 10 days ago
 $ten_days_ago = date('Y-m-d', strtotime('-10 days'));
 
-//querry to find survey made 10 days ago
-
+// Query to find surveys created 10 days ago
+$sql = "SELECT email FROM surveys WHERE created_at < '$ten_days_ago'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     // Loop through each row
     while($row = $result->fetch_assoc()) {
-        // Send email to each user
+        // Generate email content
         $to = $row['email'];
         $subject = "Take Survey";
-        $message = "Take the survey";
+        $message = "Take the survey by clicking on the following link: http://your_survey_link_here";
         $headers = "From: smith2834@marshall.edu" . "\r\n" .
                    "Reply-To: smith2834@marshall.edu" . "\r\n" .
                    "X-Mailer: PHP/" . phpversion();
 
-        // Send email
-        if (mail($to, $subject, $message, $headers)) {
-            echo "Email sent successfully to: $to<br>";
-            // Update the last email sent date for the user
-            $update_sql = "UPDATE users SET last_email_sent_date = CURDATE() WHERE email = '$to'";
-            $conn->query($update_sql);
-        } else {
-            echo "Failed to send email to: $to<br>";
-        }
+        // Save email content as draft on server
+        $draftFilePath = '/path/to/drafts/' . uniqid() . '.txt';
+        file_put_contents($draftFilePath, "To: $to\r\nSubject: $subject\r\n\r\n$message\r\n");
+
+        // Send notification email to user with link to draft
+        $notificationSubject = "Your Survey Draft";
+        $notificationMessage = "We've created a draft of your survey email. You can edit and send it from Outlook. Click here: http://your_server_url/view_draft.php?draft=" . basename($draftFilePath);
+        mail($to, $notificationSubject, $notificationMessage, $headers);
     }
 } else {
     echo "No users found in the database whose last email sent date is older than 10 days";
 }
 
-//Close MySQL connection
+// Close MySQL connection
 $conn->close();
 ?>
