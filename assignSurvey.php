@@ -97,6 +97,24 @@ if(isset($_SESSION["user_id"])){
             ?>               
             </select>
         </div>
+     
+        <!--add respondent emails-->
+        <div>
+            <label for="email">Enter the emails of the users you would like to assign to this survey, separated by a comma:</label>
+            <input type="email" id="email" name="email" multiple list="users"/>
+
+            <datalist id="users">
+                
+                <?php
+                    $sql = "select email from users;";
+                    $result = $mysqli->query($sql);
+                    foreach($result as $i){
+                        echo "<option value=\"".$i['email']."\">".$i['email']."</option>"; 
+                    }
+                ?>  
+            </datalist>
+            
+        </div>
         <button>Assign Survey</button>
     </form>
 
