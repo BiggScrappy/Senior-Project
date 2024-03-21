@@ -78,15 +78,37 @@ $stmt->bind_param("sssssss",
                     $userID
                   );
 
-if ($stmt->execute()) {
+$stmt->execute();  
 
-    header("Location: assignSurvey-success.html");
-    exit;
-    
-} else {
-   die("Something went wrong");
-}
+$sql= "select id from surveys where(survey_template_id=".$surveyID." and surveyor_id=".$userID." and organization_id=".$orgID." and project_id=".$projectID.");";
+$result = $mysqli->query($sql);
+$survey = $result-> fetch_assoc();
+$surveyID = $survey['id'];
 
+//make email list
+$newEmailList=array (explode(",",$emailList));
+    //grab ids for users based on email
+    foreach($newEmailList as $i){
+        foreach($i as $email){
+            $sql = "select id from users where email='".$email. "' ;";
+            $result = $mysqli->query($sql);
+            $user = $result-> fetch_assoc();
+            $userID = $user['id'];
+            echo $userID, "<br>";
+            $sql = "INSERT INTO user_surveys(user_id,survey_id) VALUES(?,?);";
+            $stmt = $mysqli -> stmt_init();
+            if (! $stmt->prepare($sql)){
+                die("sql womp womp" . $mysqli->error);
+            }
+            $stmt->bind_param("ss",
+                            $userID,
+                            $surveyID);
+            $stmt->execute(); 
+        }     
+    }
+
+header("Location: assignSurvey-success.html");
+exit;
 
 
      
