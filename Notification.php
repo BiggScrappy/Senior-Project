@@ -6,6 +6,12 @@ $password = "AdminPass";
 $database = "dam_database";
 
 // Connect to MySQL database
+if (!extension_loaded('mysqli')) {
+    echo 'MySQLi extension is not installed.';
+} else {
+    echo 'MySQLi extension is installed.';
+}
+
 $conn = new mysqli($servername, $username, $password, $database);
 
 // Check connection
