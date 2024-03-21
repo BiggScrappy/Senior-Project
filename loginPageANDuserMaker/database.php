@@ -1,3 +1,5 @@
+ <!--database connection -->
+ <!--Ember Adkins 901893134-->
 <?php
 
 $host = "damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com";
