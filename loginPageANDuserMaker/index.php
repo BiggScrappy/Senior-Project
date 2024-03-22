@@ -1,8 +1,8 @@
-<!--home page -->
+ <!--home page -->
  <!--Ember Adkins 901893134-->
 <?php 
 //set save path safe for bluehost
-ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+//ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
 if(isset($_SESSION["user_id"])){
@@ -35,7 +35,7 @@ if(isset($_SESSION["user_id"])){
         <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p>
 
         <?php if($user["role_name"]==="respondent"): ?>
-            <p><a href="fill out survey">Fill Out Survey</a></p>
+            <p><a href="selectSurvey.php">Fill Out Survey</a></p>
             <p><a href="view past survey">View Past Survey</a></p>
 
         <?php elseif($user["role_name"]==="admin"): ?>
