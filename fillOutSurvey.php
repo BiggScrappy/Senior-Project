@@ -41,9 +41,10 @@ if(isset($_SESSION["user_id"])){
         <!-- Gather Surveys-->
         <?php
             $userID = $user["user_id"];
-
+            $survey_id= $_POST["survey"];
+            echo $survey_id;
             $sql = "select * from User_Surveys
-            where user_id=".$userID ." AND survey_id=18 order by question_id  ;";
+            where user_id=".$userID ." AND survey_id=".$survey_id." order by question_id  ;";
             $result = $mysqli->query($sql);
             $questionNum=0;
             if (mysqli_num_rows($result) > 0) {
@@ -78,11 +79,6 @@ if(isset($_SESSION["user_id"])){
                         $answers = $mysqli->query($sql);
                          
 
-                      //  Echo"<div>";
-                       // Echo"<select name='answer[<?php echo  $question_id; //]' id='answer-select'>";
-                      // Echo
-                      //  "<option value=''>--Please choose an option--</option>";
-                   //Echo  "<option value=".$answer.">".$answer."</option>";     
                         foreach($answers as $thing){
                             foreach($thing as $answer){
                                 ?>              
