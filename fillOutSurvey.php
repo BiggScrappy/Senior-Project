@@ -42,7 +42,7 @@ if(isset($_SESSION["user_id"])){
         <?php
             $userID = $user["user_id"];
             $survey_id= $_POST["survey"];
-            echo $survey_id;
+           
             $sql = "select * from User_Surveys
             where user_id=".$userID ." AND survey_id=".$survey_id." order by question_id  ;";
             $result = $mysqli->query($sql);
@@ -62,7 +62,7 @@ if(isset($_SESSION["user_id"])){
 
                     if ($row["question_type_id"]==='2'){
                         echo "<div>"  ; 
-                        echo $question_id.$questionNum;          
+                          
                      ?>
                     <input type="radio" id = 'true' name="<?php echo $questionNum ?>" value='true'>
                     <label for 'true'>True</label><br>
