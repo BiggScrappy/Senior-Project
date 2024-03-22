@@ -43,59 +43,101 @@ if(isset($_SESSION["user_id"])){
             $userID = $user["user_id"];
 
             $sql = "select * from User_Surveys
-            where user_id=".$userID ." order by survey_id, question_id ;";
-                    $result = $mysqli->query($sql);
-        ?>
+            where user_id=".$userID ." AND survey_id=18 order by question_id  ;";
+            $result = $mysqli->query($sql);
+            $questionNum=0;
+            if (mysqli_num_rows($result) > 0) {
 
-               <?php foreach($result as $i) {                  
-                       $survey_id = $i["survey_id"];
-                       $question_id = $i["question_id"];
-                       $question_text = $i["question"];
-
-                        if($i["question_type_id"]==='1'){
-                            echo "confirm mc <br>";
-                            echo "question: ", $question_text, "<br>";
-                            $sql="select option_text from multiplechoice_options where question_id=".$question_id.";";
-                            $answers = $mysqli->query($sql);
-                         
-                            Echo
-                           "<select name='answer' id='answer-select'>";
-                           Echo
-                            "<option value=''>--Please choose an option--</option>";
-                          
-                           
-                            foreach($answers as $thing){
-                                foreach($thing as $answer){
-                                    //echo $answer, "<br>";
-                                    Echo"<div>";
-                                    Echo  "<option value=".$answer.">".$answer."</option>";
-                                    Echo"</div>";
-                                }   
-                            }
-                            echo "<br>";
-                        
-                        }
-                        elseif ($i["question_type_id"]==='2') {
-                            echo "confirm tf <br>";
-                            echo $question_id, ": " , $question_text,"<br>";
-                            echo "<label for='true/false'>".$question_text."</label>";
-                           
-                          //  echo "<input type='radio' id='true' name='true/false' value='true' >";
-                           //Echo "<label for 'true'>True</label><br>";
-                          //  Echo "<input type='radio' id='false' name='true/false' value='false' >";
-                           // Echo "<label for 'false'>False</label><br>";
-                        
-                        }  
-                        elseif ($i["question_type_id"]==='3') {
-                            echo "confirm likert";
-                        }
-                        elseif ($i["question_type_id"]==='4') {
-                            echo "confirm open";}
-                        
-                        
-                        
+                while($row = mysqli_fetch_assoc($result)) {
+                    $survey_id = $row["survey_id"];
+                    $question_id = $row["question_id"];
+                    $question_text = $row["question"];
+                    $questionNum=$questionNum+1;
+                    
+                    echo $questionNum, ".) ";
+                    echo $question_text;
                     echo "<br>";
-                   
+             
+
+                    if ($row["question_type_id"]==='2'){
+                        echo "<div>"  ; 
+                        echo $question_id.$questionNum;          
+                     ?>
+                    <input type="radio" id = 'true' name="<?php echo $questionNum ?>" value='true'>
+                    <label for 'true'>True</label><br>
+                    <input type="radio" id = "false" name="<?php echo $questionNum ?>" value='false'>
+                    <label for 'false'>False</label><br>
+        <?php
+                        echo "</div>";
+                        echo "<br>";
+                    }
+                    
+                    elseif($row["question_type_id"]==='1'){
+    
+                        $sql="select option_text from multiplechoice_options where question_id=".$question_id.";";
+                        $answers = $mysqli->query($sql);
+                         
+
+                      //  Echo"<div>";
+                       // Echo"<select name='answer[<?php echo  $question_id; //]' id='answer-select'>";
+                      // Echo
+                      //  "<option value=''>--Please choose an option--</option>";
+                   //Echo  "<option value=".$answer.">".$answer."</option>";     
+                        foreach($answers as $thing){
+                            foreach($thing as $answer){
+                                ?>              
+                               <label> <input type="radio" id="<?php echo  $question_id; ?>" name="<?php echo $questionNum ?>" value="<?php echo  $answer; ?>"><?php echo $answer ?> </label> <br/>
+                         
+                         
+                         <?php       
+                            }   
+                        }
+                        Echo"</div>";
+                        echo "<br>";
+                    
+                    }
+                    elseif ($row["question_type_id"]==='3') { ?>
+                        <div>
+                        <input type="radio" id='1' name="<?php echo $questionNum ?>" value=1>
+                        <label for '1'>1</label><br>
+                        <input type="radio" id="2" name="<?php echo $questionNum ?>" value=2>
+                        <label for '2'>2</label><br>
+                        <input type="radio" id="3" name="<?php echo $questionNum ?>" value=3>
+                        <label for '3'>3</label><br>
+                        <input type="radio" id = "4" name="<?php echo $questionNum ?>" value=4>
+                        <label for '4'>4</label><br>
+                        <input type="radio" id='5' name="<?php echo $questionNum ?>" value=5>
+                        <label for '5'>5</label><br>
+                         <br />
+                    </div>
+                <?php
+                    } 
+
+                    elseif ($row["question_type_id"]==='4') { ?>
+                       
+                        <div>
+                             <input type="text" id="openResponse" name="<?php echo $questionNum ?>">
+                        </div>
+                    
+                <?php    
                     }
 
-        
+
+
+
+
+                 }
+        }
+
+
+    
+
+
+
+            ?>
+
+<button>Submit Survey</button>
+    </form>
+
+</body>
+</html> 
