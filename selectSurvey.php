@@ -60,13 +60,16 @@ if(isset($_SESSION["user_id"])){
            echo "Org id: ",$new["organization_id"],"<br>";
            echo "project id: ",$new["project_id"],"<br>";
            echo "created at: ",$new["created_at"],"<br>";
-          
-          // foreach($new as $thing){
-          //  echo $thing,"<br>";
-          
-           //}
-          
+
+           echo "<label> <input type='radio' id='".$survey_id."' name='survey' value='".$survey_id."'>Select</label> <br/>";
+         
        
 
         }
     }
+ ?>   
+<button>Submit</button>
+</form>
+
+</body>
+</html> 
