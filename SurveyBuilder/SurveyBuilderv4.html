@@ -33,16 +33,6 @@
   </div>
 
   <div>
-    <label for="evaluationMonth">Evaluation Month:</label>
-    <select id="evaluationMonth" name="evaluationMonth"></select>
-  </div>
-
-  <div>
-    <label for="evaluationDay">Evaluation Day:</label>
-    <select id="evaluationDay" name="evaluationDay"></select>
-  </div>
-
-  <div>
     <label for="lockSurvey">Lock Survey:</label>
     <input type="checkbox" id="lockSurvey">
   </div>
@@ -160,19 +150,44 @@
       }
     }
 
-    // Function to submit the survey data to the server
-    async function submitSurvey() {
-      // Function implementation remains the same
+ // Function to submit the survey data to the server
+async function submitSurvey() {
+  const userID = document.getElementById('userID').value; // Retrieve user ID from the hidden input field
+
+  const surveyData = {
+    userID: userID,
+    title: document.getElementById('surveyTitle').value,
+    // Add more survey data properties as needed
+  };
+
+  try {
+    const response = await fetch('/submit-survey', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(surveyData),
+    });
+
+    if (response.ok) {
+      console.log('Survey data submitted successfully');
+      // Reset survey builder interface or show confirmation message
+    } else {
+      console.error('Failed to submit survey data:', response.statusText);
+      // Handle error, show error message, or retry submission
     }
+  } catch (error) {
+    console.error('Error submitting survey data:', error);
+    // Handle error, show error message, or retry submission
+  }
+}
+ 
 
     // Function to customize the survey (change background and font color)
     function customizeSurvey() {
       // Function implementation remains the same
     }
 
-    // Dynamically add options for the evaluationMonth dropdown
-    // Dynamically add options for the evaluationDay dropdown
-    // Function implementations remain the same
   </script>
 </body>
 </html>
