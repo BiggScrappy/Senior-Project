@@ -37,6 +37,12 @@
     <input type="checkbox" id="lockSurvey">
   </div>
 
+  <!-- User ID Input -->
+  <div>
+    <label for="userID">User ID:</label>
+    <input type="text" id="userID" placeholder="Enter your user ID" />
+  </div>
+
   <!-- Questions Container -->
   <div id="questionsContainer"></div>
 
@@ -46,7 +52,7 @@
   <button type="button" onclick="addLikertSeries()">Add Likert Scale Series</button>
   <button type="button" onclick="addMultipleSeries()">Add Multiple Series Question</button>
   <button type="button" onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
-  <button type="button" onclick="submitSurvey()">Submit Survey</button>
+  <button type="button" onclick="submitSurvey(event)">Submit Survey</button>
   <button type="button" onclick="customizeSurvey()">Customize Survey</button>
 
   <!-- Survey Preview Container -->
@@ -150,44 +156,50 @@
       }
     }
 
- // Function to submit the survey data to the server
-async function submitSurvey() {
-  const userID = document.getElementById('userID').value; // Retrieve user ID from the hidden input field
+    // Function to submit the survey data to the server
+    async function submitSurvey(event) {
+      event.preventDefault(); // Prevent the default form submission behavior
 
-  const surveyData = {
-    userID: userID,
-    title: document.getElementById('surveyTitle').value,
-    // Add more survey data properties as needed
-  };
+      const userIDElement = document.getElementById('userID');
 
-  try {
-    const response = await fetch('/submit-survey', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(surveyData),
-    });
+      if (userIDElement) {
+        const userID = userIDElement.value;
+        const surveyData = {
+          userID: userID,
+          title: document.getElementById('surveyTitle').value,
+          // Add more survey data properties as needed
+        };
 
-    if (response.ok) {
-      console.log('Survey data submitted successfully');
-      // Reset survey builder interface or show confirmation message
-    } else {
-      console.error('Failed to submit survey data:', response.statusText);
-      // Handle error, show error message, or retry submission
+        try {
+          const response = await fetch('/submit-survey', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(surveyData),
+          });
+
+          if (response.ok) {
+            console.log('Survey data submitted successfully');
+            // Reset survey builder interface or show confirmation message
+          } else {
+            console.error('Failed to submit survey data:', response.statusText);
+            // Handle error, show error message, or retry submission
+          }
+        } catch (error) {
+          console.error('Error submitting survey data:', error);
+          // Handle error, show error message, or retry submission
+        }
+      } else {
+        console.error('Element with ID "userID" not found');
+        // Handle the case where the element is not found
+      }
     }
-  } catch (error) {
-    console.error('Error submitting survey data:', error);
-    // Handle error, show error message, or retry submission
-  }
-}
- 
 
     // Function to customize the survey (change background and font color)
     function customizeSurvey() {
       // Function implementation remains the same
     }
-
   </script>
 </body>
 </html>
