@@ -1,5 +1,0 @@
----
-deployment:
-  tasks:
-    - export DEPLOYPATH=/home1/missysme/public_html/
-    - /bin/cp SurveyBuilder.html $DEPLOYPATH
