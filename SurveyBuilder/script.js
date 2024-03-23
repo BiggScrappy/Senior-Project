@@ -2,119 +2,131 @@
 function addQuestion(type) {
   const questionContainer = document.getElementById('questionsContainer');
 
-  // Create a new question element
-  const questionElement = document.createElement('div');
-  questionElement.classList.add('question');
+  // ... rest of the code for creating question elements (unchanged)
 
-  // Label for question text
-  const questionLabel = document.createElement('label');
-  questionLabel.textContent = 'Question:';
-  questionElement.appendChild(questionLabel);
+  // Trigger a POST request to add the question to the server
+  const questionData = {
+    text: questionInput.value, // Assuming questionInput captures question text
+    type: type, // Assuming type is determined elsewhere
+  };
 
-  // Input field for question text
-  const questionInput = document.createElement('input');
-  questionInput.type = 'text';
-  questionInput.placeholder = 'Enter your question here';
-  questionElement.appendChild(questionInput);
+  fetch('/add-question', { // Replace with your actual endpoint
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(questionData),
+  })
+    .then(response => {
+      if (response.ok) {
+        console.log('Question added successfully!');
+        // Update UI to reflect successful question addition (optional)
+      } else {
+        console.error('Error adding question:', response.statusText);
+        // Update UI to indicate an error (optional)
+      }
+    })
+    .catch(error => {
+      console.error('Error during question submission:', error);
+      // Update UI to indicate an error (optional)
+    });
 
-  // Additional elements based on question type
-  if (type === 'multiple-choice') {
-    const optionsContainer = document.createElement('div');
-    optionsContainer.classList.add('options-container');
-
-    // Add two initial options by default
-    addOption(optionsContainer);
-    addOption(optionsContainer);
-
-    questionElement.appendChild(optionsContainer);
-
-    // Button to add more options
-    const addOptionButton = document.createElement('button');
-    addOptionButton.textContent = 'Add Option';
-    addOptionButton.addEventListener('click', () => addOption(optionsContainer));
-    questionElement.appendChild(addOptionButton);
-  }
-
-  // Add the question element to the container
+  // Add the question element to the container (unchanged)
   questionContainer.appendChild(questionElement);
 
   // Update the survey preview (example for basic text display)
   updateSurveyPreview();
 }
 
-// Function to add an option element within a multiple-choice question
-function addOption(optionsContainer) {
-  const optionElement = document.createElement('div');
-  optionElement.classList.add('option');
+// Function to submit the survey data to the server
+async function submitSurvey(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
 
-  // Label for option text
-  const optionLabel = document.createElement('label');
-  optionLabel.textContent = 'Option:';
-  optionElement.appendChild(optionLabel);
+  const userIDElement = document.getElementById('userID');
+  const surveyTitle = document.getElementById('surveyTitle').value;
+  const lockSurvey = document.getElementById('lockSurvey').checked;
 
-  // Input field for option text
-  const optionInput = document.createElement('input');
-  optionInput.type = 'text';
-  optionInput.placeholder = 'Enter option text';
-  optionElement.appendChild(optionInput);
+  if (userIDElement) {
+    const userID = userIDElement.value;
+    const questions = [];
 
-  // Button to remove the option
-  const removeOptionButton = document.createElement('button');
-  removeOptionButton.textContent = 'Remove';
-  removeOptionButton.addEventListener('click', () => optionsContainer.removeChild(optionElement));
-  optionElement.appendChild(removeOptionButton);
+    // Collect questions from the questionsContainer
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questionElements = questionsContainer.getElementsByClassName('question');
 
-  // Add the option element to the container
-  optionsContainer.appendChild(optionElement);
+    for (let i = 0; i < questionElements.length; i++) {
+      const questionElement = questionElements[i];
+      const questionType = questionElement.dataset.type; // Assuming you add data-type attribute to the question div
+
+      const questionText = questionElement.querySelector('input[type="text"]').value;
+      const question = { text: questionText, type: questionType };
+
+      if (questionType === 'multiple-choice') {
+        const optionsContainer = questionElement.querySelector('div');
+        const optionElements = optionsContainer.querySelectorAll('input[type="text"]');
+        const options = Array.from(optionElements).map((option) => option.value);
+        question.options = options;
+      } else if (questionType === 'boolean') {
+        const responseElement = questionElement.querySelector('select');
+        const response = responseElement.value;
+        question.response = response;
+      } else if (questionType === 'likert') {
+        const responseElement = questionElement.querySelector('select');
+        const response = responseElement.value;
+        question.response = response;
+      }
+
+      questions.push(question);
+    }
+
+    const surveyData = {
+      userID,
+      title: surveyTitle,
+      locked: lockSurvey,
+      questions,
+    };
+
+    try {
+      const response = await fetch('/submit-survey', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(surveyData),
+      });
+
+      if (response.ok) {
+        const { surveyId, questionIds } = await response.json();
+        console.log('Survey data submitted successfully');
+        // Reset survey builder interface or show confirmation message
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to submit survey data:', errorData.error);
+        // Handle error, show error message, or retry submission
+      }
+    } catch (error) {
+      console.error('Error submitting survey data:', error);
+      // Handle error, show error message, or retry submission
+    }
+  } else {
+    console.error('Element with ID "userID" not found');
+    // Handle the case where the element is not found
+  }
 }
 
-// Function to handle survey submission
-async function submitSurvey(event) {
-  event.preventDefault(); // Prevent default form submission behavior
+// Function to update the survey preview
+function updateSurveyPreview() {
+  const surveyPreviewContainer = document.getElementById('surveyPreview');
+  surveyPreviewContainer.innerHTML = ''; // Clear the previous preview
 
-  const surveyData = {
-    title: document.getElementById('surveyTitle').value,
-    locked: document.getElementById('lockSurvey').checked,
-    userID: document.getElementById('userID').value,
-    questions: [],
-  };
+  const questionsContainer = document.getElementById('questionsContainer');
+  const questionElements = questionsContainer.getElementsByClassName('question');
 
-  // Collect question data from the interface
-  const questions = document.querySelectorAll('.question');
-  for (const question of questions) {
-    const questionText = question.querySelector('input[type="text"]').value;
-    let options = [];
+  for (let i = 0; i < questionElements.length; i++) {
+    const questionElement = questionElements[i];
+    const questionType = questionElement.dataset.type;
+    const questionText = questionElement.querySelector('input[type="text"]').value;
 
-    if (question.querySelector('.options-container')) {
-      const optionInputs = question.querySelectorAll('.option input[type="text"]');
-      for (const optionInput of optionInputs) {
-        options.push(optionInput.value);
-      }
-    }
-
-    surveyData.questions.push({ text: questionText, type: options.length ? 'multiple-choice' : 'open-ended', options });
+    const previewElement = document.createElement('div');
+    previewElement.textContent = `${questionType}: ${questionText}`;
+    surveyPreviewContainer.appendChild(previewElement);
   }
-
-  try {
-    // Send an AJAX request to the server (using Fetch API)
-    const response = await fetch('http://localhost:3000/submit-survey', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(surveyData),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      console.log('Survey data submitted successfully:', data);
-      // Update UI to indicate success (e.g., show a success message)
-    } else {
-      console.error('Error submitting survey data:', data);
-      // Update UI to indicate error (e.g., show an error message)
-    }
-  } catch (error) {
-    console.error('Error during survey submission:', error);
-    // Update UI to indicate error (
-  }
-
 }
