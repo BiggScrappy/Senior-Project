@@ -23,18 +23,18 @@
 
   <div>
     <label for="userID">User ID:</label>
-    <input type="text" id="userID" placeholder="Enter your user ID" />
+    <input type="number" id="userID" placeholder="Enter your user ID" />
   </div>
 
   <div id="questionsContainer"></div>
 
-  <button type="button" onclick="addQuestion('open-ended')">Add Open-Ended Question</button>
-  <button type="button" onclick="addQuestion('boolean')">Add True/False Question</button>
-  <button type="button" onclick="addLikertSeries()">Add Likert Scale Series</button>
-  <button type="button" onclick="addMultipleSeries()">Add Multiple Series Question</button>
-  <button type="button" onclick="addQuestion('multiple-choice')">Add Multiple Choice Question</button>
+  <button type="button" onclick="addQuestion(4)">Add Open-Ended Question</button>
+  <button type="button" onclick="addQuestion(1)">Add True/False Question</button>
+  <button type="button" onclick="addQuestion(2)">Add Likert Scale Series</button>
+  <button type="button" onclick="addQuestion(3)">Add Multiple Series Question</button>
+  <button type="button" onclick="addQuestion(3)">Add Multiple Choice Question</button>
   <button type="button" onclick="submitSurvey(event)">Submit Survey</button>
-  <button type="button" onclick="customizeSurvey()">Customize Survey</button>
+
 
   <div id="surveyPreview"></div>
 
@@ -64,108 +64,120 @@
       }
     }
 
-    // Function to submit the survey data to the server
-    async function submitSurvey(event) {
-      event.preventDefault(); // Prevent the default form submission behavior
+// Function to submit the survey data to the server
+async function submitSurvey(event) {
+  if (event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+  }
+  const userIDElement = document.getElementById('userID');
+  const surveyTitle = document.getElementById('surveyTitle').value;
+  const lockSurvey = document.getElementById('lockSurvey').checked;
 
-      const userIDElement = document.getElementById('userID');
-      const surveyTitle = document.getElementById('surveyTitle').value;
-      const lockSurvey = document.getElementById('lockSurvey').checked;
+  if (userIDElement) {
+    const userID = parseInt(userIDElement.value, 10);
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questionElements = questionsContainer.getElementsByClassName('question');
+    const questions = [];
 
-      if (userIDElement) {
-        const userID = userIDElement.value;
-        const questions = [];
+    for (let i = 0; i < questionElements.length; i++) {
+      const questionElement = questionElements[i];
+      const questionType = questionElement.dataset.type;
+      let questionText = '';
 
-        // Collect questions from the questionsContainer
-        const questionsContainer = document.getElementById('questionsContainer');
-        const questionElements = questionsContainer.getElementsByClassName('question');
-
-        for (let i = 0; i < questionElements.length; i++) {
-          const questionElement = questionElements[i];
-          const questionType = questionElement.dataset.type; // Assuming you add data-type attribute to the question div
-
-          const questionText = questionElement.querySelector('input[type="text"]').value;
-          const question = { text: questionText, type: questionType };
-
-          if (questionType === 'multiple-choice') {
-            const optionsContainer = questionElement.querySelector('div');
-            const optionElements = optionsContainer.querySelectorAll('input[type="text"]');
-            const options = Array.from(optionElements).map((option) => option.value);
-            question.options = options;
-          } else if (questionType === 'boolean') {
-            const responseElement = questionElement.querySelector('select');
-            const response = responseElement.value;
-            question.response = response;
-          } else if (questionType === 'likert') {
-            const responseElement = questionElement.querySelector('select');
-            const response = responseElement.value;
-            question.response = response;
-          }
-
-          questions.push(question);
-        }
-
-        const surveyData = {
-          userID,
-          title: surveyTitle,
-          locked: lockSurvey,
-          questions,
-        };
-
-        try {
-          const response = await sendPostRequest('/submit-survey', surveyData);
-
-          if (response.ok) {
-            const { surveyId, questionIds } = response;
-            console.log('Survey data submitted successfully');
-            // Reset survey builder interface or show confirmation message
-          } else {
-            console.error('Failed to submit survey data:', response.statusText);
-            // Handle error, show error message, or retry submission
-          }
-        } catch (error) {
-          console.error('Error submitting survey data:', error);
-          // Handle error, show error message, or retry submission
-
-          // Additional error handling for 500 Internal Server Error
-          if (error.message.includes('500 Internal Server Error')) {
-            console.error('Internal Server Error occurred while submitting survey data. Please check the server logs for more information.');
-            // You can also display an error message to the user here
-          }
-        }
+      // Determine question text based on question type
+      if (questionType !== 'multiple-choice') {
+        questionText = questionElement.querySelector('input[type="text"]').value;
       } else {
-        console.error('Element with ID "userID" not found');
-        // Handle the case where the element is not found
-      }
-    }
-
-    // Function to add a question based on the type
-    function addQuestion(questionType) {
-      questionCount++;
-
-      const questionsContainer = document.getElementById('questionsContainer');
-
-      const questionDiv = document.createElement('div');
-      questionDiv.classList.add('question');
-      questionDiv.dataset.type = questionType; // Add data-type attribute to the question div
-
-      // Determine the question input based on the type
-      let questionInput;
-      if (questionType === 'open-ended') {
-        questionInput = createOpenEndedQuestion(questionCount);
-      } else if (questionType === 'boolean') {
-        questionInput = createBooleanQuestion(questionCount);
-      } else if (questionType === 'likert') {
-        questionInput = createLikertQuestion(questionCount);
-      } else if (questionType === 'multiple-choice') {
-        questionInput = createMultipleChoiceQuestion(questionCount);
+        questionText = questionElement.querySelector('label').textContent; // This line needs to be adjusted
       }
 
-      questionDiv.innerHTML = questionInput;
+      const question = {
+        text: questionText.trim(), // Trim the text to remove leading/trailing whitespace
+        type: questionType
+      };
 
-      questionsContainer.appendChild(questionDiv);
+      if (questionType === 'multiple-choice') {
+        const questionInput = questionElement.querySelector('input[type="text"]');
+        questionText = questionInput.value.trim(); // Get text from the input field
+        const optionsContainer = questionElement.querySelector('div');
+        const optionElements = optionsContainer.querySelectorAll('input[type="text"]');
+        const options = Array.from(optionElements).map((option) => option.value.trim());
+        question.options = options;
+      }
+
+      questions.push(question);
     }
 
+    const surveyData = {
+      userID,
+      title: surveyTitle,
+      locked: lockSurvey,
+      questions,
+    };
+
+    try {
+      const response = await sendPostRequest('/submit-survey', surveyData);
+
+      if (response) {
+        const { surveyId, questionIds } = response;
+        console.log('Survey data submitted successfully');
+        // Reset survey builder interface or show confirmation message
+      } else {
+        console.error('Failed to submit survey data: Response data missing');
+        // Handle error, show error message, or retry submission
+      }
+    } catch (error) {
+      console.error('Error submitting survey data:', error);
+      // Handle error, show error message, or retry submission
+    }
+  } else {
+    console.error('Element with ID "userID" not found');
+    // Handle the case where the element is not found
+  }
+}
+
+ // Function to add a question based on the type
+function addQuestion(questionType) {
+    questionCount++;
+
+    const questionsContainer = document.getElementById('questionsContainer');
+
+    const questionDiv = document.createElement('div');
+    questionDiv.classList.add('question');
+    questionDiv.dataset.type = getQuestionTypeValue(questionType); // Add data-type attribute to the question div
+
+    // Determine the question input based on the type
+    let questionInput;
+    if (questionType === 4) { // Adjusted to numeric comparison
+      questionInput = createOpenEndedQuestion(questionCount);
+    } else if (questionType === 1) { // Adjusted to numeric comparison
+      questionInput = createBooleanQuestion(questionCount);
+    } else if (questionType === 2) { // Adjusted to numeric comparison
+      questionInput = createLikertQuestion(questionCount);
+    } else if (questionType === 3) { // Adjusted to numeric comparison
+      questionInput = createMultipleChoiceQuestion(questionCount);
+    }
+
+    questionDiv.innerHTML = questionInput;
+
+    questionsContainer.appendChild(questionDiv);
+  }
+
+  // Function to get the server-side question type value
+  function getQuestionTypeValue(questionType) {
+    switch (questionType) {
+      case 4:
+        return 'open-ended'; // Adjusted to return string value
+      case 1:
+        return 'boolean'; // Adjusted to return string value
+      case 2:
+        return 'likert'; // Adjusted to return string value
+      case 3:
+        return 'multiple-choice'; // Adjusted to return string value
+      default:
+        return ''; // Handle unsupported types
+    }
+  }
     // Helper function to create an open-ended question input
     function createOpenEndedQuestion(questionCount) {
       const questionId = `question${questionCount}`;
