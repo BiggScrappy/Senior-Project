@@ -1,7 +1,4 @@
- <!--Assign Survey -->
- <!--Ember Adkins 901893134-->
 <?php
-    //redirect session save data to useable path on bluehost
      //ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
      session_start();
 
@@ -17,13 +14,19 @@
     
         $user = $result-> fetch_assoc();
     }
-   
+  //  <!--Assign Survey -->
+ //<!--Ember Adkins 901893134-->
     $userID = $user["user_id"];
     //gather info from form
     $orgName= (isset($_POST["orgName"]) ? $_POST["orgName"] : '');
     $projectName= (isset($_POST["projectName"]) ? $_POST["projectName"] : '');
     $surveyorRole= (isset($_POST["surveyorRole"]) ? $_POST["surveyorRole"] : '');
     $surveyTemplate= (isset($_POST["surveyTemplate"]) ? $_POST["surveyTemplate"] : '');
+    $emailList= (isset($_POST["email"]) ? $_POST["email"] : '');
+    $startDate= (isset($_POST["startDate"]) ? $_POST["startDate"] : '');
+    $endDate= (isset($_POST["endDate"]) ? $_POST["endDate"] : '');
+    
+    
 
     $mysqli = require __DIR__ . "/database.php";
 
@@ -59,8 +62,8 @@
     
 
 //insert assignment into db
-$sql = "INSERT INTO surveys(survey_template_id,surveyor_id,organization_id, project_id,surveyor_role_id,created_at,created_by)
-VALUES(?,?,?,?,?,?,?);";
+$sql = "INSERT INTO surveys(survey_template_id,surveyor_id,organization_id, project_id,surveyor_role_id,created_at,created_by,start_date,end_date)
+VALUES(?,?,?,?,?,?,?,?,?);";
 
 $stmt = $mysqli -> stmt_init();
 
@@ -68,16 +71,17 @@ if (! $stmt->prepare($sql)){
     die("sql womp womp" . $mysqli->error);
 }
 $today=date("Y,m,d");
-$stmt->bind_param("sssssss",                 
+$stmt->bind_param("sssssssss",                 
                     $surveyID,
                     $userID,
                     $orgID,
                     $projectID,
                     $roleID,
                     $today,
-                    $userID
+                    $userID,
+                    $startDate,
+                    $endDate
                   );
-
 $stmt->execute();  
 
 $sql= "select id from surveys where(survey_template_id=".$surveyID." and surveyor_id=".$userID." and organization_id=".$orgID." and project_id=".$projectID.");";
@@ -109,6 +113,5 @@ $newEmailList=array (explode(",",$emailList));
 
 header("Location: assignSurvey-success.html");
 exit;
-
 
      
