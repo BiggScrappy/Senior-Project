@@ -1,6 +1,4 @@
- <!--Assign Survey -->
- <!--Ember Adkins 901893134-->
- <?php 
+<?php
 //ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
@@ -16,7 +14,8 @@ if(isset($_SESSION["user_id"])){
     $user = $result-> fetch_assoc();
 }
 ?>
-
+ <!--Assign Survey -->
+ <!--Ember Adkins 901893134-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -97,7 +96,18 @@ if(isset($_SESSION["user_id"])){
             ?>               
             </select>
         </div>
-     
+
+        <!--add start date-->
+        <div>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate">
+        </div>
+
+        <!--add end date-->
+        <div>
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate">
+        </div>
         <!--add respondent emails-->
         <div>
             <label for="email">Enter the emails of the users you would like to assign to this survey, separated by a comma:</label>
@@ -117,6 +127,6 @@ if(isset($_SESSION["user_id"])){
         </div>
         <button>Assign Survey</button>
     </form>
-
+    <p><a href="index.php">Go to Home</a></p>
 </body>
 </html>
