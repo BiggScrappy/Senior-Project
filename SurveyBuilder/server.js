@@ -1,19 +1,19 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql2/promise');
-const path = require('path');
+const { json, urlencoded } = require('body-parser');
+const { createPool, createConnection } = require('mysql2/promise');
+const { join } = require('path');
 
 const app = express();
 const port = 3000;
 
 // Middleware to parse JSON bodies
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 // Serve the HTML file from the root directory
 app.get('/', (req, res) => {
   // Serve the HTML file from the same HTTP server
-  res.sendFile(path.join(__dirname, 'SurveyBuilder.html'));
+  res.sendFile(join(__dirname, 'SurveyBuilder.html'));
 });
 
 // Handle request for favicon.ico
@@ -33,11 +33,11 @@ let db;
 // Function to connect to the database
 async function connectToDatabase() {
   try {
-    db = await mysql.createPool(dbConfig);
+    db = await createPool(dbConfig);
     console.log('Connected to database successfully');
   } catch (error) {
     console.error('Error connecting to database:', error);
-    process.exit(1);// Exit the process on failure 
+    process.exit(1); // Exit the process on failure
   }
 }
 
@@ -48,14 +48,12 @@ app.listen(port, () => {
 connectToDatabase(); // Call the function to connect to the database
 
 // Route to handle survey data submission
-// ...
-
-// Route to handle survey data submission
 app.post('/submit-survey', async (req, res) => {
   const surveyData = req.body;
+  const userID = parseInt(req.body.userID, 10);
 
   try {
-    const db = await mysql.createConnection(dbConfig);
+    const db = await createConnection(dbConfig);
 
     // 1. Insert survey details into the 'surveys' table
     const [surveyResult] = await db.query('INSERT INTO survey_templates(name, description) VALUES (?, ?)', [surveyData.title, surveyData.surveyDescription]);
@@ -66,37 +64,27 @@ app.post('/submit-survey', async (req, res) => {
 
     for (const question of surveyData.questions) {
       // Fetch the question_type_id from the question_types table
-      const [questionTypeResult] = await db.query('SELECT id FROM question_types WHERE name = ?', [question.type]);
-      const questionTypeId = questionTypeResult[0]?.id;
-
-      if (!questionTypeId) {
-        console.error(`Invalid question type: ${question.type}`);
-        continue; // Skip this question if the question type is invalid
-      }
-
-      // Determine the query based on the question type
-      const queryValues = [question.text];
-
-      let query;
+      let questionTypeId;
       switch (question.type) {
-        case 'type1':
-          query = 'INSERT INTO questions(question, question_type_id) VALUES (?, 1)';
+        case 1: // Boolean
+          questionTypeId = 1;
           break;
-        case 'type2':
-          query = 'INSERT INTO questions(question, question_type_id) VALUES (?, 2)';
+        case 2: // Likert
+          questionTypeId = 2;
           break;
-        case 'type3':
-          query = 'INSERT INTO questions(question, question_type_id) VALUES (?, 3)';
+        case 3: // Multiple-choice
+          questionTypeId = 3;
           break;
-        case 'type4':
-          query = 'INSERT INTO questions(question, question_type_id) VALUES (?, 4)';
+        case 4: // Open-ended
+          questionTypeId = 4;
           break;
         default:
           console.error(`Invalid question type: ${question.type}`);
-          continue; // Skip this question if the question type is invalid
+          continue; // Skip unsupported types
       }
 
-      const [questionResult] = await db.query(query, queryValues);
+      // Insert the question into the database
+      const [questionResult] = await db.query('INSERT INTO questions(question, question_type_id) VALUES (?, ?)', [question.text, questionTypeId]);
       const questionID = questionResult.insertId;
       questionIds.push(questionID);
 
@@ -104,7 +92,7 @@ app.post('/submit-survey', async (req, res) => {
       await db.query('INSERT INTO survey_template_questions (survey_template_id, question_id) VALUES (?, ?)', [surveyID, questionID]);
 
       // Insert options for multiple-choice questions into the 'multiplechoice_options' table
-      if (question.type === 'multiple-choice') {
+      if (question.type === 3 /* Multiple-choice */) {
         for (const option of question.options) {
           await db.query('INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)', [questionID, option]);
         }
