@@ -1,6 +1,4 @@
- <!--Select Survey -->
- <!--Ember Adkins 901893134-->
- <?php 
+<?php
 //ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
@@ -15,8 +13,10 @@ if(isset($_SESSION["user_id"])){
 
     $user = $result-> fetch_assoc();
 }
-?>
 
+?>
+ <!--Select Survey -->
+ <!--Ember Adkins 901893134-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,7 +42,7 @@ if(isset($_SESSION["user_id"])){
     $user_id=$user["user_id"];
 
     //find user's assigned surveys
-    $sql="select * from user_surveys where user_id=".$user_id." order by survey_id;";
+    $sql="select * from user_surveys where user_id=".$user_id." and completed !=1 order by survey_id;";
     $result = $mysqli->query($sql);
  
     if (mysqli_num_rows($result) > 0) {
@@ -61,7 +61,7 @@ if(isset($_SESSION["user_id"])){
            echo "project id: ",$new["project_id"],"<br>";
            echo "created at: ",$new["created_at"],"<br>";
 
-           echo "<label> <input type='radio' id='".$survey_id."' name='survey' value='".$survey_id."'>Select</label> <br/>";
+           echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label> <br/>";
          
        
 
@@ -70,6 +70,6 @@ if(isset($_SESSION["user_id"])){
  ?>   
 <button>Submit</button>
 </form>
-
+<p><a href="index.php">Go to Home</a></p>
 </body>
 </html> 
