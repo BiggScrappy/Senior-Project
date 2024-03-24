@@ -1,14 +1,16 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Open SurveyBuilder.html",
-            "file": "/Users/nateblakely/Desktop/SurveyBuilder/SurveyBuilder.html"
-        }
-    ]
-}
+    "name": "survey-builder",
+    "version": "1.0.0",
+    "description": "Your survey builder application description",
+    "main": "server.js",
+    "type": "module", // Add this line to enable ES module syntax
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.17.1",
+      "body-parser": "^1.19.0",
+      "mysql2": "^2.3.0"
+    }
+  }
+  
