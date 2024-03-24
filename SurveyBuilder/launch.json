@@ -1,0 +1,16 @@
+{
+    "name": "survey-builder",
+    "version": "1.0.0",
+    "description": "Your survey builder application description",
+    "main": "server.js",
+    "type": "module", // Add this line to enable ES module syntax
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.17.1",
+      "body-parser": "^1.19.0",
+      "mysql2": "^2.3.0"
+    }
+  }
+  
