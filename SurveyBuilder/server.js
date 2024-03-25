@@ -22,7 +22,7 @@ const dbConfig = {
   host: "damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com",
   user: "admin",
   password: "adminPass",
-  database: "dam_database"
+  database: "dam_database",
 };
 
 // Connect to the database
@@ -40,47 +40,51 @@ async function connectToDatabase() {
 
 connectToDatabase();
 
-// Route to handle survey data submission
-app.post('/submit-survey', async (req, res) => {
-  const surveyData = req.body;
-  const userID = parseInt(req.body.userID, 10);
-
+// Function to insert sample data into the survey_templates table
+async function insertSampleSurveyTemplates() {
   try {
-    // 1. Insert survey details into the 'survey_templates' table
-    const [surveyResult] = await db.query('INSERT INTO survey_templates(name, description) VALUES (?, ?)', [surveyData.title, '']);
-    const surveyID = surveyResult.insertId;
-
-    // 2. Insert questions and associate them with the survey
-    const questionIds = [];
-    for (const question of surveyData.questions) {
-      const { text, type, options } = question;
-
-      // Fetch the question_type_id from the question_types table
-      const [questionTypeResult] = await db.query('SELECT id FROM question_types WHERE type = ?', [type]);
-      const questionTypeId = questionTypeResult[0].id;
-
-      // Insert the question into the 'questions' table
-      const [questionResult] = await db.query('INSERT INTO questions(question, question_type_id) VALUES (?, ?)', [text, questionTypeId]);
-      const questionID = questionResult.insertId;
-      questionIds.push(questionID);
-
-      // Associate the question with the survey in the 'survey_template_questions' table
-      await db.query('INSERT INTO survey_template_questions (survey_template_id, question_id) VALUES (?, ?)', [surveyID, questionID]);
-
-      // Insert options for multiple-choice, boolean, and Likert questions into the 'multiplechoice_options' table
-      if (options && options.length > 0) {
-        for (const option of options) {
-          await db.query('INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)', [questionID, option]);
-        }
-      }
-    }
-
-    console.log('Survey data received and stored successfully');
-    res.status(200).json({ surveyId: surveyID, questionIds });
+    await db.query('INSERT INTO survey_templates (name, description, created_at, created_by) VALUES (?, ?, NOW(), 1)', ['Customer Satisfaction Survey', 'Survey to collect feedback from customers']);
+    await db.query('INSERT INTO survey_templates (name, description, created_at, created_by) VALUES (?, ?, NOW(), 1)', ['Employee Engagement Survey', 'Survey to measure employee satisfaction and engagement']);
+    console.log('Sample survey templates inserted successfully');
   } catch (error) {
-    console.error('Error saving survey data to the database:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error inserting sample survey templates:', error);
   }
+}
+
+// Function to insert sample data into the questions table
+async function insertSampleQuestions() {
+  try {
+    await db.query('INSERT INTO questions (question_type_id, question, created_at, created_by) VALUES (?, ?, NOW(), 1)', [1, 'How satisfied are you with our products?']);
+    await db.query('INSERT INTO questions (question_type_id, question, created_at, created_by) VALUES (?, ?, NOW(), 1)', [2, 'Are you happy with your work-life balance?']);
+    await db.query('INSERT INTO questions (question_type_id, question, created_at, created_by) VALUES (?, ?, NOW(), 1)', [3, 'Rate your agreement with the following statement: "The company values my contributions."']);
+    console.log('Sample questions inserted successfully');
+  } catch (error) {
+    console.error('Error inserting sample questions:', error);
+  }
+}
+
+// Function to insert sample data into the surveys table
+async function insertSampleSurveys() {
+  try {
+    await db.query('INSERT INTO surveys (survey_template_id, surveyor_id, organization_id, project_id, surveyor_role_id, start_date, end_date, created_at, created_by) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), NOW(), 1)', [1, 1, 1, 1, 1]);
+    await db.query('INSERT INTO surveys (survey_template_id, surveyor_id, organization_id, project_id, surveyor_role_id, start_date, end_date, created_at, created_by) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), NOW(), 1)', [2, 1, 1, 1, 1]);
+    console.log('Sample surveys inserted successfully');
+  } catch (error) {
+    console.error('Error inserting sample surveys:', error);
+  }
+}
+
+// Insert sample data into the tables
+async function insertSampleData() {
+  await insertSampleSurveyTemplates();
+  await insertSampleQuestions();
+  await insertSampleSurveys();
+}
+
+// Call the function to insert sample data when the server starts
+app.listen(port, async () => {
+  console.log(`Server listening on http://localhost:${port}`);
+  await insertSampleData();
 });
 
 app.listen(port, () => {
