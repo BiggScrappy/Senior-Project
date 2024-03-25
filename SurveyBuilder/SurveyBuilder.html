@@ -5,38 +5,112 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Survey Builder</title>
   <style>
-    /* Your styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .likert-options {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .likert-option {
+      display: flex;
+      align-items: center;
+    }
+
+    .likert-option label {
+      margin-left: 5px;
+    }
   </style>
 </head>
 <body>
-  <h1>Survey Builder</h1>
+  <div class="container">
+    <h1>Survey Builder</h1>
 
-  <div>
-    <label for="surveyTitle">Survey Title:</label>
-    <input type="text" id="surveyTitle">
+    <div class="form-group">
+      <label for="surveyTitle">Survey Title:</label>
+      <input type="text" id="surveyTitle">
+    </div>
+
+    <div class="form-group">
+      <label for="lockSurvey">
+        <input type="checkbox" id="lockSurvey"> Lock Survey
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="userID">User ID:</label>
+      <input type="number" id="userID" placeholder="Enter your user ID" />
+    </div>
+
+    <div class="form-group">
+      <label for="questionType">Question Type:</label>
+      <select id="questionType">
+        <option value="open-ended">Open-Ended</option>
+        <option value="boolean">True/False</option>
+        <option value="likert">Likert Scale</option>
+        <option value="multiple-choice">Multiple Choice</option>
+      </select>
+      <button type="button" onclick="addQuestion()">Add Question</button>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <button type="button" onclick="submitSurvey(event)">Submit Survey</button>
+
+    <div id="surveyPreview"></div>
   </div>
-
-  <div>
-    <label for="lockSurvey">Lock Survey:</label>
-    <input type="checkbox" id="lockSurvey">
-  </div>
-
-  <div>
-    <label for="userID">User ID:</label>
-    <input type="number" id="userID" placeholder="Enter your user ID" />
-  </div>
-
-  <div id="questionsContainer"></div>
-
-  <button type="button" onclick="addQuestion(4)">Add Open-Ended Question</button>
-  <button type="button" onclick="addQuestion(1)">Add True/False Question</button>
-  <button type="button" onclick="addQuestion(2)">Add Likert Scale Series</button>
-  <button type="button" onclick="addQuestion(3)">Add Multiple Series Question</button>
-  <button type="button" onclick="addQuestion(3)">Add Multiple Choice Question</button>
-  <button type="button" onclick="submitSurvey(event)">Submit Survey</button>
-
-
-  <div id="surveyPreview"></div>
 
   <script>
     let questionCount = 0;
@@ -64,194 +138,132 @@
       }
     }
 
-// Function to submit the survey data to the server
-async function submitSurvey(event) {
-  if (event) {
-  event.preventDefault(); // Prevent the default form submission behavior
-  }
-  const userIDElement = document.getElementById('userID');
-  const surveyTitle = document.getElementById('surveyTitle').value;
-  const lockSurvey = document.getElementById('lockSurvey').checked;
+    // Function to submit the survey data to the server
+    async function submitSurvey(event) {
+      if (event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+      }
+      const userIDElement = document.getElementById('userID');
+      const surveyTitle = document.getElementById('surveyTitle').value;
+      const lockSurvey = document.getElementById('lockSurvey').checked;
 
-  if (userIDElement) {
-    const userID = parseInt(userIDElement.value, 10);
-    const questionsContainer = document.getElementById('questionsContainer');
-    const questionElements = questionsContainer.getElementsByClassName('question');
-    const questions = [];
+      if (userIDElement) {
+        const userID = parseInt(userIDElement.value, 10);
+        const questionsContainer = document.getElementById('questionsContainer');
+        const questionElements = questionsContainer.getElementsByClassName('question');
+        const questions = [];
 
-    for (let i = 0; i < questionElements.length; i++) {
-      const questionElement = questionElements[i];
-      const questionType = questionElement.dataset.type;
-      let questionText = '';
+        for (let i = 0; i < questionElements.length; i++) {
+          const questionElement = questionElements[i];
+          const questionType = questionElement.dataset.type;
+          const questionTextElement = questionElement.querySelector('input[type="text"]');
+          const questionText = questionTextElement ? questionTextElement.value.trim() : '';
 
-      // Determine question text based on question type
-      if (questionType !== 'multiple-choice') {
-        questionText = questionElement.querySelector('input[type="text"]').value;
+          const question = {
+            text: questionText,
+            type: questionType,
+          };
+
+          if (questionType === 'multiple-choice' || questionType === 'boolean') {
+            const optionsContainer = questionElement.querySelector('.options-container');
+            const optionElements = optionsContainer.querySelectorAll('input[type="text"]');
+            const options = Array.from(optionElements).map((option) => option.value.trim());
+            question.options = options;
+          } else if (questionType === 'likert') {
+            const selectedOption = questionElement.querySelector('input[type="radio"]:checked');
+            if (selectedOption) {
+              question.options = [selectedOption.value];
+            }
+          }
+
+          questions.push(question);
+        }
+
+        const surveyData = {
+          userID,
+          title: surveyTitle,
+          locked: lockSurvey,
+          questions,
+        };
+
+        try {
+          const response = await sendPostRequest('/submit-survey', surveyData);
+
+          if (response) {
+            const { surveyId, questionIds } = response;
+            console.log('Survey data submitted successfully');
+            // Reset survey builder interface or show confirmation message
+          } else {
+            console.error('Failed to submit survey data: Response data missing');
+            // Handle error, show error message, or retry submission
+          }
+        } catch (error) {
+          console.error('Error submitting survey data:', error);
+          // Handle error, show error message, or retry submission
+        }
       } else {
-        questionText = questionElement.querySelector('label').textContent; // This line needs to be adjusted
-      }
-
-      const question = {
-        text: questionText.trim(), // Trim the text to remove leading/trailing whitespace
-        type: questionType
-      };
-
-      if (questionType === 'multiple-choice') {
-        const questionInput = questionElement.querySelector('input[type="text"]');
-        questionText = questionInput.value.trim(); // Get text from the input field
-        const optionsContainer = questionElement.querySelector('div');
-        const optionElements = optionsContainer.querySelectorAll('input[type="text"]');
-        const options = Array.from(optionElements).map((option) => option.value.trim());
-        question.options = options;
-      }
-
-      questions.push(question);
-    }
-
-    const surveyData = {
-      userID,
-      title: surveyTitle,
-      locked: lockSurvey,
-      questions,
-    };
-
-    try {
-      const response = await sendPostRequest('/submit-survey', surveyData);
-
-      if (response) {
-        const { surveyId, questionIds } = response;
-        console.log('Survey data submitted successfully');
-        // Reset survey builder interface or show confirmation message
-      } else {
-        console.error('Failed to submit survey data: Response data missing');
-        // Handle error, show error message, or retry submission
-      }
-    } catch (error) {
-      console.error('Error submitting survey data:', error);
-      // Handle error, show error message, or retry submission
-    }
-  } else {
-    console.error('Element with ID "userID" not found');
-    // Handle the case where the element is not found
-  }
-}
-
- // Function to add a question based on the type
-function addQuestion(questionType) {
-    questionCount++;
-
-    const questionsContainer = document.getElementById('questionsContainer');
-
-    const questionDiv = document.createElement('div');
-    questionDiv.classList.add('question');
-    questionDiv.dataset.type = getQuestionTypeValue(questionType); // Add data-type attribute to the question div
-
-    // Determine the question input based on the type
-    let questionInput;
-    if (questionType === 4) { // Adjusted to numeric comparison
-      questionInput = createOpenEndedQuestion(questionCount);
-    } else if (questionType === 1) { // Adjusted to numeric comparison
-      questionInput = createBooleanQuestion(questionCount);
-    } else if (questionType === 2) { // Adjusted to numeric comparison
-      questionInput = createLikertQuestion(questionCount);
-    } else if (questionType === 3) { // Adjusted to numeric comparison
-      questionInput = createMultipleChoiceQuestion(questionCount);
-    }
-
-    questionDiv.innerHTML = questionInput;
-
-    questionsContainer.appendChild(questionDiv);
-  }
-
-  // Function to get the server-side question type value
-  function getQuestionTypeValue(questionType) {
-    switch (questionType) {
-      case 4:
-        return 'open-ended'; // Adjusted to return string value
-      case 1:
-        return 'boolean'; // Adjusted to return string value
-      case 2:
-        return 'likert'; // Adjusted to return string value
-      case 3:
-        return 'multiple-choice'; // Adjusted to return string value
-      default:
-        return ''; // Handle unsupported types
-    }
-  }
-    // Helper function to create an open-ended question input
-    function createOpenEndedQuestion(questionCount) {
-      const questionId = `question${questionCount}`;
-
-      return `<label for="${questionId}">Open-Ended Question ${questionCount}:</label>
-              <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your open-ended question">`;
-    }
-
-    // Helper function to create a boolean question input
-    function createBooleanQuestion(questionCount) {
-      const questionId = `question${questionCount}`;
-      const responseId = `response${questionCount}`;
-
-      return `<div>
-                <label for="${questionId}">True/False Question ${questionCount}:</label>
-                <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your True/False question">
-                <select id="${responseId}" name="${responseId}">
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>`;
-    }
-
-    // Helper function to create a Likert scale question input
-    function createLikertQuestion(questionCount) {
-      const questionId = `question${questionCount}`;
-      const responseId = `response${questionCount}`;
-
-      return `<div>
-                <label for="${questionId}">Likert Scale Question ${questionCount}:</label>
-                <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your Likert scale question">
-                <select id="${responseId}" name="${responseId}">
-                  <option value="1">Strongly Disagree</option>
-                  <option value="2">Disagree</option>
-                  <option value="3">Neutral</option>
-                  <option value="4">Agree</option>
-                  <option value="5">Strongly Agree</option>
-                </select>
-              </div>`;
-    }
-
-    // Helper function to create a multiple-choice question input
-    function createMultipleChoiceQuestion(questionCount) {
-      const questionId = `question${questionCount}`;
-      const responseId = `response${questionCount}`;
-
-      return `<label for="${questionId}">Multiple Choice Question ${questionCount}:</label>
-              <input type="text" id="${questionId}" name="${questionId}" placeholder="Enter your multiple-choice question">
-              <div id="${responseId}">
-                <input type="text" placeholder="Option 1">
-                <input type="text" placeholder="Option 2">
-                <!-- Add more option inputs as needed -->
-              </div>`;
-    }
-
-    // Function to add a series of Likert scale questions
-    function addLikertSeries() {
-      const numberOfQuestions = prompt('Enter the number of Likert scale questions:');
-      for (let i = 1; i <= numberOfQuestions; i++) {
-        addQuestion('likert');
+        console.error('Element with ID "userID" not found');
+        // Handle the case where the element is not found
       }
     }
 
-    // Function to add a series of multiple-choice questions
-    function addMultipleSeries() {
-      const numberOfQuestions = prompt('Enter the number of multiple-choice questions in the series:');
-      for (let i = 1; i <= numberOfQuestions; i++) {
-        addQuestion('multiple-choice');
+    // Function to add a question
+    function addQuestion() {
+      questionCount++;
+
+      const questionsContainer = document.getElementById('questionsContainer');
+      const questionType = document.getElementById('questionType').value;
+
+      const questionDiv = document.createElement('div');
+      questionDiv.classList.add('question');
+      questionDiv.dataset.type = questionType;
+
+      const questionInput = document.createElement('input');
+      questionInput.type = 'text';
+      questionInput.placeholder = `Enter your ${questionType} question`;
+
+      questionDiv.appendChild(questionInput);
+
+      if (questionType === 'multiple-choice' || questionType === 'boolean' || questionType === 'likert') {
+        const optionsContainer = document.createElement('div');
+        optionsContainer.classList.add('options-container');
+        questionDiv.appendChild(optionsContainer);
       }
+
+      if (questionType === 'likert') {
+        const likertOptions = createLikertOptions();
+        questionDiv.appendChild(likertOptions);
+      }
+
+      questionsContainer.appendChild(questionDiv);
     }
 
-    // Function to customize the survey (change background and font color)
-    function customizeSurvey() {
-      // Function implementation remains the same
+    // Function to create Likert scale options
+    function createLikertOptions() {
+      const likertOptions = document.createElement('div');
+      likertOptions.classList.add('likert-options');
+
+      const likertLabels = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
+
+      likertLabels.forEach((label, index) => {
+        const likertOption = document.createElement('div');
+        likertOption.classList.add('likert-option');
+
+        const likertRadio = document.createElement('input');
+        likertRadio.type = 'radio';
+        likertRadio.name = `likert-${questionCount}`;
+        likertRadio.value = index + 1;
+
+        const likertLabel = document.createElement('label');
+        likertLabel.textContent = label;
+
+        likertOption.appendChild(likertRadio);
+        likertOption.appendChild(likertLabel);
+
+        likertOptions.appendChild(likertOption);
+      });
+
+      return likertOptions;
     }
   </script>
 </body>
