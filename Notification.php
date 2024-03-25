@@ -6,12 +6,6 @@ $password = "AdminPass";
 $database = "dam_database";
 
 // Connect to MySQL database
-if (!extension_loaded('mysqli')) {
-    echo 'MySQLi extension is not installed.';
-} else {
-    echo 'MySQLi extension is installed.';
-}
-
 $conn = new mysqli($servername, $username, $password, $database);
 
 // Check connection
@@ -43,13 +37,34 @@ if ($result->num_rows > 0) {
 
         // Send notification email to user with link to draft
         $notificationSubject = "Your Survey Draft";
-        $notificationMessage = "We've created a draft of your survey email. You can edit and send it from Outlook. Click here: http://your_server_url/view_draft.php?draft=" . basename($draftFilePath);
+        $notificationMessage = " Click here to edit email: http://your_server_url/view_draft.php?draft=" . basename($draftFilePath) . "<br><br>";
+        // Add HTML button
+        $notificationMessage .= '<button onclick="openOutlookEmail()">Open Email in Outlook</button>';
         mail($to, $notificationSubject, $notificationMessage, $headers);
     }
 } else {
-    echo "No users found in the database whose last email sent date is older than 10 days";
+    echo "No survey older than 10 days";
 }
 
 // Close MySQL connection
 $conn->close();
 ?>
+
+<!-- JavaScript function to open Outlook email -->
+<script>
+function openOutlookEmail() {
+    // Define email properties
+    var recipient = 'recipient@example.com';
+    var subject = 'Subject of the email';
+    var body = 'Body content of the email';
+
+    // Create mailto URL for Outlook
+    var mailtoUrl = 'mailto:' + encodeURIComponent(recipient) +
+                    '?subject=' + encodeURIComponent(subject) +
+                    '&body=' + encodeURIComponent(body) +
+                    '&amp;';
+
+    // Open email client (Outlook)
+    window.location.href = mailtoUrl;
+}
+</script>
