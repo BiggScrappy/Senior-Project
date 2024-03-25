@@ -187,12 +187,12 @@
         };
 
         try {
-          const response = await sendPostRequest('/submit-survey', surveyData);
+          // Send survey data to the server
+          const response = await sendPostRequest('/surveys', surveyData);
 
           if (response) {
-            const { surveyId, questionIds } = response;
+            // Handle the response from the server as needed
             console.log('Survey data submitted successfully');
-            // Reset survey builder interface or show confirmation message
           } else {
             console.error('Failed to submit survey data: Response data missing');
             // Handle error, show error message, or retry submission
