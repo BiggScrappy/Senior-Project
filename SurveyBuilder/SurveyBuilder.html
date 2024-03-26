@@ -188,7 +188,7 @@
 
         try {
           // Send survey data to the server
-          const response = await sendPostRequest('/surveys', surveyData);
+          const response = await sendPostRequest('/survey_templates', surveyData);
 
           if (response) {
             // Handle the response from the server as needed
@@ -206,9 +206,8 @@
         // Handle the case where the element is not found
       }
     }
-
-    // Function to add a question
-    function addQuestion() {
+// Inside the addQuestion function
+function addQuestion() {
       questionCount++;
 
       const questionsContainer = document.getElementById('questionsContainer');
@@ -221,6 +220,7 @@
       const questionInput = document.createElement('input');
       questionInput.type = 'text';
       questionInput.placeholder = `Enter your ${questionType} question`;
+      questionInput.id = `question-${questionCount}`; // Assign unique ID to question input
 
       questionDiv.appendChild(questionInput);
 
@@ -237,7 +237,40 @@
 
       questionsContainer.appendChild(questionDiv);
     }
+    async function sendPostRequest(url, data, retries = 3, delay = 1000) {
+  try {
+    const timeout = setTimeout(() => {
+      throw new Error('Request timed out');
+    }, 10000); // Set a timeout of 10 seconds (adjust as needed)
 
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    clearTimeout(timeout); // Clear the timeout if the request succeeds
+
+    if (response.ok) {
+      return response.json();
+    } else {
+      const errorMessage = `Failed to send request: ${response.status} ${response.statusText}`;
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    if (retries > 0) {
+      console.error('Error sending request:', error);
+      console.log(`Retrying in ${delay} ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return sendPostRequest(url, data, retries - 1, delay * 2); // Exponential backoff
+    } else {
+      console.error('Error sending request:', error);
+      throw error;
+    }
+  }
+}
     // Function to create Likert scale options
     function createLikertOptions() {
       const likertOptions = document.createElement('div');
@@ -251,7 +284,7 @@
 
         const likertRadio = document.createElement('input');
         likertRadio.type = 'radio';
-        likertRadio.name = `likert-${questionCount}`;
+        likertRadio.name = `likert-${questionCount}`; // Ensure unique name for Likert radio buttons
         likertRadio.value = index + 1;
 
         const likertLabel = document.createElement('label');
