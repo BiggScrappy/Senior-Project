@@ -93,7 +93,12 @@
       <label for="userID">User ID:</label>
       <input type="number" id="userID" placeholder="Enter your user ID" />
     </div>
-
+    <div class="form-group">
+      <label for="surveyDescription">Survey Description:</label>
+      <input type="text" id="surveyDescription">
+    </div>
+    
+    
     <div class="form-group">
       <label for="questionType">Question Type:</label>
       <select id="questionType">
@@ -140,72 +145,76 @@
 
     // Function to submit the survey data to the server
     async function submitSurvey(event) {
-      if (event) {
-        event.preventDefault(); // Prevent the default form submission behavior
-      }
-      const userIDElement = document.getElementById('userID');
-      const surveyTitle = document.getElementById('surveyTitle').value;
-      const lockSurvey = document.getElementById('lockSurvey').checked;
+  if (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+  }
+  const userIDElement = document.getElementById('userID');
+  const surveyTitle = document.getElementById('surveyTitle').value;
+  const lockSurvey = document.getElementById('lockSurvey').checked;
 
-      if (userIDElement) {
-        const userID = parseInt(userIDElement.value, 10);
-        const questionsContainer = document.getElementById('questionsContainer');
-        const questionElements = questionsContainer.getElementsByClassName('question');
-        const questions = [];
+  const surveyDescription = document.getElementById('surveyDescription').value; // Extract survey description
 
-        for (let i = 0; i < questionElements.length; i++) {
-          const questionElement = questionElements[i];
-          const questionType = questionElement.dataset.type;
-          const questionTextElement = questionElement.querySelector('input[type="text"]');
-          const questionText = questionTextElement ? questionTextElement.value.trim() : '';
+  if (userIDElement) {
+    const userID = parseInt(userIDElement.value, 10);
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questionElements = questionsContainer.getElementsByClassName('question');
+    const questions = [];
 
-          const question = {
-            text: questionText,
-            type: questionType,
-          };
+    for (let i = 0; i < questionElements.length; i++) {
+      const questionElement = questionElements[i];
+      const questionType = questionElement.dataset.type;
+      const questionTextElement = questionElement.querySelector('input[type="text"]');
+      const questionText = questionTextElement ? questionTextElement.value.trim() : '';
 
-          if (questionType === 'multiple-choice' || questionType === 'boolean') {
-            const optionsContainer = questionElement.querySelector('.options-container');
-            const optionElements = optionsContainer.querySelectorAll('input[type="text"]');
-            const options = Array.from(optionElements).map((option) => option.value.trim());
-            question.options = options;
-          } else if (questionType === 'likert') {
-            const selectedOption = questionElement.querySelector('input[type="radio"]:checked');
-            if (selectedOption) {
-              question.options = [selectedOption.value];
-            }
-          }
+      const question = {
+        text: questionText,
+        type: questionType,
+      };
 
-          questions.push(question);
+      if (questionType === 'multiple-choice' || questionType === 'boolean') {
+        const optionsContainer = questionElement.querySelector('.options-container');
+        const optionElements = optionsContainer.querySelectorAll('input[type="text"]');
+        const options = Array.from(optionElements).map((option) => option.value.trim());
+        question.options = options;
+      } else if (questionType === 'likert') {
+        const selectedOption = questionElement.querySelector('input[type="radio"]:checked');
+        if (selectedOption) {
+          question.options = [selectedOption.value];
         }
-
-        const surveyData = {
-          userID,
-          title: surveyTitle,
-          locked: lockSurvey,
-          questions,
-        };
-
-        try {
-          // Send survey data to the server
-          const response = await sendPostRequest('/survey_templates', surveyData);
-
-          if (response) {
-            // Handle the response from the server as needed
-            console.log('Survey data submitted successfully');
-          } else {
-            console.error('Failed to submit survey data: Response data missing');
-            // Handle error, show error message, or retry submission
-          }
-        } catch (error) {
-          console.error('Error submitting survey data:', error);
-          // Handle error, show error message, or retry submission
-        }
-      } else {
-        console.error('Element with ID "userID" not found');
-        // Handle the case where the element is not found
       }
+
+      questions.push(question);
     }
+
+    const surveyData = {
+      userID,
+      title: surveyTitle,
+      description: surveyDescription, // Assign survey description to surveyData object
+      locked: lockSurvey,
+      questions,
+    };
+
+    try {
+      // Send survey data to the server
+      const response = await sendPostRequest('/survey_templates', surveyData);
+
+      if (response) {
+        // Handle the response from the server as needed
+        console.log('Survey data submitted successfully');
+      } else {
+        console.error('Failed to submit survey data: Response data missing');
+        // Handle error, show error message, or retry submission
+      }
+    } catch (error) {
+      console.error('Error submitting survey data:', error);
+      // Handle error, show error message, or retry submission
+    }
+  } else {
+    console.error('Element with ID "userID" not found');
+    // Handle the case where the element is not found
+  }
+}
+
 // Inside the addQuestion function
 function addQuestion() {
       questionCount++;
