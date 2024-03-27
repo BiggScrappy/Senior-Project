@@ -1,8 +1,5 @@
-<!--Fill Out Survey -->
- <!--Ember Adkins 901893134-->
- <?php
-    //redirect session save data to useable path on bluehost
-     //ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+<?php
+     ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
      session_start();
 
      //verify user info
@@ -19,19 +16,15 @@
     }
 
 
-
+//Fill Out Survey -->
+//Ember Adkins 901893134-->
    
     $userID = $user["user_id"];
-  
-    
-    foreach($_POST as $key => $LABEL){
-        
-        echo $key," ",$LABEL,"<br>";
-    }
-    echo "<br>";
+    $survey_id= $_SESSION["survey_id"];
 
+    
     $sql = "select * from User_Surveys
-    where user_id=".$userID ."  AND survey_id=18 order by question_id  ;";
+    where user_id=".$userID."  AND survey_id=".$survey_id." order by question_id  ;";
     $result = $mysqli->query($sql);
     $questionNum=0;
 
@@ -41,7 +34,6 @@
 
         $questionNum=$questionNum+1;
         $answer= (isset($_POST["$questionNum"]) ? $_POST["$questionNum"] : '');   
-        echo $answer; 
         $sql = "INSERT INTO responses(question_id,survey_id,response,created_at,created_by)
                 VALUES(?,?,?,?,?);";
 
@@ -59,7 +51,15 @@
                     $userID
                   );
         $stmt->execute();  
+        
+        $sql="update user_surveys set completed=1 where user_id=".$userID." and survey_id=".$survey_id.";";
+        $stmt = $mysqli -> stmt_init();
 
+        if (! $stmt->prepare($sql)){
+         die("sql womp womp" . $mysqli->error);
+        }
+        $stmt->execute(); 
 
+        header("Location: filloutSurvey-success.html");
      
     }
