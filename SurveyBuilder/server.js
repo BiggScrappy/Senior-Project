@@ -77,20 +77,42 @@ app.post('/survey_templates', async (req, res) => {
   try {
     console.log('Request body:', req.body);
 
-    // Insert the survey template data into the database
-    const [result] = await db.query('INSERT INTO survey_templates (name, description) VALUES (?, ?)', [title, description]);
+    // Start a database transaction for consistency
+    await db.query('START TRANSACTION');
 
-    // Log the SQL query
-    console.log('SQL query:', 'INSERT INTO survey_templates (name, description) VALUES (?, ?)', [title, description]);
+    // Validate title and description (optional, adjust as needed)
+    if (!title || !description) {
+      throw new Error('Missing required fields: title and description');
+    }
 
-    res.status(201).json({ id: result.insertId }); // Send a success response
+    // Prepared statement for survey template insertion
+    const insertTemplateQuery = 'INSERT INTO survey_templates (userID, name, description, locked) VALUES (?, ?, ?, ?)';
+    const [surveyTemplateResult] = await db.query(insertTemplateQuery, [userID, title, description, locked]);
+    const surveyTemplateId = surveyTemplateResult.insertId;
+
+    // Assign questions to the survey template (assuming questions is an array of question IDs)
+    for (const questionId of questions) {
+      const assignQuestionQuery = 'INSERT INTO survey_template_questions (survey_template_id, question_id) VALUES (?, ?)';
+      await db.query(assignQuestionQuery, [surveyTemplateId, questionId]);
+    }
+
+    // Commit the transaction if everything went well
+    await db.query('COMMIT');
+
+    console.log('SQL query:', insertTemplateQuery, [userID, title, description, locked]);
+
+    res.status(201).json({ id: surveyTemplateId }); // Send a success response with the created template ID
   } catch (error) {
+    await db.query('ROLLBACK'); // Rollback any changes if an error occurred
     console.error('Error creating survey template:', error);
-    res.status(500).json({ error: 'Internal Server Error' }); // Send an error response
+
+    if (error.message.includes('timeout')) {
+      res.status(500).json({ error: 'Database operation timed out. Please try again later.' });
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' }); // Generic error for other issues
+    }
   }
 });
-
-
 
 
 // Function to handle assigning questions to a survey template
@@ -136,5 +158,3 @@ app.put('/surveys/:id/lock', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
 });
-
-
