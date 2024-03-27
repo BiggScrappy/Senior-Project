@@ -1,5 +1,5 @@
 <?php
-//ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
 if(isset($_SESSION["user_id"])){
@@ -49,7 +49,7 @@ if(isset($_SESSION["user_id"])){
 
         while($row = mysqli_fetch_assoc($result)) {
            $survey_id=$row["survey_id"];
-           echo $survey_id,"<br>";
+           echo "Survey ID: ", $survey_id,"<br>";
 
            $sql2="select * from surveys where id=".$survey_id.";";
            $result2 = $mysqli->query($sql2);
@@ -60,6 +60,9 @@ if(isset($_SESSION["user_id"])){
            echo "Org id: ",$new["organization_id"],"<br>";
            echo "project id: ",$new["project_id"],"<br>";
            echo "created at: ",$new["created_at"],"<br>";
+           echo "start date: ",$new["start_date"]," | ";
+           echo "end date: ",$new["end_date"],"<br>";
+
 
            echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label> <br/>";
          
