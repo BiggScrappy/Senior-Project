@@ -1,7 +1,5 @@
- <!--Fill Out Survey -->
- <!--Ember Adkins 901893134-->
- <?php 
-//ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+<?php
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
 if(isset($_SESSION["user_id"])){
@@ -15,8 +13,11 @@ if(isset($_SESSION["user_id"])){
 
     $user = $result-> fetch_assoc();
 }
-?>
 
+$_SESSION["survey_id"]= $_POST["survey_id"];
+?>
+ <!--Fill Out Survey -->
+ <!--Ember Adkins 901893134-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -41,8 +42,8 @@ if(isset($_SESSION["user_id"])){
         <!-- Gather Surveys-->
         <?php
             $userID = $user["user_id"];
-            $survey_id= $_POST["survey"];
-           
+            $survey_id= $_SESSION["survey_id"];
+           // echo $survey_id;
             $sql = "select * from User_Surveys
             where user_id=".$userID ." AND survey_id=".$survey_id." order by question_id  ;";
             $result = $mysqli->query($sql);
@@ -62,7 +63,7 @@ if(isset($_SESSION["user_id"])){
 
                     if ($row["question_type_id"]==='2'){
                         echo "<div>"  ; 
-                          
+                        
                      ?>
                     <input type="radio" id = 'true' name="<?php echo $questionNum ?>" value='true'>
                     <label for 'true'>True</label><br>
