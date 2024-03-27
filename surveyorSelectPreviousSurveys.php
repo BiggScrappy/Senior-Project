@@ -1,5 +1,5 @@
 <?php
-//ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
 if(isset($_SESSION["user_id"])){
@@ -39,11 +39,11 @@ $userID = $user["user_id"];
         <p><a href="login.php">Login</a> </p>
     <?php endif; ?>   
 
-<form action="surveyorViewPreviousSurvey.php" method="post">
+<form action="viewPreviousSurveys.php" method="post">
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys where surveyor_id=".$user_id." ; ";
+    $sql="select * from surveys where surveyor_id=".$user_id." and end_date<now() ; ";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -56,7 +56,8 @@ $userID = $user["user_id"];
            echo "surveyor id: ",$row["surveyor_id"],"<br>";
            echo "Org id: ",$row["organization_id"],"<br>";
            echo "project id: ",$row["project_id"],"<br>";
-           echo "created at: ",$row["created_at"],"<br>";
+           echo "start date: ",$row["start_date"]," | ";
+           echo "end date: ",$row["end_date"],"<br>";
 
            echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label> <br/>";
          
