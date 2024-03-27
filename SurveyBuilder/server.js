@@ -69,22 +69,29 @@ app.post('/questions', async (req, res) => {
   }
 });
 
-
 // Function to handle creating a new survey template
 app.post('/survey_templates', async (req, res) => {
   // Handle creating a new survey template
-  const { name, description } = req.body;
+  const { userID, title, description, locked, questions } = req.body; // Destructure the request body
 
   try {
     console.log('Request body:', req.body);
-    const [result] = await db.query('INSERT INTO survey_templates (name, description) VALUES (?, ?)', [name, description]);
-    console.log('SQL query:', 'INSERT INTO survey_templates (name, description) VALUES (?, ?)', [name, description]);
-    res.status(201).json({ id: result.insertId });
+
+    // Insert the survey template data into the database
+    const [result] = await db.query('INSERT INTO survey_templates (name, description) VALUES (?, ?)', [title, description]);
+
+    // Log the SQL query
+    console.log('SQL query:', 'INSERT INTO survey_templates (name, description) VALUES (?, ?)', [title, description]);
+
+    res.status(201).json({ id: result.insertId }); // Send a success response
   } catch (error) {
     console.error('Error creating survey template:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' }); // Send an error response
   }
 });
+
+
+
 
 // Function to handle assigning questions to a survey template
 app.post('/survey_template_questions', async (req, res) => {
@@ -129,3 +136,5 @@ app.put('/surveys/:id/lock', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
 });
+
+
