@@ -1,5 +1,5 @@
 <?php
-//ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
 if(isset($_SESSION["user_id"])){
@@ -72,15 +72,27 @@ $userID = $user["user_id"];
 
         //filters out surveys with no users assigned, if any 
         if($user_count>0){
-           echo "Surveys done: ", $users_completed, "/",$user_count, " (",$percentage,"%)", " | ";
-           echo "survey number: ", $survey_id," | ";
-
-           echo "survey template id: ",$row["survey_template_id"]," | ";
-           echo "Org id: ",$row["organization_id"]," | ";
-           echo "project id: ",$row["project_id"]," | ";
-           echo "start date: ",$row["start_date"]," | ";
-           echo "end date: ",$row["end_date"]," <br> ";
-
+            $sql="select name from organizations where id=".$row["organization_id"].";";
+            $thing=$mysqli->query($sql);
+            $orgName=mysqli_fetch_assoc($thing);
+ 
+            $sql="select name from projects where id=".$row["project_id"].";";
+            $thing=$mysqli->query($sql);
+            $projectName=mysqli_fetch_assoc($thing);
+        
+            $sql="select name from survey_templates where id=".$row["survey_template_id"].";";
+            $thing=$mysqli->query($sql);
+            $surveyName=mysqli_fetch_assoc($thing);
+ 
+            echo "Surveys done: ", $users_completed, "/",$user_count, " (",$percentage,"%)", " | ";
+            echo "survey number: ", $survey_id," | ";
+ 
+            echo "Survey Type: ",$surveyName["name"]," | ";
+            echo "Organization Name: ",$orgName["name"]," | ";
+            echo "Project Name: ",$projectName["name"]," | ";
+            echo "start date: ",$row["start_date"]," | ";
+            echo "end date: ",$row["end_date"]," <br> ";
+ 
            echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View Respondent List</label> <br/>";  
         }
            
