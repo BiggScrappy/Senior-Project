@@ -37,13 +37,13 @@ if ($result->num_rows > 0) {
 
         // Send notification email to user with link to draft
         $notificationSubject = "Your Survey Draft";
-        $notificationMessage = " Click here to edit email: http://your_server_url/view_draft.php?draft=" . basename($draftFilePath) . "<br><br>";
+        $notificationMessage = "We've created a draft of your survey email. You can edit and send it from Outlook. Click here: http://your_server_url/view_draft.php?draft=" . basename($draftFilePath) . "<br><br>";
         // Add HTML button
         $notificationMessage .= '<button onclick="openOutlookEmail()">Open Email in Outlook</button>';
         mail($to, $notificationSubject, $notificationMessage, $headers);
     }
 } else {
-    echo "No survey older than 10 days";
+    echo "No users found in the database whose last email sent date is older than 10 days";
 }
 
 // Close MySQL connection
