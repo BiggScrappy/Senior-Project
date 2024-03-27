@@ -1,5 +1,5 @@
 <?php
-//ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
 if(isset($_SESSION["user_id"])){
@@ -13,6 +13,7 @@ if(isset($_SESSION["user_id"])){
 
     $user = $result-> fetch_assoc();
 }
+
 $survey_id= (isset($_POST["survey_id"]) ? $_POST["survey_id"] : '');
 $userID = $user["user_id"];
 
@@ -40,8 +41,9 @@ $userID = $user["user_id"];
     <?php endif; ?>   
 
 <?php
-    $sql = "select * from User_Surveys
-    where user_id=".$userID ." AND survey_id=".$survey_id." order by question_id;";
+    echo $survey_id,"<br>";
+    $sql = "select * from Survey_Questions
+    where survey_id=".$survey_id." order by question_id;";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -66,11 +68,14 @@ $userID = $user["user_id"];
                          <?php                          
                             } 
                         }  
-                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+                $sql="select response,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
-                $responseUser = mysqli_fetch_assoc($response);
-
-                echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+                if (mysqli_num_rows($response) > 0) {
+                    while($responseUser = mysqli_fetch_assoc($response)){
+                         echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
+                    }
+                }
+                echo "<br>";
             }
             elseif($question_type==2){
                echo "<ul>";
@@ -79,10 +84,14 @@ $userID = $user["user_id"];
                echo "</ul>";
 
                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
-                $response = $mysqli->query($sql);
-                $responseUser = mysqli_fetch_assoc($response);
-
-                echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+               $response = $mysqli->query($sql);
+               if (mysqli_num_rows($response) > 0) {
+                   while($responseUser = mysqli_fetch_assoc($response)){
+                        echo "User's Response: ", $responseUser["response"],"<br>";
+                   }
+                }
+                echo "<br>";
+            
             }
             elseif($question_type==3){
                echo "<ul>";
@@ -94,22 +103,30 @@ $userID = $user["user_id"];
                echo "</ul>";
                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                $response = $mysqli->query($sql);
-               $responseUser = mysqli_fetch_assoc($response);
-
-               echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+               if (mysqli_num_rows($response) > 0) {
+                   while($responseUser = mysqli_fetch_assoc($response)){
+                        echo "User's Response: ", $responseUser["response"],"<br>";
+                   }
+                }
+                echo "<br>";
+            
             }
             elseif($question_type==4){
                 $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
-                $responseUser = mysqli_fetch_assoc($response);
-                echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+                if (mysqli_num_rows($response) > 0) {
+                    while($responseUser = mysqli_fetch_assoc($response)){
+                         echo "User's Response: ", $responseUser["response"],"<br>";
+                    }
+                }
+                echo "<br>";
             }
 
         }   
     }
 
     ?>
-<p><a href="selectPreviousSurveys.php">View A Different Survey</a></p>
+<p><a href="surveyorSelectPreviousSurveys.php">View A Different Survey</a></p>
 <p><a href="index.php">Go to Home</a></p>
 
 </body>
