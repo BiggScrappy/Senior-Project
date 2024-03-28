@@ -1,81 +1,71 @@
 <?php
 session_start();
 
-// Include the database connection file
+// Assuming you have a database connection
 include_once 'database.php';
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve form data
+    // Process survey data
     $surveyTitle = $_POST['surveyTitle'];
     $lockSurvey = isset($_POST['lockSurvey']) ? 1 : 0;
     $userID = $_POST['userID'];
     $surveyDescription = $_POST['surveyDescription'];
-    $questionText = $_POST['questionText'];  // Array of question texts
-    $questionType = $_POST['questionType'];  // Array of question types
 
-    // Begin transaction
-    $mysqli->begin_transaction();
-
-    try {
-        // Insert survey template
-        $insertSurveyTemplateQuery = "INSERT INTO survey_templates (name, description, created_at, created_by) VALUES (?, ?, NOW(), ?)";
-        $stmt = $mysqli->prepare($insertSurveyTemplateQuery);
-        $stmt->bind_param("ssi", $surveyTitle, $surveyDescription, $userID);
+    // Insert survey template
+    $insertSurveyTemplateQuery = "INSERT INTO survey_templates (name, description, created_at, created_by, locked) VALUES (?, ?, NOW(), ?, ?)";
+    $stmt = $mysqli->prepare($insertSurveyTemplateQuery);
+    if ($stmt) {
+        $stmt->bind_param("ssii", $surveyTitle, $surveyDescription, $userID, $lockSurvey);
         $stmt->execute();
-
         // Retrieve the last inserted ID
         $surveyTemplateId = $mysqli->insert_id;
         $stmt->close();
+    } else {
+        // Handle the error
+        echo "Error: " . $mysqli->error;
+    }
 
-        // Loop through each question and insert data
-        for ($i = 0; $i < count($questionText); $i++) {
-            $currentQuestionText = $questionText[$i];
-            $currentQuestionType = $questionType[$i];
+    // Loop through each question and insert data
+    if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
+        $questionTypes = $_POST['questionType'];
+        $questionTexts = $_POST['questionText'];
 
-            // Insert question
-            $insertQuestionQuery = "INSERT INTO questions (question_type_id, question, created_at, created_by) VALUES (?, ?, NOW(), ?)";
-            $stmt = $mysqli->prepare($insertQuestionQuery);
-            $stmt->bind_param("isi", $currentQuestionType, $currentQuestionText, $userID);
-            $stmt->execute();
-            $questionId = $mysqli->insert_id;
-            $stmt->close();
+        // Check if both arrays have the same length
+        if (count($questionTypes) == count($questionTexts)) {
+            $questionsCount = count($questionTypes);
+            for ($i = 0; $i < $questionsCount; $i++) {
+                $currentQuestionType = $questionTypes[$i];
+                $currentQuestionText = $questionTexts[$i];
 
-            // Insert into survey_template_questions
-            $insertSurveyTemplateQuestionQuery = "INSERT INTO survey_template_questions (question_id, survey_template_id, created_at, created_by) VALUES (?, ?, NOW(), ?)";
-            $stmt = $mysqli->prepare($insertSurveyTemplateQuestionQuery);
-            $stmt->bind_param("iis", $questionId, $surveyTemplateId, $userID);
-            $stmt->execute();
-            $stmt->close();
+                // Insert question
+                $insertQuestionQuery = "INSERT INTO questions (question_type, question_text, survey_template_id) VALUES (?, ?, ?)";
+                $stmt = $mysqli->prepare($insertQuestionQuery);
+                $stmt->bind_param("ssi", $currentQuestionType, $currentQuestionText, $surveyTemplateId);
+                $stmt->execute();
+                $questionId = $mysqli->insert_id;
+                $stmt->close();
 
-            // Handle additional logic for specific question types (e.g., options for multiple choice)
-            if ($currentQuestionType == "multiple-choice") {
-                // Assuming options are submitted as an array within each questionText element (adjust based on your implementation)
-                $options = json_decode($currentQuestionText, true)['options'];  // Assuming options are encoded in JSON within questionText
-                if (is_array($options)) {
+                // Additional logic for specific question types (e.g., options for multiple choice)
+                if ($currentQuestionType == "multiple-choice" && isset($_POST['options'][$i])) {
+                    $options = $_POST['options'][$i];
                     foreach ($options as $optionText) {
-                        $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text, created_at, created_by) VALUES (?, ?, NOW(), ?)";
+                        $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)";
                         $stmt = $mysqli->prepare($insertOptionQuery);
-                        $stmt->bind_param("isi", $questionId, $optionText, $userID);
+                        $stmt->bind_param("is", $questionId, $optionText);
                         $stmt->execute();
                         $stmt->close();
                     }
                 }
             }
-            // ... Implement similar logic for other question types with additional data (if applicable)
+        } else {
+            echo "Error: Number of question types and question texts do not match.";
         }
-
-        // Commit transaction
-        $mysqli->commit();
-
-        // Redirect after successful form submission
-        header("Location: success.php");
-        exit();
-    } catch (Exception $e) {
-        // Rollback transaction on error
-        $mysqli->rollback();
-        echo "Error: " . $e->getMessage();
     }
+
+    // Redirect after form submission
+    header("Location: success.php");
+    exit();
 } else {
     // If the form is not submitted, redirect to the form page
     header("Location: survey_form.php");
