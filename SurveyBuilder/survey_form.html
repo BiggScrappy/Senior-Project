@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Builder</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* General styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa; /* Light gray background */
+      color: #333; /* Dark text color */
+      transition: background-color 0.3s ease;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff; /* White container background */
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e8098;/* Blue heading color */
+    }
+
+    .form-group {
+      margin-bottom: 20px; /* Increased margin for better spacing */
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555; /* Dark gray label color */
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px; /* Increased padding for better appearance */
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      font-size: 16px; /* Larger font size for better readability */
+      color: #333; /* Dark text color */
+    }
+
+    button {
+      background-color: #1e8098;
+      color: #fff;
+      padding: 12px 24px; /* Increased padding for better appearance */
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 16px; /* Larger font size for better appearance */
+    }
+
+    button:hover {
+      background-color: #0056b3; /* Darker shade of blue on hover */
+    }
+
+    /* Dark mode styles */
+    body.dark-mode {
+      background-color: #333; /* Dark background color */
+      color: #fff; /* Light text color */
+    }
+
+    body.dark-mode .container {
+      background-color: #444; /* Dark container background */
+    }
+
+    body.dark-mode label {
+      color: #ccc; /* Light gray label color in dark mode */
+    }
+
+    body.dark-mode input[type="text"],
+    body.dark-mode input[type="number"],
+    body.dark-mode textarea,
+    body.dark-mode select {
+      background-color: #444; /* Dark input background */
+      color: #fff; /* Light text color */
+      border-color: #666; /* Dark border color */
+    }
+
+    body.dark-mode button {
+      background-color: #007bff; /* Blue button color in dark mode */
+      color: #fff; /* Light text color */
+    }
+
+    body.dark-mode button:hover {
+      background-color: #0056b3; /* Darker shade of blue on hover in dark mode */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Survey Builder</h1>
+
+    <form method="post" action="process_survey.php">
+      <div class="form-group">
+        <label for="surveyTitle">Survey Title:</label>
+        <input type="text" id="surveyTitle" name="surveyTitle" required>
+      </div>
+
+      <div class="form-group">
+        <label for="lockSurvey">
+          <input type="checkbox" id="lockSurvey" name="lockSurvey"> Lock Survey
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="userID">User ID:</label>
+        <input type="number" id="userID" name="userID" placeholder="Enter your user ID" required />
+      </div>
+
+      <div class="form-group">
+        <label for="surveyDescription">Survey Description:</label>
+        <textarea id="surveyDescription" name="surveyDescription" required></textarea>
+      </div>
+
+      <div id="questionsContainer"></div>
+      <button type="button" id="addQuestionBtn">Add Question</button>
+      <button type="submit">Submit Survey</button>
+    </form>
+  </div>
+
+  <!-- Dark mode toggle button -->
+  <button id="darkModeToggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+  <script>
+    // JavaScript for dynamic question generation
+    const questionsContainer = document.getElementById('questionsContainer');
+    const addQuestionBtn = document.getElementById('addQuestionBtn');
+
+    addQuestionBtn.addEventListener('click', function() {
+      // Create a new question container
+      const questionContainer = document.createElement('div');
+      questionContainer.classList.add('question-container');  // Add a class for styling
+
+      // Generate question type selection
+      const questionTypeSelect = document.createElement('select');
+      questionTypeSelect.name = 'questionType[]';  // Array name for multiple questions
+      questionTypeSelect.innerHTML = `
+        <option value="open-ended">Open-Ended</option>
+        <option value="multiple-choice">Multiple Choice</option>
+        <option value="likert">Likert Scale</option>
+        <option value="true-false">True/False</option>
+      `;
+      questionContainer.appendChild(questionTypeSelect);
+
+      // Add input fields based on question type (implemented later)
+      const questionInputContainer = document.createElement('div');
+      questionInputContainer.classList.add('question-input-container');  // Add a class for styling
+      questionContainer.appendChild(questionInputContainer);
+
+      // Add button to remove the question
+      const removeQuestionBtn = document.createElement('button');
+      removeQuestionBtn.textContent = 'Remove Question';
+      removeQuestionBtn.addEventListener('click', function() {
+        questionsContainer.removeChild(questionContainer);
+      });
+      questionContainer.appendChild(removeQuestionBtn);
+
+      // Update question input fields on type change
+      questionTypeSelect.addEventListener('change', function() {
+        const questionType = this.value;
+        questionInputContainer.innerHTML = '';  // Clear existing inputs
+        generateQuestionInputs(questionType, questionInputContainer);
+      });
+
+      // Add the question container to the form
+      questionsContainer.appendChild(questionContainer);
+    });
+
+    // Function to generate question input fields based on selected type
+    function generateQuestionInputs(questionType, questionInputContainer) {
+      switch (questionType) {
+        case 'open-ended':
+          const openEndedInput = document.createElement('input');
+          openEndedInput.type = 'text';
+          openEndedInput.name = 'questionText[]';  // Array name for multiple questions
+          openEndedInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(openEndedInput);
+          break;
+        case 'multiple-choice':
+          const mcQuestionInput = document.createElement('input');
+          mcQuestionInput.type = 'text';
+          mcQuestionInput.name = 'questionText[]';  // Array name for multiple questions
+          mcQuestionInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(mcQuestionInput);
+
+          // Add multiple choice options input
+          const mcOptionsInput = document.createElement('textarea');
+          mcOptionsInput.name = 'options[]';  // Array name for multiple questions
+          mcOptionsInput.placeholder = 'Enter options separated by comma...';
+          questionInputContainer.appendChild(mcOptionsInput);
+          break;
+        case 'likert':
+          const likertQuestionInput = document.createElement('input');
+          likertQuestionInput.type = 'text';
+          likertQuestionInput.name = 'questionText[]';  // Array name for multiple questions
+          likertQuestionInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(likertQuestionInput);
+
+          // Add Likert scale options input
+          const likertScaleInput = document.createElement('input');
+          likertScaleInput.type = 'text';
+          likertScaleInput.name = 'likertScale[]';  // Array name for multiple questions
+          likertScaleInput.placeholder = 'Enter Likert scale options separated by comma...';
+          questionInputContainer.appendChild(likertScaleInput);
+          break;
+        case 'true-false':
+          const trueFalseQuestionInput = document.createElement('input');
+          trueFalseQuestionInput.type = 'text';
+          trueFalseQuestionInput.name = 'questionText[]';  // Array name for multiple questions
+          trueFalseQuestionInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(trueFalseQuestionInput);
+          break;
+        default:
+          break;
+      }
+    }
+
+    // JavaScript for toggling dark mode
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+  </script>
+</body>
+</html>
