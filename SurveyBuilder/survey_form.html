@@ -27,7 +27,7 @@
 
     h1 {
       text-align: center;
-      color: #1e8098;/* Blue heading color */
+      color: #007bff; /* Blue heading color */
     }
 
     .form-group {
@@ -56,7 +56,7 @@
     }
 
     button {
-      background-color: #1e8098;
+      background-color: #007bff;
       color: #fff;
       padding: 12px 24px; /* Increased padding for better appearance */
       border: none;
@@ -68,6 +68,21 @@
 
     button:hover {
       background-color: #0056b3; /* Darker shade of blue on hover */
+    }
+
+    /* Enhanced button styles */
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
     }
 
     /* Dark mode styles */
@@ -93,12 +108,14 @@
       border-color: #666; /* Dark border color */
     }
 
-    body.dark-mode button {
+    body.dark-mode button,
+    body.dark-mode .btn-primary {
       background-color: #007bff; /* Blue button color in dark mode */
       color: #fff; /* Light text color */
     }
 
-    body.dark-mode button:hover {
+    body.dark-mode button:hover,
+    body.dark-mode .btn-primary:hover {
       background-color: #0056b3; /* Darker shade of blue on hover in dark mode */
     }
   </style>
@@ -130,13 +147,13 @@
       </div>
 
       <div id="questionsContainer"></div>
-      <button type="button" id="addQuestionBtn">Add Question</button>
-      <button type="submit">Submit Survey</button>
+      <button type="button" id="addQuestionBtn" class="btn-primary">Add Question</button>
+      <button type="submit" class="btn-primary">Submit Survey</button>
     </form>
   </div>
 
   <!-- Dark mode toggle button -->
-  <button id="darkModeToggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+  <button id="darkModeToggle" class="btn-primary" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
   <script>
     // JavaScript for dynamic question generation
@@ -167,6 +184,7 @@
       // Add button to remove the question
       const removeQuestionBtn = document.createElement('button');
       removeQuestionBtn.textContent = 'Remove Question';
+      removeQuestionBtn.classList.add('btn-primary'); // Add class for button styling
       removeQuestionBtn.addEventListener('click', function() {
         questionsContainer.removeChild(questionContainer);
       });
@@ -200,11 +218,22 @@
           mcQuestionInput.placeholder = 'Enter your question here...';
           questionInputContainer.appendChild(mcQuestionInput);
 
-          // Add multiple choice options input
-          const mcOptionsInput = document.createElement('textarea');
-          mcOptionsInput.name = 'options[]';  // Array name for multiple questions
-          mcOptionsInput.placeholder = 'Enter options separated by comma...';
-          questionInputContainer.appendChild(mcOptionsInput);
+          // Add input field for number of options
+          const mcOptionsCountInput = document.createElement('input');
+          mcOptionsCountInput.type = 'number';
+          mcOptionsCountInput.name = 'optionsCount[]';  // Array name for multiple questions
+          mcOptionsCountInput.placeholder = 'Number of options';
+          questionInputContainer.appendChild(mcOptionsCountInput);
+
+          // Add button to generate options
+          const generateOptionsBtn = document.createElement('button');
+          generateOptionsBtn.textContent = 'Generate Options';
+          generateOptionsBtn.classList.add('btn-primary'); // Add class for button styling
+          generateOptionsBtn.addEventListener('click', function() {
+            const optionsCount = parseInt(mcOptionsCountInput.value);
+            generateMultipleChoiceOptions(optionsCount, questionInputContainer);
+          });
+          questionInputContainer.appendChild(generateOptionsBtn);
           break;
         case 'likert':
           const likertQuestionInput = document.createElement('input');
@@ -215,20 +244,63 @@
 
           // Add Likert scale options input
           const likertScaleInput = document.createElement('input');
-          likertScaleInput.type = 'text';
+          likertScaleInput.type = 'number'; // Change input type to number for Likert scale
           likertScaleInput.name = 'likertScale[]';  // Array name for multiple questions
-          likertScaleInput.placeholder = 'Enter Likert scale options separated by comma...';
+          likertScaleInput.placeholder = 'Enter the scale (e.g., 5 for 1-5)';
           questionInputContainer.appendChild(likertScaleInput);
           break;
         case 'true-false':
-          const trueFalseQuestionInput = document.createElement('input');
-          trueFalseQuestionInput.type = 'text';
-          trueFalseQuestionInput.name = 'questionText[]';  // Array name for multiple questions
-          trueFalseQuestionInput.placeholder = 'Enter your question here...';
-          questionInputContainer.appendChild(trueFalseQuestionInput);
+          // Create text input for the question
+          const trueFalseTextInput = document.createElement('input');
+          trueFalseTextInput.type = 'text';
+          trueFalseTextInput.name = 'questionText[]'; // Array name for multiple questions
+          trueFalseTextInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(trueFalseTextInput);
+
+          // Create hidden input to store True/False value
+          const trueFalseHiddenInput = document.createElement('input');
+          trueFalseHiddenInput.type = 'hidden';
+          trueFalseHiddenInput.name = 'trueFalseAnswer[]'; // Array name for multiple answers
+          questionInputContainer.appendChild(trueFalseHiddenInput);
+
+          // Create buttons for True/False options
+          const trueBtn = document.createElement('button');
+          trueBtn.textContent = 'True';
+          trueBtn.type = 'button';
+          trueBtn.classList.add('btn-primary'); // Add class for button styling
+          trueBtn.onclick = function() {
+            trueFalseHiddenInput.value = 'True';
+          };
+          questionInputContainer.appendChild(trueBtn);
+
+          const falseBtn = document.createElement('button');
+          falseBtn.textContent = 'False';
+          falseBtn.type = 'button';
+          falseBtn.classList.add('btn-primary'); // Add class for button styling
+          falseBtn.onclick = function() {
+            trueFalseHiddenInput.value = 'False';
+          };
+          questionInputContainer.appendChild(falseBtn);
           break;
         default:
           break;
+      }
+    }
+
+    // Function to generate multiple choice options input fields
+    function generateMultipleChoiceOptions(optionsCount, questionInputContainer) {
+      // Clear existing options
+      questionInputContainer.querySelectorAll('input[type="text"]').forEach(input => {
+        questionInputContainer.removeChild(input);
+      });
+
+      // Generate new options input fields
+      for (let i = 1; i <= optionsCount; i++) {
+        const optionInput = document.createElement('input');
+        optionInput.type = 'text';
+        optionInput.name = 'options[]';  // Array name for multiple options
+        optionInput.placeholder = 'Option ' + i;
+        questionInputContainer.appendChild(optionInput);
       }
     }
 
