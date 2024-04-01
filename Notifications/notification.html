@@ -4,34 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Form</title>
+    <!-- Include jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
     <h2>Send Email to Surveyors</h2>
-    <form action="submitButton.php" method="post">
-        <label for="surveyor">Select Surveyor:</label><br>
-        <select id="surveyor" name="surveyor">
+    <form id="emailForm" action="submitButton.php" method="post">
+        <label for="email">Select Email:</label><br>
+        <select id="email" name="email">
             <?php
             // Database connection parameters
-            $host = "damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com";
-            $dbname = "dam_database";
-            $username = "admin";
-            $password = "adminPass";
+            $servername = "damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com"; 
+            $username = "admin"; 
+            $password = "AdminPass"; 
+            $database = "dam_database";
+
 
             // Create connection
-            $conn = new mysqli($host, $username, $password, $dbname);
+            $conn = new mysqli($servername, $username, $password, $dbname);
 
             // Check connection
             if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);
             }
 
-            // Retrieve surveyors from the database and populate the dropdown
-            $sql = "select email from users;";
+            // Retrieve emails from the database and populate the dropdown
+            $sql = "SELECT email FROM users";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
-                    echo '<option value="' . $row["email"] . '"> . $row["email"] . </option>';
+                    echo '<option value="' . $row["email"] . '">' . $row["email"] . '</option>';
                 }
             } else {
                 echo '<option value="">No emails found</option>';
@@ -43,7 +46,27 @@
         <input type="text" id="subject" name="subject"><br><br>
         <label for="message">Message:</label><br>
         <textarea id="message" name="message" rows="4" cols="50"></textarea><br><br>
-        <input type="submit" value="Send Email">
+        <label for="sendDateTime">Send Date and Time:</label><br>
+        <input type="datetime-local" id="sendDateTime" name="sendDateTime"><br><br>
+        <input type="submit" value="Schedule Email">
     </form>
+
+    <script>
+        $(document).ready(function() {
+            // Prevent the form from submitting
+            $("#emailForm").submit(function(event) {
+                event.preventDefault();
+
+                // Get the form data
+                var formData = $(this).serialize();
+
+                // Submit the form data to the PHP script
+                $.post("submitButton.php", formData, function(response) {
+                    // Handle the response from the server
+                    alert(response);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
