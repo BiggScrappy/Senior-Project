@@ -16,6 +16,7 @@ if(isset($_SESSION["user_id"])){
 
 $survey_id= (isset($_POST["survey_id"]) ? $_POST["survey_id"] : '');
 $userID = $user["user_id"];
+$userRole=$user["role_name"];
 
 ?>
 
@@ -27,8 +28,24 @@ $userID = $user["user_id"];
     <title>Fill Out Survey</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+
+<div class="header">
+  <a href="#default" class="logo">USACE Dam Safety</a>
+  <div class="header-right">
+    <a class="active" href="index.php">Home</a>
+   
+<?php if(isset($_SESSION["user_id"])): ?>
+    <a href="logout.php">Logout</a>
+<?php elseif(!isset($_SESSION["user_id"])): ?>
+    <a href="login.php">Login</a>
+<?php endif; ?>
+  </div>
+</div>
 
 <!--Verify User Info-->
     <h1>View Survey</h1>
@@ -83,11 +100,11 @@ $userID = $user["user_id"];
                echo" <li> False </li>";
                echo "</ul>";
 
-               $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+               $sql="select response ,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                $response = $mysqli->query($sql);
                if (mysqli_num_rows($response) > 0) {
                    while($responseUser = mysqli_fetch_assoc($response)){
-                        echo "User's Response: ", $responseUser["response"],"<br>";
+                    echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
                    }
                 }
                 echo "<br>";
@@ -101,22 +118,22 @@ $userID = $user["user_id"];
                echo" <li> 4 </li>";
                echo" <li> 5 </li>";
                echo "</ul>";
-               $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+               $sql="select response ,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                $response = $mysqli->query($sql);
                if (mysqli_num_rows($response) > 0) {
                    while($responseUser = mysqli_fetch_assoc($response)){
-                        echo "User's Response: ", $responseUser["response"],"<br>";
+                        echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
                    }
                 }
                 echo "<br>";
             
             }
             elseif($question_type==4){
-                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+                $sql="select response,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
                 if (mysqli_num_rows($response) > 0) {
                     while($responseUser = mysqli_fetch_assoc($response)){
-                         echo "User's Response: ", $responseUser["response"],"<br>";
+                        echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
                     }
                 }
                 echo "<br>";
@@ -125,9 +142,13 @@ $userID = $user["user_id"];
         }   
     }
 
-    ?>
-<p><a href="surveyorSelectPreviousSurveys.php">View A Different Survey</a></p>
-<p><a href="index.php">Go to Home</a></p>
+?>
 
+<?php if($userRole==="surveyor"):?>
+    <p><a href="surveyorSelectPreviousSurveys.php">View A Different Survey</a></p>
+<?php elseif($userRole==="admin"):?>
+    <p><a href="adminSelectPreviousSurveys.php">View A Different Survey</a></p>
+<?php endif; ?>
+<p><a href="index.php">Go to Home</a></p>
 </body>
 </html> 
