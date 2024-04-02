@@ -13,39 +13,22 @@
         <label for="email">Select Email:</label><br>
         <select id="email" name="email">
             <?php
-            // Database connection parameters
-            $servername = "damproject.cp0sgqaywkci.us-east-2.rds.amazonaws.com"; 
-            $username = "admin"; 
-            $password = "AdminPass"; 
-            $database = "dam_database";
-
-
-            // Create connection
-            $conn = new mysqli($servername, $username, $password, $dbname);
-
-            // Check connection
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
+                include('database.php');
 
             // Retrieve emails from the database and populate the dropdown
-            $sql = "SELECT email FROM users";
+            $email = mysqli_query( $con, "SELECT email FROM users");
             $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
+                while($c = mysqli_fetch_array($email)) 
+                {
                     echo '<option value="' . $row["email"] . '">' . $row["email"] . '</option>';
-                }
-            } else {
-                echo '<option value="">No emails found</option>';
-            }
-            $conn->close();
             ?>
+            <option value="<?php echo $c['ID']?>"><?php echo $c['email'] ?></option>
+            <?php } ?>
         </select><br><br>
         <label for="subject">Subject:</label><br>
         <input type="text" id="subject" name="subject"><br><br>
         <label for="message">Message:</label><br>
-        <textarea id="message" name="message" rows="4" cols="50"></textarea><br><br>
+        <textarea id="message" name="message" rows="4"></textarea><br><br>
         <label for="sendDateTime">Send Date and Time:</label><br>
         <input type="datetime-local" id="sendDateTime" name="sendDateTime"><br><br>
         <input type="submit" value="Schedule Email">
