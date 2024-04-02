@@ -118,11 +118,24 @@
     body.dark-mode .btn-primary:hover {
       background-color: #0056b3; /* Darker shade of blue on hover in dark mode */
     }
+
+    /* Success message style */
+    .success-message {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Survey Builder</h1>
+
+    <!-- Display success message if it exists -->
+    <?php if (isset($_GET['success']) && $_GET['success'] == 'true'): ?>
+      <p class="success-message">Survey submitted successfully!</p>
+    <?php endif; ?>
 
     <form method="post" action="process_survey.php">
       <div class="form-group">
@@ -211,6 +224,7 @@
           openEndedInput.placeholder = 'Enter your question here...';
           questionInputContainer.appendChild(openEndedInput);
           break;
+
         case 'multiple-choice':
           const mcQuestionInput = document.createElement('input');
           mcQuestionInput.type = 'text';
@@ -218,50 +232,39 @@
           mcQuestionInput.placeholder = 'Enter your question here...';
           questionInputContainer.appendChild(mcQuestionInput);
 
-          // Add input field for number of options
-          const mcOptionsCountInput = document.createElement('input');
-          mcOptionsCountInput.type = 'number';
-          mcOptionsCountInput.name = 'optionsCount[]';  // Array name for multiple questions
-          mcOptionsCountInput.placeholder = 'Number of options';
-          questionInputContainer.appendChild(mcOptionsCountInput);
-
-          // Add button to generate options
-          const generateOptionsBtn = document.createElement('button');
-          generateOptionsBtn.textContent = 'Generate Options';
-          generateOptionsBtn.classList.add('btn-primary'); // Add class for button styling
-          generateOptionsBtn.addEventListener('click', function() {
-            const optionsCount = parseInt(mcOptionsCountInput.value);
-            generateMultipleChoiceOptions(optionsCount, questionInputContainer);
-          });
-          questionInputContainer.appendChild(generateOptionsBtn);
+          // Add multiple choice options input
+          const mcOptionsInput = document.createElement('textarea');
+          mcOptionsInput.name = 'options[]';  // Array name for multiple questions
+          mcOptionsInput.placeholder = 'Enter options separated by comma...';
+          questionInputContainer.appendChild(mcOptionsInput);
           break;
+
         case 'likert':
-          const likertQuestionInput = document.createElement('input');
-          likertQuestionInput.type = 'text';
-          likertQuestionInput.name = 'questionText[]';  // Array name for multiple questions
-          likertQuestionInput.placeholder = 'Enter your question here...';
-          questionInputContainer.appendChild(likertQuestionInput);
+          const likertNumOptions = document.createElement('select');
+          likertNumOptions.id = 'likertNumOptions';
+          likertNumOptions.onchange = updateLikertInputs;
+          likertNumOptions.innerHTML = `
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <!-- Add more options as needed -->
+          `;
+          questionInputContainer.appendChild(likertNumOptions);
 
-          // Add Likert scale options input
-          const likertScaleInput = document.createElement('input');
-          likertScaleInput.type = 'number'; // Change input type to number for Likert scale
-          likertScaleInput.name = 'likertScale[]';  // Array name for multiple questions
-          likertScaleInput.placeholder = 'Enter the scale (e.g., 5 for 1-5)';
-          questionInputContainer.appendChild(likertScaleInput);
+          const likertOptionsContainer = document.createElement('div');
+          likertOptionsContainer.id = 'likertOptionsContainer';
+          questionInputContainer.appendChild(likertOptionsContainer);
+
+          // Generate Likert scale inputs initially with default value
+          generateLikertInputs(3, likertOptionsContainer);
           break;
-        case 'true-false':
-          // Create text input for the question
-          const trueFalseTextInput = document.createElement('input');
-          trueFalseTextInput.type = 'text';
-          trueFalseTextInput.name = 'questionText[]'; // Array name for multiple questions
-          trueFalseTextInput.placeholder = 'Enter your question here...';
-          questionInputContainer.appendChild(trueFalseTextInput);
 
-          // Create hidden input to store True/False value
-          const trueFalseHiddenInput = document.createElement('input');
-          trueFalseHiddenInput.type = 'hidden';
-          trueFalseHiddenInput.name = 'trueFalseAnswer[]'; // Array name for multiple answers
-          questionInputContainer.appendChild(trueFalseHiddenInput);
+        case 'true-false':
+          const trueFalseInput = document.createElement('input');
+          trueFalseInput.type = 'text';
+          trueFalseInput.name = 'questionText[]'; // Array name for multiple questions
+          trueFalseInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(trueFalseInput);
 
           // Create buttons for True/False options
           const trueBtn = document.createElement('button');
@@ -269,7 +272,7 @@
           trueBtn.type = 'button';
           trueBtn.classList.add('btn-primary'); // Add class for button styling
           trueBtn.onclick = function() {
-            trueFalseHiddenInput.value = 'True';
+            trueFalseInput.value = 'True';
           };
           questionInputContainer.appendChild(trueBtn);
 
@@ -278,30 +281,33 @@
           falseBtn.type = 'button';
           falseBtn.classList.add('btn-primary'); // Add class for button styling
           falseBtn.onclick = function() {
-            trueFalseHiddenInput.value = 'False';
+            trueFalseInput.value = 'False';
           };
           questionInputContainer.appendChild(falseBtn);
           break;
+
         default:
           break;
       }
     }
 
-    // Function to generate multiple choice options input fields
-    function generateMultipleChoiceOptions(optionsCount, questionInputContainer) {
-      // Clear existing options
-      questionInputContainer.querySelectorAll('input[type="text"]').forEach(input => {
-        questionInputContainer.removeChild(input);
-      });
-
-      // Generate new options input fields
-      for (let i = 1; i <= optionsCount; i++) {
-        const optionInput = document.createElement('input');
-        optionInput.type = 'text';
-        optionInput.name = 'options[]';  // Array name for multiple options
-        optionInput.placeholder = 'Option ' + i;
-        questionInputContainer.appendChild(optionInput);
+    // Function to generate Likert scale inputs based on the selected number of options
+    function generateLikertInputs(numOptions, container) {
+      container.innerHTML = ''; // Clear existing inputs
+      for (let i = 1; i <= numOptions; i++) {
+        const likertOptionInput = document.createElement('input');
+        likertOptionInput.type = 'text';
+        likertOptionInput.name = 'options[]';  // Array name for multiple questions
+        likertOptionInput.placeholder = `Option ${i}`;
+        container.appendChild(likertOptionInput);
       }
+    }
+
+    // Function to update Likert scale inputs based on the selected number of options
+    function updateLikertInputs() {
+      const numOptions = parseInt(this.value);
+      const likertOptionsContainer = document.getElementById('likertOptionsContainer');
+      generateLikertInputs(numOptions, likertOptionsContainer);
     }
 
     // JavaScript for toggling dark mode
@@ -311,3 +317,5 @@
   </script>
 </body>
 </html>
+
+
