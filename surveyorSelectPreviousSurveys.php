@@ -26,9 +26,24 @@ $userID = $user["user_id"];
     <title>Fill Out Survey</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+
+<div class="header">
+  <a href="#default" class="logo">USACE Dam Safety</a>
+  <div class="header-right">
+    <a class="active" href="index.php">Home</a>
+
+<?php if(isset($_SESSION["user_id"])): ?>
+    <a href="logout.php">Logout</a>
+<?php elseif(!isset($_SESSION["user_id"])): ?>
+    <a href="login.php">Login</a>
+<?php endif; ?>
+  </div>
+</div>
 <!--Verify User Info-->
     <h1>View Survey</h1>
     <?php if(isset($user)): ?>
@@ -52,12 +67,24 @@ $userID = $user["user_id"];
            $survey_id=$row["id"];
            echo $survey_id,"<br>";
 
-           echo "survey template id: ",$row["survey_template_id"],"<br>";
-           echo "surveyor id: ",$row["surveyor_id"],"<br>";
-           echo "Org id: ",$row["organization_id"],"<br>";
-           echo "project id: ",$row["project_id"],"<br>";
+           $sql="select name from organizations where id=".$row["organization_id"].";";
+           $thing=$mysqli->query($sql);
+           $orgName=mysqli_fetch_assoc($thing);
+
+           $sql="select name from projects where id=".$row["project_id"].";";
+           $thing=$mysqli->query($sql);
+           $projectName=mysqli_fetch_assoc($thing);
+       
+           $sql="select name from survey_templates where id=".$row["survey_template_id"].";";
+           $thing=$mysqli->query($sql);
+           $surveyName=mysqli_fetch_assoc($thing);
+           
+           echo "Survey Type: ",$surveyName["name"]," | ";
+           echo "Organization Name: ",$orgName["name"]," | ";
+           echo "Project Name: ",$projectName["name"]," | ";
            echo "start date: ",$row["start_date"]," | ";
-           echo "end date: ",$row["end_date"],"<br>";
+           echo "end date: ",$row["end_date"]," <br> ";
+
 
            echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label> <br/>";
          
