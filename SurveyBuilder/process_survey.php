@@ -74,7 +74,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             $stmt->close();
 
             // Additional logic for specific question types (e.g., options for multiple choice)
-            if ($currentQuestionType === "multiple-choice" && isset($_POST['options'][$i])) {
+            if ($currentQuestionType === "1" && isset($_POST['options'][$i])) {
                 $options = $_POST['options'][$i];
                 foreach ($options as $optionText) {
                     $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)";
