@@ -9,16 +9,15 @@
 </head>
 <body>
     <h2>Send Email to Surveyors</h2>
+           <?php
+                 $mysqli = require __DIR__ . "/database.php";
+            ?>
+
     <form id="emailForm" action="submitButton.php" method="post">
         <label for="email">Select Email:</label><br>
-        <select id="email" name="email">
-            <?php
-                 $mysqli = require __DIR__ . "/database.php";
-?>
              <input type="email" id="email" name="email" multiple list="users"/>
 
             <datalist id="users">
-    
      <?php
         $sql = "select email from users;";
         $result = $mysqli->query($sql);
