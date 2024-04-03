@@ -44,7 +44,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             $currentQuestionText = $questionTexts[$i];
 
             // Insert question
-            $insertQuestionQuery = "INSERT INTO questions (question_type, question_text, survey_template_id) VALUES (?, ?, ?)";
+            $insertQuestionQuery = "INSERT INTO questions (question_type_id, question_text, survey_template_id) VALUES (?, ?, ?)";
             $stmt = $mysqli->prepare($insertQuestionQuery);
             $stmt->bind_param("ssi", $currentQuestionType, $currentQuestionText, $surveyTemplateId);
             $stmt->execute();
@@ -55,7 +55,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             if ($currentQuestionType == "multiple-choice" && isset($_POST['options'][$i])) {
                 $options = $_POST['options'][$i];
                 foreach ($options as $optionText) {
-                    $insertOptionQuery = "INSERT INTO multiple_choice_options question_id, option_text) VALUES (?, ?)";
+                    $insertOptionQuery = "INSERT INTO multiple_choice_options (question_id, option_text) VALUES (?, ?)";
                     $stmt = $mysqli->prepare($insertOptionQuery);
                     $stmt->bind_param("is", $questionId, $optionText);
                     $stmt->execute();
