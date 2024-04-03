@@ -132,12 +132,7 @@
   <div class="container">
     <h1>Survey Builder</h1>
 
-    <!-- Display success message if it exists -->
-    <?php if (isset($_GET['success']) && $_GET['success'] == 'true'): ?>
-      <p class="success-message">Survey submitted successfully!</p>
-    <?php endif; ?>
-
-    <form method="post" action="process_survey.php">
+    <form id="surveyForm" method="post" action="process_survey.php">
       <div class="form-group">
         <label for="surveyTitle">Survey Title:</label>
         <input type="text" id="surveyTitle" name="surveyTitle" required>
@@ -161,7 +156,7 @@
 
       <div id="questionsContainer"></div>
       <button type="button" id="addQuestionBtn" class="btn-primary">Add Question</button>
-      <button type="submit" class="btn-primary">Submit Survey</button>
+      <button type="button" id="submitSurveyBtn" class="btn-primary">Submit Survey</button>
     </form>
   </div>
 
@@ -172,6 +167,8 @@
     // JavaScript for dynamic question generation
     const questionsContainer = document.getElementById('questionsContainer');
     const addQuestionBtn = document.getElementById('addQuestionBtn');
+    const submitSurveyBtn = document.getElementById('submitSurveyBtn');
+    const surveyForm = document.getElementById('surveyForm');
 
     addQuestionBtn.addEventListener('click', function() {
       // Create a new question container
@@ -240,23 +237,18 @@
           break;
 
         case 'likert':
-          const likertNumOptions = document.createElement('select');
-          likertNumOptions.id = 'likertNumOptions';
-          likertNumOptions.onchange = updateLikertInputs;
-          likertNumOptions.innerHTML = `
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <!-- Add more options as needed -->
-          `;
-          questionInputContainer.appendChild(likertNumOptions);
-
-          const likertOptionsContainer = document.createElement('div');
-          likertOptionsContainer.id = 'likertOptionsContainer';
-          questionInputContainer.appendChild(likertOptionsContainer);
-
-          // Generate Likert scale inputs initially with default value
-          generateLikertInputs(3, likertOptionsContainer);
+          // Prompt user for the number of Likert scale options
+          const likertOptionsCount = prompt("Enter the number of Likert scale options:");
+          if (likertOptionsCount !== null) {
+            for (let i = 0; i < likertOptionsCount; i++) {
+              // Create Likert scale input fields
+              const likertInput = document.createElement('input');
+              likertInput.type = 'text';
+              likertInput.name = 'likertOption[]';  // Array name for Likert scale options
+              likertInput.placeholder = 'Enter Likert scale option';
+              questionInputContainer.appendChild(likertInput);
+            }
+          }
           break;
 
         case 'true-false':
@@ -291,29 +283,18 @@
       }
     }
 
-    // Function to generate Likert scale inputs based on the selected number of options
-    function generateLikertInputs(numOptions, container) {
-      container.innerHTML = ''; // Clear existing inputs
-      for (let i = 1; i <= numOptions; i++) {
-        const likertOptionInput = document.createElement('input');
-        likertOptionInput.type = 'text';
-        likertOptionInput.name = 'options[]';  // Array name for multiple questions
-        likertOptionInput.placeholder = `Option ${i}`;
-        container.appendChild(likertOptionInput);
-      }
-    }
-
-    // Function to update Likert scale inputs based on the selected number of options
-    function updateLikertInputs() {
-      const numOptions = parseInt(this.value);
-      const likertOptionsContainer = document.getElementById('likertOptionsContainer');
-      generateLikertInputs(numOptions, likertOptionsContainer);
-    }
-
     // JavaScript for toggling dark mode
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
+
+    // Function to confirm submission before submitting the form
+    submitSurveyBtn.addEventListener('click', function() {
+      if (confirm('Are you sure you want to submit the survey?')) {
+        surveyForm.submit();
+      }
+    });
   </script>
 </body>
 </html>
+
