@@ -13,17 +13,21 @@
         <label for="email">Select Email:</label><br>
         <select id="email" name="email">
             <?php
-                include('database.php');
+                 $mysqli = require __DIR__ . "/database.php";
+?>
+             <input type="email" id="email" name="email" multiple list="users"/>
 
-            // Retrieve emails from the database and populate the dropdown
-            $email = mysqli_query( $con, "SELECT email FROM users");
-            $result = $conn->query($sql);
-                while($c = mysqli_fetch_array($email)) 
-                {
-                    echo '<option value="' . $row["email"] . '">' . $row["email"] . '</option>';
-            ?>
-            <option value="<?php echo $c['ID']?>"><?php echo $c['email'] ?></option>
-            <?php } ?>
+            <datalist id="users">
+    
+     <?php
+        $sql = "select email from users;";
+        $result = $mysqli->query($sql);
+        foreach($result as $i){
+            echo "<option value=\"".$i['email']."\">".$i['email']."</option>"; 
+        }
+    ?>  
+</datalist>
+            <?php  ?>
         </select><br><br>
         <label for="subject">Subject:</label><br>
         <input type="text" id="subject" name="subject"><br><br>
