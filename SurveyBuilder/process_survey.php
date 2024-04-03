@@ -37,25 +37,27 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
     $questionTexts = $_POST['questionText'];
 
     // Check if both arrays have the same length
-    if (count($questionTypes) == count($questionTexts)) {
+    if (count($questionTypes) === count($questionTexts)) {
         $questionsCount = count($questionTypes);
         for ($i = 0; $i < $questionsCount; $i++) {
             $currentQuestionType = $questionTypes[$i];
             $currentQuestionText = $questionTexts[$i];
+            echo $currentQuestionType;
+            echo  $currentQuestionText;
 
             // Insert question
-            $insertQuestionQuery = "INSERT INTO questions (question_type_id, question_text, survey_template_id) VALUES (?, ?, ?)";
+            $insertQuestionQuery = "INSERT INTO questions (question_type_id, question VALUES (?, ?)";
             $stmt = $mysqli->prepare($insertQuestionQuery);
-            $stmt->bind_param("ssi", $currentQuestionType, $currentQuestionText, $surveyTemplateId);
+            $stmt->bind_param("ss", $currentQuestionType, $currentQuestionText);
             $stmt->execute();
             $questionId = $mysqli->insert_id;
             $stmt->close();
 
             // Additional logic for specific question types (e.g., options for multiple choice)
-            if ($currentQuestionType == "multiple-choice" && isset($_POST['options'][$i])) {
+            if ($currentQuestionType === "multiple-choice" && isset($_POST['options'][$i])) {
                 $options = $_POST['options'][$i];
                 foreach ($options as $optionText) {
-                    $insertOptionQuery = "INSERT INTO multiple_choice_options (question_id, option_text) VALUES (?, ?)";
+                    $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)";
                     $stmt = $mysqli->prepare($insertOptionQuery);
                     $stmt->bind_param("is", $questionId, $optionText);
                     $stmt->execute();
@@ -76,6 +78,6 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
 }
 
 // Redirect after form submission with success message
-header("Location: success.php");
-exit();
+//header("Location: success.php");
+//exit();
 ?>
