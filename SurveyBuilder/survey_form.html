@@ -257,25 +257,6 @@
           trueFalseInput.name = 'questionText[]'; // Array name for multiple questions
           trueFalseInput.placeholder = 'Enter your question here...';
           questionInputContainer.appendChild(trueFalseInput);
-
-          // Create buttons for True/False options
-          const trueBtn = document.createElement('button');
-          trueBtn.textContent = 'True';
-          trueBtn.type = 'button';
-          trueBtn.classList.add('btn-primary'); // Add class for button styling
-          trueBtn.onclick = function() {
-            trueFalseInput.value = 'True';
-          };
-          questionInputContainer.appendChild(trueBtn);
-
-          const falseBtn = document.createElement('button');
-          falseBtn.textContent = 'False';
-          falseBtn.type = 'button';
-          falseBtn.classList.add('btn-primary'); // Add class for button styling
-          falseBtn.onclick = function() {
-            trueFalseInput.value = 'False';
-          };
-          questionInputContainer.appendChild(falseBtn);
           break;
 
         default:
