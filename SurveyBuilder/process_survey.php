@@ -35,6 +35,15 @@ if ($stmt) {
 if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
     $questionTypes = $_POST['questionType'];
     $questionTexts = $_POST['questionText'];
+    foreach($questionTypes as $thing){
+        echo $thing,"<br>";
+    }
+        
+    foreach($questionTexts as $thing){
+         echo $thing,"<br>";
+    }
+           
+    //echo $questionTexts;
 
     // Check if both arrays have the same length
     if (count($questionTypes) === count($questionTexts)) {
@@ -42,11 +51,22 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
         for ($i = 0; $i < $questionsCount; $i++) {
             $currentQuestionType = $questionTypes[$i];
             $currentQuestionText = $questionTexts[$i];
-            echo $currentQuestionType;
-            echo  $currentQuestionText;
+            if($currentQuestionType==="multiple-choice"){
+                $currentQuestionType=1;
+            }
+            elseif($currentQuestionType==="true-false"){
+                $currentQuestionType=2;
+            }
+            elseif($currentQuestionType==="likert"){
+                $currentQuestionType=3;
+            }
+            elseif($currentQuestionType==="open-ended"){
+                $currentQuestionType=4;
+            }
+       
 
             // Insert question
-            $insertQuestionQuery = "INSERT INTO questions (question_type_id, question VALUES (?, ?)";
+            $insertQuestionQuery = "INSERT INTO questions (question_type_id, question) VALUES (?, ?)";
             $stmt = $mysqli->prepare($insertQuestionQuery);
             $stmt->bind_param("ss", $currentQuestionType, $currentQuestionText);
             $stmt->execute();
@@ -59,7 +79,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
                 foreach ($options as $optionText) {
                     $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)";
                     $stmt = $mysqli->prepare($insertOptionQuery);
-                    $stmt->bind_param("is", $questionId, $optionText);
+                    $stmt->bind_param("ss", $questionId, $optionText);
                     $stmt->execute();
                     $stmt->close();
                 }
