@@ -27,8 +27,24 @@ $userRole=$user["role_name"];
     <title>View Active Surveys</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+
+<div class="header">
+  <a href="#default" class="logo">USACE Dam Safety</a>
+  <div class="header-right">
+    <a class="active" href="index.php">Home</a>
+
+<?php if(isset($_SESSION["user_id"])): ?>
+    <a href="logout.php">Logout</a>
+<?php elseif(!isset($_SESSION["user_id"])): ?>
+    <a href="login.php">Login</a>
+<?php endif; ?>
+  </div>
+</div>
 
 <!--Verify User Info-->
     <h1>View Respondent List </h1>

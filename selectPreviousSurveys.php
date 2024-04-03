@@ -23,8 +23,24 @@
     <title>Select Previous Survey To View</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<div class="header">
+  <a href="#default" class="logo">USACE Dam Safety</a>
+  <div class="header-right">
+    <a class="active" href="index.php">Home</a>
+   
+<?php if(isset($_SESSION["user_id"])): ?>
+    <a href="logout.php">Logout</a>
+<?php elseif(!isset($_SESSION["user_id"])): ?>
+    <a href="login.php">Login</a>
+<?php endif; ?>
+  </div>
+</div>
+
 
 <!--Verify User Info-->
     <h1>Select Previous Survey To View</h1>
@@ -51,21 +67,31 @@
 
         while($row = mysqli_fetch_assoc($result)) {
            $survey_id=$row["survey_id"];
-           echo $survey_id,"<br>";
 
            $sql2="select * from surveys where id=".$survey_id.";";
            $result2 = $mysqli->query($sql2);
            $new = mysqli_fetch_assoc($result2);
 
-           echo "survey template id: ",$new["survey_template_id"],"<br>";
-           echo "surveyor id: ",$new["surveyor_id"],"<br>";
-           echo "Org id: ",$new["organization_id"],"<br>";
-           echo "project id: ",$new["project_id"],"<br>";
-           echo "created at: ",$new["created_at"],"<br>";
+           $sql2="select name from organizations where id=".$new["organization_id"].";";
+           $thing=$mysqli->query($sql2);
+           $orgName=mysqli_fetch_assoc($thing);
+
+           $sql2="select name from projects where id=".$new["project_id"].";";
+           $thing=$mysqli->query($sql2);
+           $projectName=mysqli_fetch_assoc($thing);
+       
+           $sql2="select name from survey_templates where id=".$new["survey_template_id"].";";
+           $thing=$mysqli->query($sql2);
+           $surveyName=mysqli_fetch_assoc($thing);
+           
+           echo "Survey Type: ",$surveyName["name"]," | ";
+           echo "Organization Name: ",$orgName["name"]," | ";
+           echo "Project Name: ",$projectName["name"]," | ";
+           echo "start date: ",$new["start_date"]," | ";
+           echo "end date: ",$new["end_date"]," <br> ";
+
 
            echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label> <br/>";
-         
-       
 
         }
     }

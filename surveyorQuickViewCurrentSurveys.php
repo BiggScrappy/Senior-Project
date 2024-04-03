@@ -26,8 +26,23 @@ $userID = $user["user_id"];
     <title>View Active Surveys</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+
+<div class="header">
+  <a href="#default" class="logo">USACE Dam Safety</a>
+  <div class="header-right">
+    <a class="active" href="index.php">Home</a>
+<?php if(isset($_SESSION["user_id"])): ?>
+    <a href="logout.php">Logout</a>
+<?php elseif(!isset($_SESSION["user_id"])): ?>
+    <a href="login.php">Login</a>
+<?php endif; ?>
+  </div>
+</div>
 
 <!--Verify User Info-->
     <h1>View Active Survey</h1>
@@ -41,7 +56,16 @@ $userID = $user["user_id"];
 
 <form action="viewRespondentList.php" method="post">
 
-
+<table>
+  <tr>
+    <th>Surveys Completed</th>
+    <th>Survey ID Number</th>
+    <th>Organization Name</th>
+    <th>Project Name</th>
+    <th>Start Date</th>
+    <th>End Date</th>
+    <th>Select</th>
+  </tr>
 <?php
     $user_id = $user["user_id"];
 
@@ -69,7 +93,7 @@ $userID = $user["user_id"];
            else{
             $percentage=0;
            }
-
+    
         //filters out surveys with no users assigned, if any 
         if($user_count>0){
            $sql="select name from organizations where id=".$row["organization_id"].";";
@@ -83,17 +107,19 @@ $userID = $user["user_id"];
            $sql="select name from survey_templates where id=".$row["survey_template_id"].";";
            $thing=$mysqli->query($sql);
            $surveyName=mysqli_fetch_assoc($thing);
+         
+           echo "<tr>";
+           echo "<th>", $users_completed, "/",$user_count, " (",$percentage,"%)", "</th>";
+           echo "<th> ", $survey_id,"</th>";
 
-           echo "Surveys done: ", $users_completed, "/",$user_count, " (",$percentage,"%)", " | ";
-           echo "survey number: ", $survey_id," | ";
+           echo "<th>",$surveyName["name"],"</th>";
+           echo "<th>",$orgName["name"],"</th>";
+           echo "<th>",$projectName["name"],"</th>";
+           echo "<th>",$row["start_date"],"</th>";
+           echo "<th>",$row["end_date"],"</th>";
 
-           echo "Survey Type: ",$surveyName["name"]," | ";
-           echo "Organization Name: ",$orgName["name"]," | ";
-           echo "Project Name: ",$projectName["name"]," | ";
-           echo "start date: ",$row["start_date"]," | ";
-           echo "end date: ",$row["end_date"]," <br> ";
-
-           echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View Respondent List</label> <br/>";  
+           echo "<th> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View Respondent List</label> </th>";  
+           echo "</tr>";
         }
            
          
@@ -105,6 +131,6 @@ $userID = $user["user_id"];
     ?>
     <button>View List</button>
 </form>
-<p><a href="index.php">Go to Home</a></p>
+
 </body>
 </html> 
