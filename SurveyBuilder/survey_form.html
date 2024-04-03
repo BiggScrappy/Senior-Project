@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -238,18 +239,19 @@
 
           case 'likert':
   // Prompt user for the number of Likert scale options
-  const likertOptionsCount = prompt("Enter the number of desired questions:");
-  if (likertOptionsCount !== null) {
-    for (let i = 0; i < likertOptionsCount; i++) {
+ // const likertOptionsCount = prompt("Enter the number of Likert scale options:");
+ // if (likertOptionsCount !== null) {
+   // for (let i = 0; i < likertOptionsCount; i++) {
       // Create Likert scale input fields
-      const likertInput = document.createElement('input');
-      likertInput.type = 'text';
-      likertInput.name = 'likertOption[]';  // Change to 'likertOption[]' to create an array
-      likertInput.placeholder = 'Enter Likert option';
-      questionInputContainer.appendChild(likertInput);
-    }
-  }
-  break;
+              const likertInput = document.createElement('input');
+              likertInput.type = 'text';
+              likertInput.name = 'questionText[]';  // Change to 'likertOption[]' to create an array
+              likertInput.placeholder = 'Enter Likert option';
+              questionInputContainer.appendChild(likertInput);
+          // }
+            break;
+  //}
+  //break;
 
         case 'true-false':
           const trueFalseInput = document.createElement('input');
@@ -278,4 +280,3 @@
   </script>
 </body>
 </html>
-
