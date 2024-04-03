@@ -18,7 +18,7 @@ $userID = $_POST['userID'];
 $surveyDescription = $_POST['surveyDescription'];
 
 // Insert survey template
-$insertSurveyTemplateQuery = "INSERT INTO SURVEY_TEMPLATES (name, description, created_at, created_by, locked) VALUES (?, ?, NOW(), ?, ?)";
+$insertSurveyTemplateQuery = "INSERT INTO survey_templates (name, description, created_at, created_by, locked) VALUES (?, ?, NOW(), ?, ?)";
 $stmt = $mysqli->prepare($insertSurveyTemplateQuery);
 if ($stmt) {
     $stmt->bind_param("ssii", $surveyTitle, $surveyDescription, $userID, $lockSurvey);
@@ -44,7 +44,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             $currentQuestionText = $questionTexts[$i];
 
             // Insert question
-            $insertQuestionQuery = "INSERT INTO QUESTIONS (question_type, question_text, survey_template_id) VALUES (?, ?, ?)";
+            $insertQuestionQuery = "INSERT INTO questions (question_type, question_text, survey_template_id) VALUES (?, ?, ?)";
             $stmt = $mysqli->prepare($insertQuestionQuery);
             $stmt->bind_param("ssi", $currentQuestionType, $currentQuestionText, $surveyTemplateId);
             $stmt->execute();
@@ -55,7 +55,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             if ($currentQuestionType == "multiple-choice" && isset($_POST['options'][$i])) {
                 $options = $_POST['options'][$i];
                 foreach ($options as $optionText) {
-                    $insertOptionQuery = "INSERT INTO MULITPLE_CHOICE_OPTIONS (question_id, option_text) VALUES (?, ?)";
+                    $insertOptionQuery = "INSERT INTO multiple_choice_options question_id, option_text) VALUES (?, ?)";
                     $stmt = $mysqli->prepare($insertOptionQuery);
                     $stmt->bind_param("is", $questionId, $optionText);
                     $stmt->execute();
@@ -64,7 +64,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             }
 
             // Insert into SURVEY_TEMPLATE_QUESTIONS table
-            $insertTemplateQuestionQuery = "INSERT INTO SURVEY_TEMPLATE_QUESTIONS (survey_template_id, question_id) VALUES (?, ?)";
+            $insertTemplateQuestionQuery = "INSERT INTO survey_template_questions (survey_template_id, question_id) VALUES (?, ?)";
             $stmt = $mysqli->prepare($insertTemplateQuestionQuery);
             $stmt->bind_param("ii", $surveyTemplateId, $questionId);
             $stmt->execute();
