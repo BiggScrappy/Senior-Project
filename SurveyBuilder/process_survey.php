@@ -31,39 +31,30 @@ if ($stmt) {
     echo "Error: " . $mysqli->error;
 }
 
-// Loop through each question and insert data
+// Loop through each question and insert data . 
+
+// Nates's attempt to fix the mc errors. 
 if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
     $questionTypes = $_POST['questionType'];
     $questionTexts = $_POST['questionText'];
-    foreach($questionTypes as $thing){
-        echo $thing,"<br>";
-    }
-        
-    foreach($questionTexts as $thing){
-         echo $thing,"<br>";
-    }
-           
-    //echo $questionTexts;
+    $optionsArray = $_POST['options']; // Retrieve all options
 
     // Check if both arrays have the same length
-    if (count($questionTypes) === count($questionTexts)) {
+    if (count($questionTypes) === count($questionTexts) ) {
         $questionsCount = count($questionTypes);
         for ($i = 0; $i < $questionsCount; $i++) {
             $currentQuestionType = $questionTypes[$i];
             $currentQuestionText = $questionTexts[$i];
-            if($currentQuestionType==="multiple-choice"){
-                $currentQuestionType=1;
+            
+            if($currentQuestionType === "multiple-choice") {
+                $currentQuestionType = 1;
+            } elseif($currentQuestionType === "true-false") {
+                $currentQuestionType = 2;
+            } elseif($currentQuestionType === "likert") {
+                $currentQuestionType = 3;
+            } elseif($currentQuestionType === "open-ended") {
+                $currentQuestionType = 4;
             }
-            elseif($currentQuestionType==="true-false"){
-                $currentQuestionType=2;
-            }
-            elseif($currentQuestionType==="likert"){
-                $currentQuestionType=3;
-            }
-            elseif($currentQuestionType==="open-ended"){
-                $currentQuestionType=4;
-            }
-       
 
             // Insert question
             $insertQuestionQuery = "INSERT INTO questions (question_type_id, question) VALUES (?, ?)";
@@ -74,8 +65,8 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             $stmt->close();
 
             // Additional logic for specific question types (e.g., options for multiple choice)
-            if ($currentQuestionType === "1" && isset($_POST['options'][$i])) {
-                $options = $_POST['options'][$i];
+            if ($currentQuestionType === 1 && isset($options)) {
+                $options = explode(',', $optionsArray[$i]); // Split options by commas <--- split the options string by commas using the 'explode' function, then insert each option into the database using prepared statements 
                 foreach ($options as $optionText) {
                     $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)";
                     $stmt = $mysqli->prepare($insertOptionQuery);
@@ -93,11 +84,6 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             $stmt->close();
         }
     } else {
-        echo "Error: Number of question types and question texts do not match.";
+        echo "Error: Number of question types, question texts, and options do not match.";
     }
 }
-
-// Redirect after form submission with success message
-//header("Location: success.php");
-//exit();
-?>
