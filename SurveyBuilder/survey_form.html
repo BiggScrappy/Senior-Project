@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -223,22 +222,25 @@
           questionInputContainer.appendChild(openEndedInput);
           break;
 
-        case 'multiple-choice':
-          const mcQuestionInput = document.createElement('input');
-          mcQuestionInput.type = 'text';
-          mcQuestionInput.name = 'questionText[]';  // Array name for multiple questions
-          mcQuestionInput.placeholder = 'Enter your question here...';
-          questionInputContainer.appendChild(mcQuestionInput);
+          case 'multiple-choice': //Nate's attempt to fix the mc, corrected the placeholder text for the multiple-choice options input to prompt the user to separate options with commas.
 
-          // Add multiple choice options input
-          const mcOptionsInput = document.createElement('textarea');
-          mcOptionsInput.name = 'options[]';  // Array name for multiple questions
-          mcOptionsInput.placeholder = 'Enter options separated by comma...';
-          questionInputContainer.appendChild(mcOptionsInput);
-          break;
+
+  const mcQuestionInput = document.createElement('input');
+  mcQuestionInput.type = 'text';
+  mcQuestionInput.name = 'questionText[]';  // Array name for multiple questions
+  mcQuestionInput.placeholder = 'Enter your question here...';
+  questionInputContainer.appendChild(mcQuestionInput);
+
+  // Add multiple choice options input
+  const mcOptionsInput = document.createElement('textarea');
+  mcOptionsInput.name = 'options[]';  // Array name for multiple options
+  mcOptionsInput.placeholder = 'Enter options separated by commas...';
+  questionInputContainer.appendChild(mcOptionsInput);
+  break;
+
 
           case 'likert':
-  // Prompt user for the number of Likert scale options
+ // Prompt user for the number of Likert scale options
  // const likertOptionsCount = prompt("Enter the number of Likert scale options:");
  // if (likertOptionsCount !== null) {
    // for (let i = 0; i < likertOptionsCount; i++) {
@@ -280,3 +282,4 @@
   </script>
 </body>
 </html>
+
