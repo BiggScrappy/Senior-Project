@@ -40,13 +40,12 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
     $optionsArray = $_POST['options']; // Retrieve all options
 
     // Check if both arrays have the same length
-    if (count($questionTypes) === count($questionTexts) && count($questionTexts) === count($optionsArray)) {
+    if (count($questionTypes) === count($questionTexts) ) {
         $questionsCount = count($questionTypes);
         for ($i = 0; $i < $questionsCount; $i++) {
             $currentQuestionType = $questionTypes[$i];
             $currentQuestionText = $questionTexts[$i];
-            $options = explode(',', $optionsArray[$i]); // Split options by commas <--- split the options string by commas using the 'explode' function, then insert each option into the database using prepared statements 
-
+            
             if($currentQuestionType === "multiple-choice") {
                 $currentQuestionType = 1;
             } elseif($currentQuestionType === "true-false") {
@@ -67,6 +66,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
 
             // Additional logic for specific question types (e.g., options for multiple choice)
             if ($currentQuestionType === 1 && isset($options)) {
+                $options = explode(',', $optionsArray[$i]); // Split options by commas <--- split the options string by commas using the 'explode' function, then insert each option into the database using prepared statements 
                 foreach ($options as $optionText) {
                     $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)";
                     $stmt = $mysqli->prepare($insertOptionQuery);
