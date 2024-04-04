@@ -22,9 +22,8 @@
 
     <form id="emailForm" action="" method="post">
         <label for="email">Select Email:</label><br>
-        <select id="email" name="email[]" multiple> <!-- Add multiple attribute here -->
-            <option value="all" id="selectAllOption">Select All</option> <!-- Add Select All option here -->
-            <!-- Populate options from database -->
+        <select id="email" name="email[]" multiple>
+            <option value="all" id="selectAllOption">Select All</option>
             <?php
             $sql = "SELECT email FROM users;";
             $result = $mysqli->query($sql);
@@ -37,9 +36,11 @@
         <input type="text" id="subject" name="subject"><br><br>
         <label for="message">Message:</label><br>
         <textarea id="message" name="message" rows="4"></textarea><br><br>
-        <label for="sendDateTime">Send Date and Time:</label><br>
-        <input type="datetime-local" id="sendDateTime" name="sendDateTime"><br><br>
-        <button type="submit" id="editButton" name="action" value="edit">Edit in Outlook</button>
+        <label for="sendDateTime1">First Send Date and Time:</label><br>
+        <input type="datetime-local" id="sendDateTime1" name="sendDateTime1"><br><br>
+        <label for="sendDateTime2">Second Send Date and Time:</label><br>
+        <input type="datetime-local" id="sendDateTime2" name="sendDateTime2"><br><br>
+        <button type="button" id="editButton" name="action" value="edit">Edit in Outlook</button>
         <button type="submit" id="scheduleButton" name="action" value="schedule">Schedule Email</button>
     </form>
 
@@ -47,8 +48,7 @@
         $(document).ready(function() {
             // Event listener for "Select All" option
             $("#selectAllOption").click(function() {
-                // Toggle select all options except the "Select All" option itself
-                $("#email option").not(this).prop("selected", $(this).prop("selected"));
+                $("#email option").prop("selected", $(this).prop("selected"));
             });
 
             // Enable multiple selection by clicking for the dropdown
@@ -72,24 +72,18 @@
                     $select.focus();
                 });
             });
-        });
 
-        // Prevent form submission on button click (Edit in Outlook)
-        $("#editButton").click(function(event) {
-            event.preventDefault();
-
-            // Get selected emails from dropdown, excluding the "Select All" option
-            var selectedEmails = $("#email option:selected").not("#selectAllOption").map(function() {
-                return $(this).val();
-            }).get();
-
-            var toField = selectedEmails ? selectedEmails.join(";") : "";
-
-            // Construct the mailto URL
-            var mailto = "mailto:" + toField;
-
-            // Redirect to the mailto URL
-            window.location.href = mailto;
+            // Edit in Outlook button click event
+            $("#editButton").click(function(event) {
+                event.preventDefault();
+                var message = $("#message").val();
+                var subject = $("#subject").val();
+                var selectedEmails = $("#email").val().filter(function(email) {
+                    return email !== "all"; // Exclude the "all" option
+                }).join(";");
+                var mailtoLink = "mailto:" + encodeURIComponent(selectedEmails) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(message);
+                window.location.href = mailtoLink;
+            });
         });
     </script>
 </body>
