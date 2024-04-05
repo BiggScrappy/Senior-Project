@@ -23,11 +23,12 @@ $userID = $user["user_id"];
  <!DOCTYPE html>
 <html>
 <head>
-    <title>Fill Out Survey</title>
+    <title>Select Previous Survey</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -36,7 +37,6 @@ $userID = $user["user_id"];
   <a href="#default" class="logo">USACE Dam Safety</a>
   <div class="header-right">
     <a class="active" href="index.php">Home</a>
-
 <?php if(isset($_SESSION["user_id"])): ?>
     <a href="logout.php">Logout</a>
 <?php elseif(!isset($_SESSION["user_id"])): ?>
@@ -46,7 +46,7 @@ $userID = $user["user_id"];
 </div>
 
 <!--Verify User Info-->
-    <h1>View Survey</h1>
+    <h1>Welcome</h1>
     <?php if(isset($user)): ?>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
@@ -56,6 +56,27 @@ $userID = $user["user_id"];
     <?php endif; ?>   
 
 <form action="viewPreviousSurveys.php" method="post">
+
+<input type="text" id="myInput"  placeholder="Search for names..">
+
+<main class="table">
+    <section class="table_header">
+    <h1>Previous Surveys</h1>
+    </section>
+        <section class="table_body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Survey Type</th>
+                        <th>Organization Name</th>
+                        <th>Project Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+    <tbody id="body">
+
 <?php
     $user_id = $user["user_id"];
 
@@ -66,25 +87,58 @@ $userID = $user["user_id"];
 
         while($row = mysqli_fetch_assoc($result)) {
            $survey_id=$row["id"];
-           echo $survey_id,"<br>";
 
-           echo "survey template id: ",$row["survey_template_id"],"<br>";
-           echo "surveyor id: ",$row["surveyor_id"],"<br>";
-           echo "Org id: ",$row["organization_id"],"<br>";
-           echo "project id: ",$row["project_id"],"<br>";
-           echo "start date: ",$row["start_date"]," | ";
-           echo "end date: ",$row["end_date"],"<br>";
+           $sql="select name from organizations where id=".$row["organization_id"].";";
+           $thing=$mysqli->query($sql);
+           $orgName=mysqli_fetch_assoc($thing);
 
-           echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label> <br/>";
+           $sql="select name from projects where id=".$row["project_id"].";";
+           $thing=$mysqli->query($sql);
+           $projectName=mysqli_fetch_assoc($thing);
+       
+           $sql="select name from survey_templates where id=".$row["survey_template_id"].";";
+           $thing=$mysqli->query($sql);
+           $surveyName=mysqli_fetch_assoc($thing);
+
+
+           echo "<tr>";
+           echo "<td>",$surveyName["name"],"</td>";
+           echo "<td>",$orgName["name"],"</td>";
+           echo "<td>",$projectName["name"],"</td>";
+           echo "<td>",$row["start_date"],"</td>";
+           echo "<td>",$row["end_date"],"</td>";
+
+
+           echo "<td>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label>","</td>";
          
+        echo "</tr>";
        
 
         }
     }
 
     ?>
+    
+    </tbody>
+</table>
+        </section>
+    </section>
+            
     <button>Submit</button>
 </form>
-<p><a href="index.php">Go to Home</a></p>
+
+<script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#body tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+
 </body>
+
 </html> 
+
