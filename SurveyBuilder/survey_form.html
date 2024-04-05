@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -331,11 +330,8 @@ if(isset($_SESSION["user_id"])){
           break;
 
         case 'likert':
-          // Prompt user for the number of Likert scale options
-          // const likertOptionsCount = prompt("Enter the number of Likert scale options:");
-          // if (likertOptionsCount !== null) {
-          // for (let i = 0; i < likertOptionsCount; i++) {
-          // Create Likert scale input fields
+
+
           const likertInput = document.createElement('input');
           likertInput.type = 'text';
           likertInput.name = 'questionText[]';  // Change to 'likertOption[]' to create an array
@@ -371,4 +367,3 @@ if(isset($_SESSION["user_id"])){
   </script>
 </body>
 </html>
-
