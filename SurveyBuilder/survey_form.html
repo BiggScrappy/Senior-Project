@@ -1,3 +1,81 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Builder</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* General styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa; /* Light gray background */
+      color: #333; /* Dark text color */
+      transition: background-color 0.3s ease;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff; /* White container background */
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    }
+
+    h1 {
+      text-align: center;
+      color: #007bff; /* Blue heading color */
+    }
+
+    .form-group {
+      margin-bottom: 20px; /* Increased margin for better spacing */
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555; /* Dark gray label color */
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px; /* Increased padding for better appearance */
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      font-size: 16px
+User
+print the whole thing 
+ChatGPT
+Apologies for the oversight. Here's the entire HTML file with the PHP snippet included before the HTML tag:
+
+php
+Copy code
+<?php
+// Session handling and user authentication
+ini_set('session.save_path', realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+session_start();
+
+// Include database connection
+$mysqli = require __DIR__ . "/database.php";
+
+// Verify user info
+if(isset($_SESSION["user_id"])){
+  $sql = "SELECT * FROM User_Information WHERE user_id = {$_SESSION["user_id"]}";
+  $result = $mysqli->query($sql);
+  $user = $result->fetch_assoc();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,11 +204,8 @@
       font-weight: bold;
       margin-top: 20px;
     }
-  </style>
-</head>
-<body>
 
-<?php
+    <?php
 // Session handling and user authentication
 ini_set('session.save_path', realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
@@ -145,163 +220,161 @@ if(isset($_SESSION["user_id"])){
   $user = $result->fetch_assoc();
 }
 ?>
-
-<div class="header">
-  <a href="#default" class="logo">USACE Dam Safety</a>
-  <div class="header-right">
-    <a class="active" href="index.php">Home</a>
-    <?php if(isset($_SESSION["user_id"])): ?>
-      <a href="logout.php">Logout</a>
-    <?php elseif(!isset($_SESSION["user_id"])): ?>
-      <a href="login.php">Login</a>
-    <?php endif; ?>
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="#default" class="logo">USACE Dam Safety</a>
+    <div class="header-right">
+      <a class="active" href="index.php">Home</a>
+      <?php if(isset($_SESSION["user_id"])): ?>
+        <a href="logout.php">Logout</a>
+      <?php elseif(!isset($_SESSION["user_id"])): ?>
+        <a href="login.php">Login</a>
+      <?php endif; ?>
+    </div>
   </div>
-</div>
+  <div class="container">
+    <h1>Survey Builder</h1>
 
-<div class="container">
-  <h1>Survey Builder</h1>
+    <form id="surveyForm" method="post" action="process_survey.php">
+      <div class="form-group">
+        <label for="surveyTitle">Survey Title:</label>
+        <input type="text" id="surveyTitle" name="surveyTitle" required>
+      </div>
 
-  <form id="surveyForm" method="post" action="process_survey.php">
-    <div class="form-group">
-      <label for="surveyTitle">Survey Title:</label>
-      <input type="text" id="surveyTitle" name="surveyTitle" required>
-    </div>
+      <div class="form-group">
+        <label for="lockSurvey">
+          <input type="checkbox" id="lockSurvey" name="lockSurvey"> Lock Survey
+        </label>
+      </div>
 
-    <div class="form-group">
-      <label for="lockSurvey">
-        <input type="checkbox" id="lockSurvey" name="lockSurvey"> Lock Survey
-      </label>
-    </div>
+      <div class="form-group">
+        <label for="surveyDescription">Survey Description:</label>
+        <textarea id="surveyDescription" name="surveyDescription" required></textarea>
+      </div>
 
-    <!-- Removed the User ID input field and replaced it with session handling -->
-    <!-- <div class="form-group">
-      <label for="userID">User ID:</label>
-      <input type="number" id="userID" name="userID" placeholder="Enter your user ID" required />
-    </div> -->
+      <div id="questionsContainer"></div>
+      <button type="button" id="addQuestionBtn" class="btn-primary">Add Question</button>
+      <button type="button" id="submitSurveyBtn" class="btn-primary">Submit Survey</button>
+    </form>
+  </div>
 
-    <div class="form-group">
-      <label for="surveyDescription">Survey Description:</label>
-      <textarea id="surveyDescription" name="surveyDescription" required></textarea>
-    </div>
+  <!-- Dark mode toggle button -->
+  <button id="darkModeToggle" class="btn-primary" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
-    <div id="questionsContainer"></div>
-    <button type="button" id="addQuestionBtn" class="btn-primary">Add Question</button>
-    <button type="button" id="submitSurveyBtn" class="btn-primary">Submit Survey</button>
-  </form>
-</div>
+  <script>
+    // JavaScript for dynamic question generation
+    const questionsContainer = document.getElementById('questionsContainer');
+    const addQuestionBtn = document.getElementById('addQuestionBtn');
+    const submitSurveyBtn = document.getElementById('submitSurveyBtn');
+    const surveyForm = document.getElementById('surveyForm');
 
-<!-- Dark mode toggle button -->
-<button id="darkModeToggle" class="btn-primary" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    addQuestionBtn.addEventListener('click', function() {
+      // Create a new question container
+      const questionContainer = document.createElement('div');
+      questionContainer.classList.add('question-container');  // Add a class for styling
 
-<script>
-  // JavaScript for dynamic question generation
-  const questionsContainer = document.getElementById('questionsContainer');
-  const addQuestionBtn = document.getElementById('addQuestionBtn');
-  const submitSurveyBtn = document.getElementById('submitSurveyBtn');
-  const surveyForm = document.getElementById('surveyForm');
+      // Generate question type selection
+      const questionTypeSelect = document.createElement('select');
+      questionTypeSelect.name = 'questionType[]';  // Array name for multiple questions
+      questionTypeSelect.innerHTML = `
+        <option value="open-ended">Open-Ended</option>
+        <option value="multiple-choice">Multiple Choice</option>
+        <option value="likert">Likert Scale</option>
+        <option value="true-false">True/False</option>
+      `;
+      questionContainer.appendChild(questionTypeSelect);
 
-  addQuestionBtn.addEventListener('click', function() {
-    // Create a new question container
-    const questionContainer = document.createElement('div');
-    questionContainer.classList.add('question-container');  // Add a class for styling
+      // Add input fields based on question type (implemented later)
+      const questionInputContainer = document.createElement('div');
+      questionInputContainer.classList.add('question-input-container');  // Add a class for styling
+      questionContainer.appendChild(questionInputContainer);
 
-    // Generate question type selection
-    const questionTypeSelect = document.createElement('select');
-    questionTypeSelect.name = 'questionType[]';  // Array name for multiple questions
-    questionTypeSelect.innerHTML = `
-      <option value="open-ended">Open-Ended</option>
-      <option value="multiple-choice">Multiple Choice</option>
-      <option value="likert">Likert Scale</option>
-      <option value="true-false">True/False</option>
-    `;
-    questionContainer.appendChild(questionTypeSelect);
+      // Add button to remove the question
+      const removeQuestionBtn = document.createElement('button');
+      removeQuestionBtn.textContent = 'Remove Question';
+      removeQuestionBtn.classList.add('btn-primary'); // Add class for button styling
+      removeQuestionBtn.addEventListener('click', function() {
+        questionsContainer.removeChild(questionContainer);
+      });
+      questionContainer.appendChild(removeQuestionBtn);
 
-    // Add input fields based on question type (implemented later)
-    const questionInputContainer = document.createElement('div');
-    questionInputContainer.classList.add('question-input-container');  // Add a class for styling
-    questionContainer.appendChild(questionInputContainer);
+      // Update question input fields on type change
+      questionTypeSelect.addEventListener('change', function() {
+        const questionType = this.value;
+        questionInputContainer.innerHTML = '';  // Clear existing inputs
+        generateQuestionInputs(questionType, questionInputContainer);
+      });
 
-    // Add button to remove the question
-    const removeQuestionBtn = document.createElement('button');
-    removeQuestionBtn.textContent = 'Remove Question';
-    removeQuestionBtn.classList.add('btn-primary'); // Add class for button styling
-    removeQuestionBtn.addEventListener('click', function() {
-      questionsContainer.removeChild(questionContainer);
-    });
-    questionContainer.appendChild(removeQuestionBtn);
-
-    // Update question input fields on type change
-    questionTypeSelect.addEventListener('change', function() {
-      const questionType = this.value;
-      questionInputContainer.innerHTML = '';  // Clear existing inputs
-      generateQuestionInputs(questionType, questionInputContainer);
+      // Add the question container to the form
+      questionsContainer.appendChild(questionContainer);
     });
 
-    // Add the question container to the form
-    questionsContainer.appendChild(questionContainer);
-  });
+    // Function to generate question input fields based on selected type
+    function generateQuestionInputs(questionType, questionInputContainer) {
+      switch (questionType) {
+        case 'open-ended':
+          const openEndedInput = document.createElement('input');
+          openEndedInput.type = 'text';
+          openEndedInput.name = 'questionText[]';  // Array name for multiple questions
+          openEndedInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(openEndedInput);
+          break;
 
-  // Function to generate question input fields based on selected type
-  function generateQuestionInputs(questionType, questionInputContainer) {
-    switch (questionType) {
-      case 'open-ended':
-        const openEndedInput = document.createElement('input');
-        openEndedInput.type = 'text';
-        openEndedInput.name = 'questionText[]';  // Array name for multiple questions
-        openEndedInput.placeholder = 'Enter your question here...';
-        questionInputContainer.appendChild(openEndedInput);
-        break;
+        case 'multiple-choice':
+          const mcQuestionInput = document.createElement('input');
+          mcQuestionInput.type = 'text';
+          mcQuestionInput.name = 'questionText[]';  // Array name for multiple questions
+          mcQuestionInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(mcQuestionInput);
 
-      case 'multiple-choice':
-        // Add multiple choice question input fields
-        const mcQuestionInput = document.createElement('input');
-        mcQuestionInput.type = 'text';
-        mcQuestionInput.name = 'questionText[]';  // Array name for multiple questions
-        mcQuestionInput.placeholder = 'Enter your question here...';
-        questionInputContainer.appendChild(mcQuestionInput);
+          // Add multiple choice options input
+          const mcOptionsInput = document.createElement('textarea');
+          mcOptionsInput.name = 'options[]';  // Array name for multiple options
+          mcOptionsInput.placeholder = 'Enter options separated by commas...';
+          questionInputContainer.appendChild(mcOptionsInput);
+          break;
 
-        // Add multiple choice options input
-        const mcOptionsInput = document.createElement('textarea');
-        mcOptionsInput.name = 'options[]';  // Array name for multiple options
-        mcOptionsInput.placeholder = 'Enter options separated by commas...';
-        questionInputContainer.appendChild(mcOptionsInput);
-        break;
+        case 'likert':
+          // Prompt user for the number of Likert scale options
+          // const likertOptionsCount = prompt("Enter the number of Likert scale options:");
+          // if (likertOptionsCount !== null) {
+          // for (let i = 0; i < likertOptionsCount; i++) {
+          // Create Likert scale input fields
+          const likertInput = document.createElement('input');
+          likertInput.type = 'text';
+          likertInput.name = 'questionText[]';  // Change to 'likertOption[]' to create an array
+          likertInput.placeholder = 'Enter Likert option';
+          questionInputContainer.appendChild(likertInput);
+          // }
+          break;
 
-      case 'likert':
-        // Create Likert scale input fields
-        const likertInput = document.createElement('input');
-        likertInput.type = 'text';
-        likertInput.name = 'questionText[]';  // Change to 'likertOption[]' to create an array
-        likertInput.placeholder = 'Enter Likert option';
-        questionInputContainer.appendChild(likertInput);
-        break;
+        case 'true-false':
+          const trueFalseInput = document.createElement('input');
+          trueFalseInput.type = 'text';
+          trueFalseInput.name = 'questionText[]'; // Array name for multiple questions
+          trueFalseInput.placeholder = 'Enter your question here...';
+          questionInputContainer.appendChild(trueFalseInput);
+          break;
 
-      case 'true-false':
-        const trueFalseInput = document.createElement('input');
-        trueFalseInput.type = 'text';
-        trueFalseInput.name = 'questionText[]'; // Array name for multiple questions
-        trueFalseInput.placeholder = 'Enter your question here...';
-        questionInputContainer.appendChild(trueFalseInput);
-        break;
-
-      default:
-        break;
+        default:
+          break;
+      }
     }
-  }
 
-  // JavaScript for toggling dark mode
-  function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-  }
-
-  // Function to confirm submission before submitting the form
-  submitSurveyBtn.addEventListener('click', function() {
-    if (confirm('Are you sure you want to submit the survey?')) {
-      surveyForm.submit();
+    // JavaScript for toggling dark mode
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
-  });
-</script>
 
+    // Function to confirm submission before submitting the form
+    submitSurveyBtn.addEventListener('click', function() {
+      if (confirm('Are you sure you want to submit the survey?')) {
+        surveyForm.submit();
+      }
+    });
+  </script>
 </body>
 </html>
 
