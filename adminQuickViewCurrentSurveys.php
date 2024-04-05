@@ -25,12 +25,26 @@ $userID = $user["user_id"];
 <head>
     <title>View Active Surveys</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
 
+<div class="header">
+  <a href="#default" class="logo">USACE Dam Safety</a>
+  <div class="header-right">
+    <a class="active" href="index.php">Home</a>
+<?php if(isset($_SESSION["user_id"])): ?>
+    <a href="logout.php">Logout</a>
+<?php elseif(!isset($_SESSION["user_id"])): ?>
+    <a href="login.php">Login</a>
+<?php endif; ?>
+  </div>
+</div>
+
 <!--Verify User Info-->
-    <h1>View Active Survey</h1>
+    <h1>Welcome</h1>
     <?php if(isset($user)): ?>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
@@ -41,11 +55,32 @@ $userID = $user["user_id"];
 
 <form action="viewRespondentList.php" method="post">
 
+<input type="text" id="myInput"  placeholder="Search for names..">
+
+<main class="table">
+    <section class="table_header">
+    <h1>Active Surveys</h1>
+    </section>
+        <section class="table_body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Surveys Completed</th>
+                        <th>Survey ID Number</th>
+                        <th>Survey Type</th>
+                        <th>Organization Name</th>
+                        <th>Project Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+    <tbody id="body">
 
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys; ";
+    $sql="select * from surveys where start_date is not null; ";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -84,17 +119,18 @@ $userID = $user["user_id"];
             $thing=$mysqli->query($sql);
             $surveyName=mysqli_fetch_assoc($thing);
  
-            echo "Surveys done: ", $users_completed, "/",$user_count, " (",$percentage,"%)", " | ";
-            echo "survey number: ", $survey_id," | ";
- 
-            echo "Survey Type: ",$surveyName["name"]," | ";
-            echo "Organization Name: ",$orgName["name"]," | ";
-            echo "Project Name: ",$projectName["name"]," | ";
-            echo "start date: ",$row["start_date"]," | ";
-            echo "end date: ",$row["end_date"]," <br> ";
- 
-           echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View Respondent List</label> <br/>";  
-        }
+            echo "<tr>";
+            echo "<td>", $users_completed, "/",$user_count, " (",$percentage,"%)", "</td>";
+            echo "<td> ", $survey_id,"</td>";
+
+            echo "<td>",$surveyName["name"],"</td>";
+            echo "<td>",$orgName["name"],"</td>";
+            echo "<td>",$projectName["name"],"</td>";
+            echo "<td>",$row["start_date"],"</td>";
+            echo "<td>",$row["end_date"],"</td>";
+
+            echo "<td> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View Respondent List</label> </td>";  
+            echo "</tr>"; }
            
          
         
@@ -103,8 +139,24 @@ $userID = $user["user_id"];
     }
 
     ?>
+       </tbody>
+                </table>
+        </section>
+    </section>
+            
     <button>View List</button>
 </form>
-<p><a href="index.php">Go to Home</a></p>
+<script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#body tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+
+
 </body>
 </html> 
