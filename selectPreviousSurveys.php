@@ -22,9 +22,11 @@
 <head>
     <title>Select Previous Survey To View</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  
 </head>
 <body>
 
@@ -43,7 +45,7 @@
 
 
 <!--Verify User Info-->
-    <h1>Select Previous Survey To View</h1>
+    <h1>Welcome</h1>
     <?php if(isset($user)): ?>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
@@ -55,7 +57,25 @@
 
     
 <form action="viewPreviousSurvey.php" method="post">
+<input type="text" id="myInput"  placeholder="Search for names..">
 
+<main class="table">
+    <section class="table_header">
+    <h1>Select Previous Survey To View</h1>
+    </section>
+        <section class="table_body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Survey Type</th>
+                        <th>Organization Name</th>
+                        <th>Project Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+                <tbody id="body">
 <?php
     $user_id = $user["user_id"];
     
@@ -68,9 +88,12 @@
         while($row = mysqli_fetch_assoc($result)) {
            $survey_id=$row["survey_id"];
 
-           $sql2="select * from surveys where id=".$survey_id.";";
+           $sql2="select * from surveys where id=".$survey_id." and start_date is not null and end_date is not null;";
            $result2 = $mysqli->query($sql2);
            $new = mysqli_fetch_assoc($result2);
+           if($new === null){
+            continue;
+           }
 
            $sql2="select name from organizations where id=".$new["organization_id"].";";
            $thing=$mysqli->query($sql2);
@@ -84,20 +107,39 @@
            $thing=$mysqli->query($sql2);
            $surveyName=mysqli_fetch_assoc($thing);
            
-           echo "Survey Type: ",$surveyName["name"]," | ";
-           echo "Organization Name: ",$orgName["name"]," | ";
-           echo "Project Name: ",$projectName["name"]," | ";
-           echo "start date: ",$new["start_date"]," | ";
-           echo "end date: ",$new["end_date"]," <br> ";
+           echo "<tr>";
+           echo "<td>",$surveyName["name"],"</td>";
+           echo "<td>",$orgName["name"],"</td>";
+           echo "<td>",$projectName["name"],"</td>";
+           echo "<td>",$new["start_date"],"</td>";
+           echo "<td>",$new["end_date"],"</td>";
 
 
-           echo "<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label> <br/>";
-
+           echo "<td>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label>","</td>";
+         
+        echo "</tr>";
+       
         }
     }
     ?>
+       </tbody>
+</table>
+        </section>
+    </section>
+            
     <button>Submit</button>
 </form>
-<p><a href="index.php">Go to Home</a></p>
+
+<script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#body tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+</script>
+
 </body>
 </html> 
