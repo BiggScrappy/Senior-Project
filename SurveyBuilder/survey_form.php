@@ -137,12 +137,13 @@ if(isset($_SESSION["user_id"])){
   addQuestionBtn.addEventListener('click', function() {
     // Create a new question container
     const questionContainer = document.createElement('div');
-    questionContainer.classList.add('question-container');  // Add a class for styling
+    questionContainer.classList.add('question-container'); // Add a class for styling
 
     // Generate question type selection
     const questionTypeSelect = document.createElement('select');
-    questionTypeSelect.name = 'questionType[]';  // Array name for multiple questions
+    questionTypeSelect.name = 'questionType[]'; // Array name for multiple questions
     questionTypeSelect.innerHTML = `
+      <option value="">Select question type</option>
       <option value="open-ended">Open-Ended</option>
       <option value="multiple-choice">Multiple Choice</option>
       <option value="likert">Likert Scale</option>
@@ -152,7 +153,7 @@ if(isset($_SESSION["user_id"])){
 
     // Add input fields based on question type (implemented later)
     const questionInputContainer = document.createElement('div');
-    questionInputContainer.classList.add('question-input-container');  // Add a class for styling
+    questionInputContainer.classList.add('question-input-container'); // Add a class for styling
     questionContainer.appendChild(questionInputContainer);
 
     // Add button to remove the question
@@ -167,9 +168,12 @@ if(isset($_SESSION["user_id"])){
     // Update question input fields on type change
     questionTypeSelect.addEventListener('change', function() {
       const questionType = this.value;
-      questionInputContainer.innerHTML = '';  // Clear existing inputs
+      questionInputContainer.innerHTML = ''; // Clear existing inputs
       generateQuestionInputs(questionType, questionInputContainer);
     });
+
+    // Call the function initially to generate input fields for the default option
+    generateQuestionInputs(questionTypeSelect.value, questionInputContainer);
 
     // Add the question container to the form
     questionsContainer.appendChild(questionContainer);
@@ -177,11 +181,16 @@ if(isset($_SESSION["user_id"])){
 
   // Function to generate question input fields based on selected type
   function generateQuestionInputs(questionType, questionInputContainer) {
+    if (questionType === '') {
+      // Do nothing or show a placeholder message
+      return;
+    }
+
     switch (questionType) {
       case 'open-ended':
         const openEndedInput = document.createElement('input');
         openEndedInput.type = 'text';
-        openEndedInput.name = 'questionText[]';  // Array name for multiple questions
+        openEndedInput.name = 'questionText[]'; // Array name for multiple questions
         openEndedInput.placeholder = 'Enter your question here...';
         questionInputContainer.appendChild(openEndedInput);
         break;
