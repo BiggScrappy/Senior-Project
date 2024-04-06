@@ -26,9 +26,11 @@ $userRole=$user["role_name"];
 <head>
     <title>View Active Surveys</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   
 </head>
 <body>
 
@@ -47,7 +49,7 @@ $userRole=$user["role_name"];
 </div>
 
 <!--Verify User Info-->
-    <h1>View Respondent List </h1>
+    <h1>Welcome</h1>
     <?php if(isset($user)): ?>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
@@ -57,46 +59,73 @@ $userRole=$user["role_name"];
     <?php endif; ?>   
 
 <?php
+
    
     $survey_id= (isset($_POST["survey_id"]) ? $_POST["survey_id"] : '');
     echo "survey id: ",$survey_id,"<br>";
     echo "Key: ", "completed: &#9745;","incomplete: &#9744; <br>";
+?>
+<main class="table">
+    <section class="table_header">
+    <h1>Respondents</h1>
+    </section>
+        <section class="table_body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+    <tbody>
+<?php
     //gather all users for given survey
     $sql="select user_id from user_surveys where survey_id=".$survey_id.";";
     $result = $mysqli->query($sql);
     foreach($result as $thing){
         $user_id= $thing["user_id"];
 
-        echo $user_id, " | ";
+     
 
         $sql="select * from users where id=".$user_id.";";
         $userInfo = $mysqli->query($sql);
         foreach($userInfo as $user){
-            echo $user["username"]," | ";
-            echo $user["email"]," | ";
+            echo "<tr>";
+            echo "<th>",$user["id"],"</th>";
+            echo "<th>",$user["username"],"</th>";
+            echo "<th>", $user["email"],"</th>";
+
             $sql="select completed from user_surveys where survey_id=".$survey_id." and user_id=".$user_id.";";
             $completed = $mysqli->query($sql);
             $row = mysqli_fetch_assoc($completed);
             if($row["completed"]==="1"){
-              echo" &#9745;";
+              echo "<th>"," &#9745;" ,"</th>";
             }
             else{
-              echo" &#9744;"; 
+              echo "<th>"," &#9744;" ,"</th>"; 
             }
         
-            echo"<br>";
+            echo "</tr>";
 
         }
 
 
     }
 ?>
+  </tbody>
+</table>
+        </section>
+    </section>
 <?php if($userRole==="surveyor"):?>
-    <p><a href="surveyorQuickViewCurrentSurveys.php">View Surveys</a></p>
+    <p><a href="surveyorQuickViewCurrentSurveys.php">
+    <button class="btn"><i class="fa-regular fa-clipboard"></i> View Past Surveys</button>
+    </a></p>
 <?php elseif($userRole==="admin"):?>
-    <p><a href="adminQuickViewCurrentSurveys.php">View Surveys</a></p>
+    <p><a href="adminQuickViewCurrentSurveys.php">
+    <button class="btn"><i class="fa-regular fa-clipboard"></i> View Past Surveys</button>
+</a></p>
 <?php endif; ?>
-
-<p><a href="index.php">Go to Home</a></p>
 </body>
 </html> 

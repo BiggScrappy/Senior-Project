@@ -20,15 +20,15 @@ if(isset($_SESSION["user_id"])){
 <head>
     <title>Home</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <link rel="stylesheet" href="styles.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
 </head>
 <body>
  <!--home page -->
  <!--Ember Adkins 901893134-->
- <!-- Load an icon library -->
 
 
 <div class="header">
@@ -61,7 +61,7 @@ if(isset($_SESSION["user_id"])){
 
 
         <?php elseif($user["role_name"]==="admin"): ?>
-            <p><a href="SurveyBuilder.html">
+            <p><a href="survey_form.php">
                 <button class="btn"><i class="fa-regular fa-pen-to-square"></i> Make Survey</button>
            </a></p>
             <p><a href="adminQuickViewCurrentSurveys.php">

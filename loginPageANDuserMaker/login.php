@@ -8,9 +8,10 @@
 <head>
     <title>Login</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
 
