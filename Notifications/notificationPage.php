@@ -35,21 +35,23 @@
         <label for="subject">Subject:</label><br>
         <input type="text" id="subject" name="subject"><br><br>
         <label for="message">Message:</label><br>
-        <textarea id="message" name="message" rows="4"></textarea><br><br>
-        <label for="sendDateTime1">First Send Date and Time:</label><br>
-        <input type="datetime-local" id="sendDateTime1" name="sendDateTime1"><br><br>
-        <label for="sendDateTime2">Second Send Date and Time:</label><br>
-        <input type="datetime-local" id="sendDateTime2" name="sendDateTime2"><br><br>
+        <textarea id="message" name="message" rows="4"></textarea><br>
+        <label for="templateSelect">Select Template:</label><br>
+        <select id="templateSelect"></select><br><br>
+        <button type="button" id="saveTemplate">Save as Template</button>
+        <button type="button" id="loadTemplate">Load Template</button><br><br>
         <button type="button" id="editButton" name="action" value="edit">Edit in Outlook</button>
-        <button type="submit" id="scheduleButton" name="action" value="schedule">Schedule Email</button>
     </form>
 
     <script>
         $(document).ready(function() {
-            // Event listener for "Select All" option
-            $("#selectAllOption").click(function() {
+            // Function to handle select all option
+            function handleSelectAll() {
                 $("#email option").prop("selected", $(this).prop("selected"));
-            });
+            }
+
+            // Event listener for "Select All" option
+            $("#selectAllOption").click(handleSelectAll);
 
             // Enable multiple selection by clicking for the dropdown
             $("#email").mousedown(function(e) {
@@ -71,6 +73,35 @@
 
                     $select.focus();
                 });
+            });
+
+            // Load saved templates
+            var templates = JSON.parse(localStorage.getItem("emailTemplates")) || [];
+
+            // Populate template select options
+            templates.forEach(function(template, index) {
+                $("#templateSelect").append("<option value='" + index + "'>Template " + (index + 1) + "</option>");
+            });
+
+            // Save template button click event
+            $("#saveTemplate").click(function() {
+                var template = $("#message").val();
+                templates.push(template);
+                localStorage.setItem("emailTemplates", JSON.stringify(templates));
+                $("#templateSelect").append("<option value='" + (templates.length - 1) + "'>Template " + templates.length + "</option>");
+                alert("Template saved successfully!");
+            });
+
+            // Load template button click event
+            $("#loadTemplate").click(function() {
+                var selectedIndex = $("#templateSelect").val();
+                if (selectedIndex !== null) {
+                    var template = templates[selectedIndex];
+                    $("#message").val(template);
+                    alert("Template loaded successfully!");
+                } else {
+                    alert("No template selected!");
+                }
             });
 
             // Edit in Outlook button click event
