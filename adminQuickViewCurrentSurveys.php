@@ -55,12 +55,13 @@ $userID = $user["user_id"];
 
 <form action="viewRespondentList.php" method="post">
 
-<input type="text" id="myInput"  placeholder="Search for names..">
 
 <main class="table">
     <section class="table_header">
     <h1>Active Surveys</h1>
     </section>
+    <input type="text" id="myInput"  placeholder="Search for names..">
+
         <section class="table_body">
             <table>
                 <thead>
@@ -80,7 +81,7 @@ $userID = $user["user_id"];
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys where start_date is not null; ";
+    $sql="select * from surveys where start_date is not null and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -118,7 +119,9 @@ $userID = $user["user_id"];
             $sql="select name from survey_templates where id=".$row["survey_template_id"].";";
             $thing=$mysqli->query($sql);
             $surveyName=mysqli_fetch_assoc($thing);
- 
+
+            $percentage= number_format((float)$percentage,2,'.','');
+
             echo "<tr>";
             echo "<td>", $users_completed, "/",$user_count, " (",$percentage,"%)", "</td>";
             echo "<td> ", $survey_id,"</td>";
