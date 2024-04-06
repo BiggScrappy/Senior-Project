@@ -25,10 +25,12 @@ $userID = $user["user_id"];
 <head>
     <title>Select Previous Survey</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    
 </head>
 <body>
 
@@ -57,12 +59,13 @@ $userID = $user["user_id"];
 
 <form action="viewPreviousSurveys.php" method="post">
 
-<input type="text" id="myInput"  placeholder="Search for names..">
+
 
 <main class="table">
     <section class="table_header">
     <h1>Previous Surveys</h1>
     </section>
+    <input type="text" id="myInput"  placeholder="Search...">
         <section class="table_body">
             <table>
                 <thead>
@@ -80,7 +83,7 @@ $userID = $user["user_id"];
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys where end_date<now(); ";
+    $sql="select * from surveys where end_date<now() and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
