@@ -27,9 +27,11 @@ $userRole=$user["role_name"];
 <head>
     <title>Fill Out Survey</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="table.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    
 </head>
 <body>
 
@@ -48,17 +50,20 @@ $userRole=$user["role_name"];
 </div>
 
 <!--Verify User Info-->
-    <h1>View Survey</h1>
+    <h1>Welcome</h1>
     <?php if(isset($user)): ?>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
         <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>    
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
-    <?php endif; ?>   
-
+    <?php endif; ?>  
+    
+    
+    <h1>View Survey</h1>
 <?php
-    echo $survey_id,"<br>";
+    echo "<b> Survey ID: ", $survey_id,"</b><br>";
+    
     $sql = "select * from Survey_Questions
     where survey_id=".$survey_id." order by question_id;";
     $result = $mysqli->query($sql);
@@ -71,59 +76,146 @@ $userRole=$user["role_name"];
             $question_text = $row["question"];
             $question_type = $row["question_type_id"];
 
-            echo $survey_id, " ", $question_id, " ", $question_text, "<br>";
+            echo $question_id, ".) ", $question_text, "<br>";
 
             if($question_type==1){
                 $sql="select option_text from multiplechoice_options where question_id=".$question_id.";";
                         $answers = $mysqli->query($sql);
-                         
-                        
+                         $optionNum = 1;
                         foreach($answers as $thing){
                             foreach($thing as $answer){
                                 ?>              
-                               <li> <?php echo  $answer;?> </li>                        
-                         <?php                          
+                              <p style='margin-left: 25px;'> <?php echo $optionNum, ".) ",$answer;?> </p>                                              
+                         <?php 
+                              $optionNum=$optionNum +1;                    
                             } 
                         }  
                 $sql="select response,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
-                if (mysqli_num_rows($response) > 0) {
+                if (mysqli_num_rows($response) > 0) { ?>
+                    <main class="table">
+                        <div class="wrapper">
+                    <section class="table_header">
+                    <h3>User Responses</h3>
+                    </section>
+                        <section class="table_body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>User Email</th>
+                                        <th>Response</th>
+                                    </tr>
+                                </thead>
+
+                    <tbody id="body">
+        <?php
                     while($responseUser = mysqli_fetch_assoc($response)){
-                         echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
-                    }
+                            $sql="select email from users where id=".$responseUser["created_by"].";";
+                            $thing=$mysqli->query($sql);
+                            $email=mysqli_fetch_assoc($thing);
+                        echo "<tr>";
+                        echo "<td>",$responseUser["created_by"],"</td>";
+                        echo "<td>",$email["email"],"</td>";
+                        echo "<td>",$responseUser["response"] ,"</td>";
+                        echo "</tr>";
+                    } ?>
+                    </tbody>
+                    </table>
+                            </section>
+                </div>
+                        </section>
+            <?php
                 }
                 echo "<br>";
             }
             elseif($question_type==2){
-               echo "<ul>";
-               echo" <li> True </li>";
-               echo" <li> False </li>";
-               echo "</ul>";
+               
+               echo" <b> True </b>";
+               echo "/";
+               echo" <b>  False </b>";
+               echo "<br>";
 
                $sql="select response ,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                $response = $mysqli->query($sql);
-               if (mysqli_num_rows($response) > 0) {
+               if (mysqli_num_rows($response) > 0) { ?>
+                <main class="table">
+                <div class="wrapper">
+                    <section class="table_header">
+                    <h3>User Responses</h3>
+                    </section>
+               
+                        <section class="table_body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>User Email</th>
+                                        <th>Response</th>
+                                    </tr>
+                                </thead>
+
+                    <tbody id="body">
+            <?php
                    while($responseUser = mysqli_fetch_assoc($response)){
-                    echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
-                   }
+                    $sql="select email from users where id=".$responseUser["created_by"].";";
+                            $thing=$mysqli->query($sql);
+                            $email=mysqli_fetch_assoc($thing);
+                        echo "<tr>";
+                        echo "<td>",$responseUser["created_by"],"</td>";
+                        echo "<td>",$email["email"],"</td>";
+                        echo "<td>",$responseUser["response"] ,"</td>";
+                        echo "</tr>";
+                    } ?>
+                    </tbody>
+                    </table>
+                            </section>
+                </div>
+                        </section>
+            <?php
                 }
                 echo "<br>";
             
             }
             elseif($question_type==3){
-               echo "<ul>";
-               echo" <li> 1 </li>";
-               echo" <li> 2 </li>";
-               echo" <li> 3 </li>";
-               echo" <li> 4 </li>";
-               echo" <li> 5 </li>";
-               echo "</ul>";
+               echo" <b>disagree 1, 2, 3, 4, 5 agree </b>";
                $sql="select response ,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                $response = $mysqli->query($sql);
                if (mysqli_num_rows($response) > 0) {
-                   while($responseUser = mysqli_fetch_assoc($response)){
-                        echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
-                   }
+                       ?>
+                    <main class="table">
+                    <div class="wrapper">
+                    <section class="table_header">
+                    <h3>User Responses</h3>
+                    </section>
+                        <section class="table_body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>User Email</th>
+                                        <th>Response</th>
+                                    </tr>
+                                </thead>
+
+                    <tbody id="body">
+        <?php
+                    while($responseUser = mysqli_fetch_assoc($response)){
+                            $sql="select email from users where id=".$responseUser["created_by"].";";
+                            $thing=$mysqli->query($sql);
+                            $email=mysqli_fetch_assoc($thing);
+                        echo "<tr>";
+                        echo "<td>",$responseUser["created_by"],"</td>";
+                        echo "<td>",$email["email"],"</td>";
+                        echo "<td>",$responseUser["response"] ,"</td>";
+                        echo "</tr>";
+                    } ?>
+                    </tbody>
+                    </table>
+                            </section>
+                </div>
+                        </section>
+            <?php
                 }
                 echo "<br>";
             
@@ -131,24 +223,62 @@ $userRole=$user["role_name"];
             elseif($question_type==4){
                 $sql="select response,created_by from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
-                if (mysqli_num_rows($response) > 0) {
-                    while($responseUser = mysqli_fetch_assoc($response)){
-                        echo "User:",$responseUser["created_by"]," Response: ", $responseUser["response"] ,"<br>";
+                if (mysqli_num_rows($response) > 0) { 
+                        ?>
+                        <main class="table">
+                        <div class="wrapper">
+                        <section class="table_header">
+                        <h3>User Responses</h3>
+                        </section>
+                            <section class="table_body">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>User ID</th>
+                                            <th>User Email</th>
+                                            <th>Response</th>
+                                        </tr>
+                                    </thead>
+    
+                        <tbody id="body">
+            <?php
+                        while($responseUser = mysqli_fetch_assoc($response)){
+                                $sql="select email from users where id=".$responseUser["created_by"].";";
+                                $thing=$mysqli->query($sql);
+                                $email=mysqli_fetch_assoc($thing);
+                            echo "<tr>";
+                            echo "<td>",$responseUser["created_by"],"</td>";
+                            echo "<td>",$email["email"],"</td>";
+                            echo "<td>",$responseUser["response"] ,"</td>";
+                            echo "</tr>";
+                        } ?>
+                        </tbody>
+                        </table>
+                                </section>
+                    </div>
+                            </section>
+                <?php
                     }
                 }
                 echo "<br>";
             }
 
         }   
-    }
+    
 
 ?>
 
 <?php if($userRole==="surveyor"):?>
-    <p><a href="surveyorSelectPreviousSurveys.php">View A Different Survey</a></p>
+    <p><a href="surveyorSelectPreviousSurveys.php">
+            <button class="btn"><i class="fa-regular fa-chart-bar"></i></i> See Previous Surveys</button>
+            </a> </p>
 <?php elseif($userRole==="admin"):?>
-    <p><a href="adminSelectPreviousSurveys.php">View A Different Survey</a></p>
+    <p><a href="adminSelectPreviousSurvey.php">
+            <button class="btn"><i class="fa-regular fa-chart-bar"></i></i> View A Different Survey</button>
+            </a></p>
 <?php endif; ?>
-<p><a href="index.php">Go to Home</a></p>
+<p><a href="index.php">
+                <button class="btn"><i class="fa-solid fa-house"></i></i> Go Home</button>
+           </a></p>
 </body>
 </html> 
