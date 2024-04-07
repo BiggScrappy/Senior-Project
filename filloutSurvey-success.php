@@ -22,6 +22,7 @@ if(isset($_SESSION["user_id"])){
      <title>Signup</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
 </head>
@@ -39,14 +40,20 @@ if(isset($_SESSION["user_id"])){
 <?php endif; ?>
   </div>
 </div>
+<!--Verify User Info-->
 <h1>Welcome</h1>
+    <div class="userInformation">
     <?php if(isset($user)): ?>
-        <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-        <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
-    <?php endif; ?>  
+    <?php endif; ?>   
+    </div>
+
 <h1>Success!</h1>
    
     <p><a href="selectSurvey.php">
