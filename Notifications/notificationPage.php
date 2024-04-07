@@ -21,29 +21,30 @@
     ?>
 
     <?php
-        // Save template if form is submitted
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (isset($_POST["saveTemplate"]) && isset($_POST["template"])) {
-                $template = $_POST["template"];
-                $sql = "INSERT INTO email_template (message) VALUES ('$template')";
-                if ($mysqli->query($sql) === TRUE) {
-                    echo "Template saved successfully";
-                } else {
-                    echo "Error: " . $sql . "<br>" . $mysqli->error;
-                }
-            }
-        }
 
-        // Retrieve templates from database
-        $templates = array();
-        $sql = "SELECT * FROM email_template";
-        $result = $mysqli->query($sql);
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $templates[] = $row['message'];
+    // Save template if form is submitted
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST["saveTemplate"]) && isset($_POST["template"])) {
+            $template = $mysqli->real_escape_string($_POST["template"]); // Prevent SQL injection
+            $sql = "INSERT INTO email_template (message) VALUES ('$template')";
+            if ($mysqli->query($sql) === TRUE) {
+                echo "Template saved successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . $mysqli->error;
             }
         }
-        ?>
+    }
+
+    // Retrieve templates from database
+    $templates = array();
+    $sql = "SELECT message FROM email_template";
+    $result = $mysqli->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $templates[] = $row['message'];
+        }
+    }
+    ?>
 
     <form id="emailForm" action="" method="post">
         <label for="email">Select Email:</label><br>
