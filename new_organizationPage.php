@@ -7,9 +7,20 @@ if(isset($_SESSION["user_id"])){
     $sql = "SELECT * FROM User_Information WHERE user_id = {$_SESSION["user_id"]}";
     $result = $mysqli->query($sql);
     $user = $result->fetch_assoc();
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $organizationName = $_POST["organizationName"];
+
+        $sql = "INSERT INTO organizations (name) VALUES ('$organizationName')";
+
+        if ($mysqli->query($sql) === TRUE) {
+            echo "New record created successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . $mysqli->error;
+        }
+    }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,20 +54,13 @@ if(isset($_SESSION["user_id"])){
 <div class="container">
   <h1>New Organization</h1>
 
-  <form id="organizationForm" method="post" action="create_organization.php">
+  <form id="organizationForm" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
     <div class="form-group">
       <label for="organizationName">Organization Name:</label>
       <input type="text" id="organizationName" name="organizationName" required>
     </div>
-
-    <div class="form-group">
-      <label for="organizationDescription">Organization Description:</label>
-      <textarea id="organizationDescription" name="organizationDescription" required><?php echo isset($_POST['organizationDescription']) ? htmlspecialchars($_POST['organizationDescription']) : ''; ?></textarea>
-    </div>
     
     <input type="hidden" name="organization_id" value="auto_increment">
-    <input type="hidden" name="created_at" value="<?= date('Y-m-d H:i:s') ?>">
-    <input type="hidden" name="created_by" value="<?= $_SESSION["user_id"] ?>">
 
     <button type="submit" class="btn-primary">Create Organization</button>
   </form>
