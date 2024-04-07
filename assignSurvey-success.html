@@ -21,6 +21,7 @@ if(isset($_SESSION["user_id"])){
      <title>Assign Success</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
 </head>
@@ -38,13 +39,20 @@ if(isset($_SESSION["user_id"])){
   </div>
 </div>
 
+<!--Verify User Info-->
+<h1>Welcome</h1>
+    <div class="userInformation">
     <?php if(isset($user)): ?>
-        <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-        <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
-    <?php endif; ?>  
+    <?php endif; ?>   
+    </div>
+
     <h1>Success!</h1>
 
     <p>The survey has been successfully assigned to the selected users! Click the buttons below to assign another or send a notification to respondents!</p>
@@ -52,7 +60,7 @@ if(isset($_SESSION["user_id"])){
             <button class="btn"><i class="fa-regular fa-paper-plane"></i></i> Email Notification</button>
             </a></p>
             <p><a href="assignSurvey.php">
-            <button class="btn"><i class="fa-regular fa-pen-to-square"></i> Assign Survey</button>
+            <button class="btn"><i class="fa-regular fa-pen-to-square"></i> Assign Another Survey</button>
             </a> </p>
 
  </body>
