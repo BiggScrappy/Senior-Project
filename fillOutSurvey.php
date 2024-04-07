@@ -23,9 +23,9 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
 <head>
     <title>Fill Out Survey</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="userInformation.css">
 </head>
 <body>
 
@@ -42,16 +42,20 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
 </div>
 
 <!--Verify User Info-->
-    <h1>Fill Out Survey</h1>
+    <h1>Welcome</h1>
+    <div class="userInformation">
     <?php if(isset($user)): ?>
-        <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-        <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>    
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
     <?php endif; ?>   
-
-
+    </div>
+<div class="container">
+<h1>Fill Out Survey</h1>
     <form action="process-fillOutSurvey.php" method="post">
         <!-- Gather Surveys-->
         <?php
@@ -103,7 +107,7 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
                          <?php       
                             }   
                         }
-                        Echo"</div>";
+                       
                         echo "<br>";
                     
                     }
@@ -149,6 +153,7 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
 
 <button>Submit Survey</button>
     </form>
+    </div>
 
 </body>
 </html> 
