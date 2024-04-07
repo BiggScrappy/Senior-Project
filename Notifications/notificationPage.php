@@ -1,3 +1,22 @@
+<?php
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
+session_start();
+
+if(isset($_SESSION["user_id"])){
+
+    $mysqli = require __DIR__ . "/database.php";
+
+    $sql = "SELECT * FROM User_Information
+            WHERE user_id = {$_SESSION["user_id"]}";
+    
+    $result = $mysqli->query($sql);
+
+    $user = $result-> fetch_assoc();
+}
+$survey_id= (isset($_POST["survey_id"]) ? $_POST["survey_id"] : '');
+$userID = $user["user_id"];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +24,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Form</title>
     <!-- Include jQuery library -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         /* Style for the select dropdown */
@@ -15,7 +36,20 @@
     </style>
 </head>
 <body>
-    <h2>Send Email to Surveyors</h2>
+
+<div class="header">
+  <a href="#default" class="logo">USACE Dam Safety</a>
+  <div class="header-right">
+    <a class="active" href="index.php">Home</a>
+ 
+<?php if(isset($_SESSION["user_id"])): ?>
+    <a href="logout.php">Logout</a>
+<?php elseif(!isset($_SESSION["user_id"])): ?>
+    <a href="login.php">Login</a>
+<?php endif; ?>
+  </div>
+</div>
+    <h2>Send Email to Respondents</h2>
     <?php
     $mysqli = require __DIR__ . "/database.php";
     ?>
@@ -25,8 +59,9 @@
     // Save template if form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST["saveTemplate"]) && isset($_POST["template"])) {
-            $template = $mysqli->real_escape_string($_POST["template"]); // Prevent SQL injection
+            $template = ($_POST["template"]); // Prevent SQL injection
             $sql = "INSERT INTO email_template (message) VALUES ('$template')";
+
             if ($mysqli->query($sql) === TRUE) {
                 echo "Template saved successfully";
             } else {
