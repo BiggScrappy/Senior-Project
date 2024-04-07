@@ -1,0 +1,18 @@
+/*body*/
+.wrapper td{white-space: nowrap;
+width: 100%;
+overflow: hidden;
+text-align: center;
+
+}
+.wrapper td:hover{
+    overflow: auto;
+    scrollbar-width: thin;
+}
+/*head*/
+.wrapper th{white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    max-height: 150px;
+    max-width: 150px;
+text-align: center;}
