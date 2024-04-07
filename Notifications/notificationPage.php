@@ -20,6 +20,31 @@
     $mysqli = require __DIR__ . "/database.php";
     ?>
 
+    <?php
+        // Save template if form is submitted
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            if (isset($_POST["saveTemplate"]) && isset($_POST["template"])) {
+                $template = $_POST["template"];
+                $sql = "INSERT INTO email_template (message) VALUES ('$template')";
+                if ($mysqli->query($sql) === TRUE) {
+                    echo "Template saved successfully";
+                } else {
+                    echo "Error: " . $sql . "<br>" . $mysqli->error;
+                }
+            }
+        }
+
+        // Retrieve templates from database
+        $templates = array();
+        $sql = "SELECT * FROM email_template";
+        $result = $mysqli->query($sql);
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $templates[] = $row['message'];
+            }
+        }
+        ?>
+
     <form id="emailForm" action="" method="post">
         <label for="email">Select Email:</label><br>
         <select id="email" name="email[]" multiple>
@@ -35,11 +60,17 @@
         <label for="subject">Subject:</label><br>
         <input type="text" id="subject" name="subject"><br><br>
         <label for="message">Message:</label><br>
-        <textarea id="message" name="message" rows="4"></textarea><br>
+        <textarea id="message" name="message" rows="4"></textarea><br><br>
         <label for="templateSelect">Select Template:</label><br>
-        <select id="templateSelect"></select><br><br>
-        <button type="button" id="saveTemplate">Save as Template</button>
-        <button type="button" id="loadTemplate">Load Template</button><br><br>
+        <select id="templateSelect" name="template">
+            <?php
+            // Populate template select options from database
+            foreach ($templates as $template) {
+                echo "<option value='" . htmlspecialchars($template) . "'>" . htmlspecialchars($template) . "</option>";
+            }
+            ?>
+        </select><br><br>
+        <button type="submit" name="saveTemplate">Save as Template</button>
         <button type="button" id="editButton" name="action" value="edit">Edit in Outlook</button>
     </form>
 
@@ -73,35 +104,6 @@
 
                     $select.focus();
                 });
-            });
-
-            // Load saved templates
-            var templates = JSON.parse(localStorage.getItem("emailTemplates")) || [];
-
-            // Populate template select options
-            templates.forEach(function(template, index) {
-                $("#templateSelect").append("<option value='" + index + "'>Template " + (index + 1) + "</option>");
-            });
-
-            // Save template button click event
-            $("#saveTemplate").click(function() {
-                var template = $("#message").val();
-                templates.push(template);
-                localStorage.setItem("emailTemplates", JSON.stringify(templates));
-                $("#templateSelect").append("<option value='" + (templates.length - 1) + "'>Template " + templates.length + "</option>");
-                alert("Template saved successfully!");
-            });
-
-            // Load template button click event
-            $("#loadTemplate").click(function() {
-                var selectedIndex = $("#templateSelect").val();
-                if (selectedIndex !== null) {
-                    var template = templates[selectedIndex];
-                    $("#message").val(template);
-                    alert("Template loaded successfully!");
-                } else {
-                    alert("No template selected!");
-                }
             });
 
             // Edit in Outlook button click event
