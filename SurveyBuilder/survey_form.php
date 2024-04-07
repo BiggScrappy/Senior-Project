@@ -1,3 +1,4 @@
+
 <?php
 ini_set('session.save_path', realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
@@ -70,6 +71,14 @@ if(isset($_SESSION["user_id"])){
       font-weight: bold;
       margin-top: 20px;
     }
+    .btn-remove{
+      background-color: tomato;
+      color: #fff;
+     float:right;
+     font-size:10px;
+     padding:16px;
+     
+    }
   </style>
 </head>
 <body>
@@ -115,7 +124,7 @@ if(isset($_SESSION["user_id"])){
 
     <div class="form-group">
       <label for="surveyDescription">Survey Description:</label>
-      <textarea id="surveyDescription" name="surveyDescription" required></textarea>
+      <textarea id="surveyDescription" name="surveyDescription" required rows="3" cols="15"></textarea>
     </div>
 
     <div id="questionsContainer"></div>
@@ -123,7 +132,7 @@ if(isset($_SESSION["user_id"])){
     <button type="button" id="submitSurveyBtn" class="btn-primary">Submit Survey</button>
   </form>
 </div>
-
+<p></p>
 <!-- Dark mode toggle button -->
 <button id="darkModeToggle" class="btn-primary" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
@@ -159,7 +168,7 @@ if(isset($_SESSION["user_id"])){
     // Add button to remove the question
     const removeQuestionBtn = document.createElement('button');
     removeQuestionBtn.textContent = 'Remove Question';
-    removeQuestionBtn.classList.add('btn-primary'); // Add class for button styling
+    removeQuestionBtn.classList.add('btn-remove'); // Add class for button styling
     removeQuestionBtn.addEventListener('click', function() {
       questionsContainer.removeChild(questionContainer);
     });
@@ -215,7 +224,7 @@ if(isset($_SESSION["user_id"])){
         const likertInput = document.createElement('input');
         likertInput.type = 'text';
         likertInput.name = 'questionText[]';  // Change to 'likertOption[]' to create an array
-        likertInput.placeholder = 'Enter Likert option';
+        likertInput.placeholder = 'Enter your question here...';
         questionInputContainer.appendChild(likertInput);
         break;
 
