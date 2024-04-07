@@ -25,9 +25,11 @@ $userID = $user["user_id"];
 <head>
     <title>View Active Surveys</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">    
+    <link rel="stylesheet" href="style.css">   
+    <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <link rel="stylesheet" href="table.css">   
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
@@ -46,14 +48,17 @@ $userID = $user["user_id"];
 
 <!--Verify User Info-->
     <h1>Welcome</h1>
+    <div class="userInformation">
     <?php if(isset($user)): ?>
-        <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-        <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>    
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
     <?php endif; ?>   
-
+    </div>
 <form action="viewRespondentList.php" method="post">
 
 
