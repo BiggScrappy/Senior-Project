@@ -120,11 +120,11 @@ $userRole=$user["role_name"];
     </section>
 <?php if($userRole==="surveyor"):?>
     <p><a href="surveyorQuickViewCurrentSurveys.php">
-    <button class="btn"><i class="fa-regular fa-clipboard"></i> View Past Surveys</button>
+    <button class="btn"><i class="fa-regular fa-clipboard"></i> View Another Survey</button>
     </a></p>
 <?php elseif($userRole==="admin"):?>
     <p><a href="adminQuickViewCurrentSurveys.php">
-    <button class="btn"><i class="fa-regular fa-clipboard"></i> View Past Surveys</button>
+    <button class="btn"><i class="fa-regular fa-clipboard"></i> View Another Survey</button>
 </a></p>
 <?php endif; ?>
 </body>
