@@ -25,8 +25,9 @@ $userID = $user["user_id"];
 <head>
     <title>Select Previous Survey</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+   <link rel="stylesheet" href="table.css">
     
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -62,6 +63,7 @@ $userID = $user["user_id"];
 
 
 <main class="table">
+    <div class="wrapper">
     <section class="table_header">
     <h1>Previous Surveys</h1>
     </section>
@@ -70,26 +72,33 @@ $userID = $user["user_id"];
             <table>
                 <thead>
                     <tr>
-                        <th>Survey Type</th>
-                        <th>Organization Name</th>
-                        <th>Project Name</th>
+                        <th>Surveyor Email</th>
+                        <th>Type</th>
+                        <th>Organization</th>
+                        <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Select</th>
                     </tr>
                 </thead>
+   
     <tbody id="body">
 
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys where end_date<now() and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
+    $sql="select id, surveyor_id, organization_id, project_id, survey_template_id, DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where end_date<now() and end_date!=0 and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null;";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
 
         while($row = mysqli_fetch_assoc($result)) {
            $survey_id=$row["id"];
+           $surveyorID = $row["surveyor_id"];
+
+           $sql="select email from users where id=".$surveyorID.";";
+           $thing=$mysqli->query($sql);
+           $email=mysqli_fetch_assoc($thing);
 
            $sql="select name from organizations where id=".$row["organization_id"].";";
            $thing=$mysqli->query($sql);
@@ -105,6 +114,7 @@ $userID = $user["user_id"];
 
 
            echo "<tr>";
+           echo "<td>",$email["email"],"</td>"; 
            echo "<td>",$surveyName["name"],"</td>";
            echo "<td>",$orgName["name"],"</td>";
            echo "<td>",$projectName["name"],"</td>";
@@ -125,6 +135,7 @@ $userID = $user["user_id"];
     </tbody>
 </table>
         </section>
+</div>
     </section>
             
     <button>Submit</button>
@@ -140,6 +151,8 @@ $userID = $user["user_id"];
             });
         });
     </script>
+
+
 
 </body>
 
