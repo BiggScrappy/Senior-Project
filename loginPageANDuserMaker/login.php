@@ -10,6 +10,8 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    
+
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
 
 </head>
@@ -28,17 +30,21 @@
   </div>
 </div>
 
-    <h1>Login</h1>
+<p></p>
 
     <form action="process-login.php" method="post">
+      <div align="center" class="container">  
+       <h1>Login</h1> 
         <label for="email">email</label>
         <input type="email" name="email" id="email"
         value="<?= htmlspecialchars($_POST["email"] ?? "")  ?>">
+        <p></p>
 
         <label for="password">password</label>
         <input type="password" name="password" id="password">
 
         <button>Login</button>
+</div>
     </form>
 
 </body>
