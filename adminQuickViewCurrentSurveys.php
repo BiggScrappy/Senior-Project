@@ -27,6 +27,7 @@ $userID = $user["user_id"];
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="table.css">   
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
@@ -57,6 +58,7 @@ $userID = $user["user_id"];
 
 
 <main class="table">
+    <div class="wrapper">
     <section class="table_header">
     <h1>Active Surveys</h1>
     </section>
@@ -66,11 +68,11 @@ $userID = $user["user_id"];
             <table>
                 <thead>
                     <tr>
-                        <th>Surveys Completed</th>
-                        <th>Survey ID Number</th>
+                        <th>Completed%</th>
+                        <th>Survey ID</th>
                         <th>Survey Type</th>
-                        <th>Organization Name</th>
-                        <th>Project Name</th>
+                        <th>Organization</th>
+                        <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Select</th>
@@ -81,7 +83,7 @@ $userID = $user["user_id"];
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys where start_date is not null and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
+    $sql="select id,organization_id, project_id,survey_template_id,DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where start_date is not null and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -132,7 +134,7 @@ $userID = $user["user_id"];
             echo "<td>",$row["start_date"],"</td>";
             echo "<td>",$row["end_date"],"</td>";
 
-            echo "<td> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View Respondent List</label> </td>";  
+            echo "<td> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View</label> </td>";  
             echo "</tr>"; }
            
          
@@ -145,9 +147,10 @@ $userID = $user["user_id"];
        </tbody>
                 </table>
         </section>
+</div>
     </section>
             
-    <button>View List</button>
+    <button>View Respondent List</button>
 </form>
 <script>
         $(document).ready(function () {
