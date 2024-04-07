@@ -28,6 +28,7 @@ $userID = $user["user_id"];
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="table.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
@@ -60,6 +61,7 @@ $userID = $user["user_id"];
 
 
 <main class="table">
+<div class="wrapper">
     <section class="table_header">
     <h1>Previous Surveys</h1>
     </section>
@@ -69,8 +71,8 @@ $userID = $user["user_id"];
                 <thead>
                     <tr>
                         <th>Survey Type</th>
-                        <th>Organization Name</th>
-                        <th>Project Name</th>
+                        <th>Organization</th>
+                        <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Select</th>
@@ -81,7 +83,7 @@ $userID = $user["user_id"];
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys where surveyor_id=".$user_id." and end_date<now() and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
+    $sql="select id, surveyor_id, organization_id, project_id, survey_template_id, DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where surveyor_id=".$user_id." and end_date<now() and end_date!=0 and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -121,6 +123,7 @@ $userID = $user["user_id"];
         </tbody>
 </table>
         </section>
+</div>
     </section>
             
     <button>Submit</button>
