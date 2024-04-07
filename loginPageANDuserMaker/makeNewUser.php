@@ -50,8 +50,9 @@ if(isset($_SESSION["user_id"])){
 <?php endif; 
 ?>   
 
+    
+<div class="container">
     <h1>Make New User</h1>
-
     <form action="process-newUser.php" method="post">
         <!--input user -->
         <div>
@@ -86,6 +87,6 @@ if(isset($_SESSION["user_id"])){
         <button>Make User</button>
         
     </form>
-
+</div>
 </body>
 </html>
