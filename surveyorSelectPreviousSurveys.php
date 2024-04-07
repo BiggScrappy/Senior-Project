@@ -57,12 +57,13 @@ $userID = $user["user_id"];
 
 <form action="viewPreviousSurveys.php" method="post">
 
-<input type="text" id="myInput"  placeholder="Search for names..">
+
 
 <main class="table">
     <section class="table_header">
     <h1>Previous Surveys</h1>
     </section>
+    <input type="text" id="myInput"  placeholder="Search..">
         <section class="table_body">
             <table>
                 <thead>
@@ -80,7 +81,7 @@ $userID = $user["user_id"];
 <?php
     $user_id = $user["user_id"];
 
-    $sql="select * from surveys where surveyor_id=".$user_id." and end_date<now() ; ";
+    $sql="select * from surveys where surveyor_id=".$user_id." and end_date<now() and survey_template_id is not null and  organization_id is not null and surveyor_role_id is not null; ";
     $result = $mysqli->query($sql);
 
     if (mysqli_num_rows($result) > 0) {

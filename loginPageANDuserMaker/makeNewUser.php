@@ -20,7 +20,7 @@ if(isset($_SESSION["user_id"])){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup</title>
+    <title>Make New User</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
@@ -40,7 +40,7 @@ if(isset($_SESSION["user_id"])){
       </div>
 
 <!--Verify User Info-->
-<h1>Select Survey</h1>
+<h1>Welcome</h1>
 <?php if(isset($user)): ?>
     <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
     <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
@@ -52,7 +52,7 @@ if(isset($_SESSION["user_id"])){
 
     <h1>Make New User</h1>
 
-    <form action="process-signup.php" method="post">
+    <form action="process-newUser.php" method="post">
         <!--input user -->
         <div>
             <label for="name">name</label>

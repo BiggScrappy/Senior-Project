@@ -30,23 +30,21 @@ if(isset($_SESSION["user_id"])){
  <!--home page -->
  <!--Ember Adkins 901893134-->
 
-
-<div class="header">
-  <a href="#default" class="logo">USACE Dam Safety</a>
-  <div class="header-right">
-    <a class="active" href="index.php">Home</a>
-  
-<?php if(isset($_SESSION["user_id"])): ?>
-    <a href="logout.php">Logout</a>
-<?php elseif(!isset($_SESSION["user_id"])): ?>
-    <a href="login.php">Login</a>
-<?php endif; ?>
-  </div>
-</div>
-
-    <h1>Home</h1>
-
     <?php if(isset($user)): ?>
+
+                <div class="header">
+        <a href="#default" class="logo">USACE Dam Safety</a>
+        <div class="header-right">
+            <a class="active" href="index.php">Home</a>
+            
+            <?php if(isset($_SESSION["user_id"])): ?>
+                <a href="logout.php">Logout</a>
+            <?php elseif(!isset($_SESSION["user_id"])): ?>
+                <a href="login.php">Login</a>
+            <?php endif; ?>
+            </div>
+            </div>
+        <h1>Home</h1>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
         <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p>
@@ -70,10 +68,10 @@ if(isset($_SESSION["user_id"])){
             <p><a href="adminSelectPreviousSurvey.php">
             <button class="btn"><i class="fa-regular fa-chart-bar"></i></i> See Previous Surveys</button>
             </a></p>
-            <p><a href="signup.html">
+            <p><a href="makeNewUser.php">
             <button class="btn"><i class="fa-regular fa-circle-user"></i></i> Make New User</button>
             </a></p>
-            <p><a href="notification.php">
+            <p><a href="notificationPage.php">
             <button class="btn"><i class="fa-regular fa-paper-plane"></i></i> Email Notification</button>
             </a></p>
 
@@ -89,6 +87,10 @@ if(isset($_SESSION["user_id"])){
             </a> </p>
 
         <?php endif; ?>
+    <?php else: ?>   
+        <?php  
+        include("login.php"); 
+    ?> 
     <?php endif; ?>
 
 

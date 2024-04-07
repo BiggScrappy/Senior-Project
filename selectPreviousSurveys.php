@@ -56,12 +56,13 @@
 
 
     
-<form action="viewPreviousSurvey.php" method="post">
-<input type="text" id="myInput"  placeholder="Search for names..">
+<form action="respondentViewPreviousSurvey.php" method="post">
+
 
 <main class="table">
     <section class="table_header">
     <h1>Select Previous Survey To View</h1>
+    <input type="text" id="myInput"  placeholder="Search...">
     </section>
         <section class="table_body">
             <table>

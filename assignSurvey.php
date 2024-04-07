@@ -22,8 +22,13 @@ if(isset($_SESSION["user_id"])){
     <title>Assign Survey</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"> </script> 
+    <script type="text/javascript" src="jquery.js"></script> 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    
 </head>
 <body>
 
@@ -65,6 +70,11 @@ if(isset($_SESSION["user_id"])){
                 }
             ?>               
             </select>
+            <script>
+                 $(document).ready(function() {
+                  $('#orgName').select2();
+                   });
+            </script>
         </div>
        <!--Select Project-->
        <div>
@@ -79,6 +89,11 @@ if(isset($_SESSION["user_id"])){
                 }
             ?>               
             </select>
+            <script>
+                 $(document).ready(function() {
+                  $('#projectName').select2();
+                   });
+            </script>
         </div>
        <!--Select Surveyor Role -->
        <div>
@@ -93,6 +108,11 @@ if(isset($_SESSION["user_id"])){
                 }
             ?>               
             </select>
+            <script>
+                 $(document).ready(function() {
+                  $('#surveyorRole').select2();
+                   });
+            </script>
         </div>
 
 
@@ -109,6 +129,11 @@ if(isset($_SESSION["user_id"])){
                 }
             ?>               
             </select>
+            <script>
+                 $(document).ready(function() {
+                  $('#surveyTemplate').select2();
+                   });
+            </script>
         </div>
 
         <!--add start date-->
@@ -124,23 +149,24 @@ if(isset($_SESSION["user_id"])){
         </div>
         <!--add respondent emails-->
         <div>
-            <label for="email">Enter the emails of the users you would like to assign to this survey, separated by a comma:</label>
-            <input type="email" id="email" name="email" multiple list="users"/>
-
-            <datalist id="users">
-                
+           <label for="email">Enter the emails of the users you would like to assign to this survey:</label>
+           <select multiple name ="email[]" id="email">     
                 <?php
-                    $sql = "select email from users;";
+                    $sql = "select email from User_Information  where role_name='respondent';";
                     $result = $mysqli->query($sql);
                     foreach($result as $i){
                         echo "<option value=\"".$i['email']."\">".$i['email']."</option>"; 
                     }
                 ?>  
-            </datalist>
-            
+            </select>
+            <script>
+                 $(document).ready(function() {
+                  $('#email').select2();
+                   });
+            </script>
         </div>
         <button>Assign Survey</button>
     </form>
-    <p><a href="index.php">Go to Home</a></p>
+  
 </body>
 </html>

@@ -3,7 +3,7 @@ ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home
 session_start();
 
 if(isset($_SESSION["user_id"])){
-    
+
     $mysqli = require __DIR__ . "/database.php";
 
     $sql = "SELECT * FROM User_Information
@@ -14,18 +14,20 @@ if(isset($_SESSION["user_id"])){
     $user = $result-> fetch_assoc();
 }
 ?>
-
- <!--Assign Survey Success -->
+<!--Assign Survey Success -->
  <!--Ember Adkins 901893134-->
+ <!DOCTYPE html>
+ <html>
  <head>
-     <title>Assign Success</title>
+     <title>Signup</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
 </head>
 <body>
- 
+   <h1>Submit Survey</h1>
+
 <div class="header">
   <a href="#default" class="logo">USACE Dam Safety</a>
   <div class="header-right">
@@ -45,15 +47,12 @@ if(isset($_SESSION["user_id"])){
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
     <?php endif; ?>  
-    <h1>Success!</h1>
 
-    <p>The survey has been successfully assigned to the selected users! Click the buttons below to assign another or send a notification to respondents!</p>
-    <p><a href="notification.php">
-            <button class="btn"><i class="fa-regular fa-paper-plane"></i></i> Email Notification</button>
-            </a></p>
-            <p><a href="assignSurvey.php">
-            <button class="btn"><i class="fa-regular fa-pen-to-square"></i> Assign Survey</button>
-            </a> </p>
+    <p>Success!
+        you can now <a href="selectSurvey.php">fillout another survey </a>or
+        <a href="index.php">go to home</a>
+    </p>
+    
 
  </body>
  </html>

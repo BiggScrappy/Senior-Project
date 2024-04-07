@@ -73,7 +73,7 @@ $stmt->bind_param("ss",
 
 if ($stmt->execute()) {
 
-    header("Location: signup-success.html");
+    header("Location: newUser-success.php");
     exit;
     
 } else {
