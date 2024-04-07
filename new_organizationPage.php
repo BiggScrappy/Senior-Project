@@ -1,10 +1,8 @@
 <?php
-// Start session and include database connection
 ini_set('session.save_path', realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 $mysqli = require __DIR__ . "/database.php";
 
-// Verify user info if logged in
 if(isset($_SESSION["user_id"])){
     $sql = "SELECT * FROM User_Information WHERE user_id = {$_SESSION["user_id"]}";
     $result = $mysqli->query($sql);
@@ -56,7 +54,6 @@ if(isset($_SESSION["user_id"])){
       <textarea id="organizationDescription" name="organizationDescription" required><?php echo isset($_POST['organizationDescription']) ? htmlspecialchars($_POST['organizationDescription']) : ''; ?></textarea>
     </div>
     
-    <!-- Hidden input fields for auto-incrementing ID, created_at, and created_by -->
     <input type="hidden" name="organization_id" value="auto_increment">
     <input type="hidden" name="created_at" value="<?= date('Y-m-d H:i:s') ?>">
     <input type="hidden" name="created_by" value="<?= $_SESSION["user_id"] ?>">
@@ -65,7 +62,6 @@ if(isset($_SESSION["user_id"])){
   </form>
 </div>
 
-<!-- Dark mode toggle button -->
 <button id="darkModeToggle" class="btn-primary" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
 <script>
