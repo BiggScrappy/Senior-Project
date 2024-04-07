@@ -26,7 +26,7 @@ if(isset($_SESSION["user_id"])){
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
 </head>
 <body>
-   <h1>Submit Survey</h1>
+   
 
 <div class="header">
   <a href="#default" class="logo">USACE Dam Safety</a>
@@ -39,7 +39,7 @@ if(isset($_SESSION["user_id"])){
 <?php endif; ?>
   </div>
 </div>
-
+<h1>Welcome</h1>
     <?php if(isset($user)): ?>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
@@ -47,11 +47,14 @@ if(isset($_SESSION["user_id"])){
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
     <?php endif; ?>  
-
-    <p>Success!
-        you can now <a href="selectSurvey.php">fillout another survey </a>or
-        <a href="index.php">go to home</a>
-    </p>
+<h1>Success!</h1>
+   
+    <p><a href="selectSurvey.php">
+                <button class="btn"><i class="fa-regular fa-pen-to-square"></i> Fill Out Another Survey</button>
+            </a></p>
+    <p><a href="index.php">
+                <button class="btn"><i class="fa-solid fa-house"></i></i> Go Home</button>
+           </a></p>
     
 
  </body>
