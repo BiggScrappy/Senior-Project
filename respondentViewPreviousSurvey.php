@@ -46,20 +46,23 @@ $userID = $user["user_id"];
 </div>
 
 <!--Verify User Info-->
-    <h1>View Survey</h1>
+    <h1>Welcome</h1>
     <?php if(isset($user)): ?>
         <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
         <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>    
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
-    <?php endif; ?>   
+    <?php endif; ?>  
 
+    <h1>View Survey</h1>
 <?php
+    echo "<b> Survey ID: ", $survey_id,"</b><br>";
     $sql = "select * from User_Surveys
     where user_id=".$userID ." AND survey_id=".$survey_id." order by question_id;";
     $result = $mysqli->query($sql);
 
+    $questionNumber=0;
     if (mysqli_num_rows($result) > 0) {
 
         while($row = mysqli_fetch_assoc($result)) {
@@ -67,60 +70,55 @@ $userID = $user["user_id"];
             $question_id = $row["question_id"];
             $question_text = $row["question"];
             $question_type = $row["question_type_id"];
-
-            echo $survey_id, " ", $question_id, " ", $question_text, "<br>";
+            $questionNumber=$questionNumber+1;
+            echo $questionNumber, ".) ", $question_text, "<br>";
 
             if($question_type==1){
                 $sql="select option_text from multiplechoice_options where question_id=".$question_id.";";
                         $answers = $mysqli->query($sql);
-                         
+                        $optionNum = 1;
                         
                         foreach($answers as $thing){
                             foreach($thing as $answer){
                                 ?>              
-                               <li> <?php echo  $answer;?> </li>                        
-                         <?php                          
+                                <p style='margin-left: 25px;'> <?php echo $optionNum, ".) ",$answer;?> </p>                         
+                         <?php   
+                             $optionNum=$optionNum +1;                        
                             } 
                         }  
                 $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
                 $responseUser = mysqli_fetch_assoc($response);
 
-                echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+                echo "<b> Your Response: ", $responseUser["response"], "</b><br>","<br>";
             }
             elseif($question_type==2){
-               echo "<ul>";
-               echo" <li> True </li>";
-               echo" <li> False </li>";
-               echo "</ul>";
+                echo" <b> True </b>";
+                echo "/";
+                echo" <b>  False </b>";
+                echo "<br>";
 
                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
                 $responseUser = mysqli_fetch_assoc($response);
 
-                echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+                echo "<b> Your Response: ", $responseUser["response"], "</b><br>","<br>";
             }
             elseif($question_type==3){
-               echo "<ul>";
-               echo" <li> 1 </li>";
-               echo" <li> 2 </li>";
-               echo" <li> 3 </li>";
-               echo" <li> 4 </li>";
-               echo" <li> 5 </li>";
-               echo "</ul>";
+               echo" <b>disagree 1, 2, 3, 4, 5 agree </b><br>";
                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                $response = $mysqli->query($sql);
                $responseUser = mysqli_fetch_assoc($response);
 
-               echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+               echo "<b>","Your Response: ", $responseUser["response"], "</b><br>","<br>";
             }
             elseif($question_type==4){
                 $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
                 $response = $mysqli->query($sql);
                 $responseUser = mysqli_fetch_assoc($response);
-                echo "User's Response: ", $responseUser["response"], "<br>","<br>";
+                echo "<b> Your Response: ", $responseUser["response"], "</b><br>","<br>";
             }
-
+             
         }   
     }
 
