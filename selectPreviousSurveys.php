@@ -24,6 +24,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="table.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   
@@ -60,6 +61,7 @@
 
 
 <main class="table">
+    <div class=wrapper>
     <section class="table_header">
     <h1>Select Previous Survey To View</h1>
     <input type="text" id="myInput"  placeholder="Search...">
@@ -69,8 +71,8 @@
                 <thead>
                     <tr>
                         <th>Survey Type</th>
-                        <th>Organization Name</th>
-                        <th>Project Name</th>
+                        <th>Organization</th>
+                        <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Select</th>
@@ -89,7 +91,7 @@
         while($row = mysqli_fetch_assoc($result)) {
            $survey_id=$row["survey_id"];
 
-           $sql2="select * from surveys where id=".$survey_id." and start_date is not null and end_date is not null;";
+           $sql2="select organization_id, project_id,survey_template_id,DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where id=".$survey_id." and start_date is not null and end_date is not null;";
            $result2 = $mysqli->query($sql2);
            $new = mysqli_fetch_assoc($result2);
            if($new === null){
@@ -126,6 +128,7 @@
        </tbody>
 </table>
         </section>
+</div>
     </section>
             
     <button>Submit</button>
