@@ -28,6 +28,7 @@ $userRole=$user["role_name"];
     <title>Fill Out Survey</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+ <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <link rel="stylesheet" href="table.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
@@ -50,15 +51,19 @@ $userRole=$user["role_name"];
 </div>
 
 <!--Verify User Info-->
-    <h1>Welcome</h1>
+<h1>Welcome</h1>
+    <div class="userInformation">
     <?php if(isset($user)): ?>
-        <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-        <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>    
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
     <?php else: ?>
         <p><a href="login.php">Login</a> </p>
-    <?php endif; ?>  
-    
+    <?php endif; ?>   
+    </div>
+
     
     <h1>View Survey</h1>
 <?php
