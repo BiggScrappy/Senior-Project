@@ -59,9 +59,7 @@ if(isset($_SESSION["user_id"])){
     <p><a href="selectSurvey.php">
                 <button class="btn"><i class="fa-regular fa-pen-to-square"></i> Fill Out Another Survey</button>
             </a></p>
-    <p><a href="index.php">
-                <button class="btn"><i class="fa-solid fa-house"></i></i> Go Home</button>
-           </a></p>
+  
     
 
  </body>
