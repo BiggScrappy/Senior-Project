@@ -23,6 +23,7 @@ if(isset($_SESSION["user_id"])){
     <title>Make New User</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 <body>
@@ -41,14 +42,17 @@ if(isset($_SESSION["user_id"])){
 
 <!--Verify User Info-->
 <h1>Welcome</h1>
-<?php if(isset($user)): ?>
-    <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
-    <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-    <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>    
-<?php else: ?>
-    <p><a href="login.php">Login</a> </p>
-<?php endif; 
-?>   
+    <div class="userInformation">
+    <?php if(isset($user)): ?>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
+        <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
+    <?php else: ?>
+        <p><a href="login.php">Login</a> </p>
+    <?php endif; ?>   
+    </div>  
 
     
 <div class="container">
