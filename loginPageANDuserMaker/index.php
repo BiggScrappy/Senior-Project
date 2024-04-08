@@ -21,6 +21,7 @@ if(isset($_SESSION["user_id"])){
     <title>Home</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="userInformation.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -44,10 +45,21 @@ if(isset($_SESSION["user_id"])){
             <?php endif; ?>
             </div>
             </div>
-        <h1>Home</h1>
-        <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
+
+      <!--Verify User Info-->
+    <h1>Welcome</h1>
+    <div class="userInformation">
+    <?php if(isset($user)): ?>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p>
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
+    <?php else: ?>
+        <p><a href="login.php">Login</a> </p>
+    <?php endif; ?>   
+    </div>
+
 
         <?php if($user["role_name"]==="respondent"): ?>
             <p><a href="selectSurvey.php">
