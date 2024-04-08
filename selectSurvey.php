@@ -87,16 +87,17 @@ if(isset($_SESSION["user_id"])){
     $user_id=$user["user_id"];
 
     //find user's assigned surveys
-    $sql="select * from user_surveys where user_id=".$user_id." and completed !=1 order by survey_id;";
+    $sql="select * from user_surveys where user_id=".$user_id." and completed !=1 and survey_id IS NOT NULL order by survey_id;";
     $result = $mysqli->query($sql);
  
     if (mysqli_num_rows($result) > 0) {
 
         while($row = mysqli_fetch_assoc($result)) {
             $survey_id=$row["survey_id"];
+        
 
-            $sql="select organization_id,project_id,survey_template_id,DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where id=".$survey_id." and end_date>now(); ";
-            $answer = $mysqli->query($sql);
+            $sql2="select organization_id, project_id,survey_template_id,DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where id=".$survey_id." and start_date is not null and end_date is not null and end_date>now();";
+            $answer = $mysqli->query($sql2);
             if (mysqli_num_rows($answer) > 0) {
 
                 while($new = mysqli_fetch_assoc($answer)) {
