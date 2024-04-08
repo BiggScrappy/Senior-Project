@@ -86,6 +86,9 @@ if(isset($_SESSION["user_id"])){
             <p><a href="notificationPage.php">
             <button class="btn"><i class="fa-regular fa-paper-plane"></i></i> Email Notification</button>
             </a></p>
+            <p><a href="additionalFunctions.php">
+            <button class="btn"><i class="fa-solid fa-gear"></i></i> Additional Functions</button>
+            </a></p>
 
         <?php elseif($user["role_name"]==="surveyor"): ?>
             <p><a href="assignSurvey.php">
