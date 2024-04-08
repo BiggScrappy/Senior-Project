@@ -73,6 +73,7 @@ if(isset($_SESSION["user_id"])){
             <table>
                 <thead>
                     <tr>
+                        <th>Survey ID</th>
                         <th>Survey Type</th>
                         <th>Organization</th>
                         <th>Project</th>
@@ -92,9 +93,9 @@ if(isset($_SESSION["user_id"])){
     if (mysqli_num_rows($result) > 0) {
 
         while($row = mysqli_fetch_assoc($result)) {
-            $survey_id=$row["id"];
+            $survey_id=$row["survey_id"];
 
-            $sql="select organization_id,project_id,survey_template_id,DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where id=".$survey_id."; ";
+            $sql="select organization_id,project_id,survey_template_id,DATE(start_date) as start_date,DATE(end_date) as end_date from surveys where id=".$survey_id." and end_date>now(); ";
             $answer = $mysqli->query($sql);
             if (mysqli_num_rows($answer) > 0) {
 
@@ -114,6 +115,7 @@ if(isset($_SESSION["user_id"])){
                     $surveyName=mysqli_fetch_assoc($thing);
         
                     echo "<tr>";
+                    echo "<th>",$survey_id,"</th>";
                     echo "<th>",$surveyName["name"],"</th>";
                     echo "<th>",$orgName["name"],"</th>";
                     echo "<th>",$projectName["name"],"</th>";
