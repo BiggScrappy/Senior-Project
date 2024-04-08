@@ -21,6 +21,7 @@ if(isset($_SESSION["user_id"])){
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Survey Builder</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
   <style>
     /* General styles */
@@ -94,13 +95,19 @@ if(isset($_SESSION["user_id"])){
     <?php endif; ?>
   </div>
 </div>
-
-<?php if(isset($user)): ?>
-        <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
+<!--Verify User Info-->
+<h1>Welcome</h1>
+    <div class="userInformation">
+    <?php if(isset($user)): ?>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
         <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p>
-<?php endif; ?>
-
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
+    <?php else: ?>
+        <p><a href="login.php">Login</a> </p>
+    <?php endif; ?>   
+    </div>
 <div class="container">
   <h1>Survey Builder</h1>
 
