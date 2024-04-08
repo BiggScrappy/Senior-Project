@@ -19,6 +19,26 @@
     <?php
     include('database.php');
 
+    function getIncomplete($surveyId) {
+        global $mysqli;
+        $incompleteEmails = array();
+
+        // SQL query to retrieve distinct email addresses from users where completed is 0
+        $sql = "SELECT DISTINCT email FROM users 
+                JOIN user_surveys ON users.id = user_surveys.user_id 
+                WHERE completed = 0 AND user_surveys.survey_id = '$surveyId'";
+
+        $result = $mysqli->query($sql);
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $incompleteEmails[] = $row['email'];
+            }
+        }
+
+        return $incompleteEmails;
+    }
+
     // Retrieve distinct survey IDs from the database
     $surveyOptions = array();
     $sql = "SELECT DISTINCT survey_id FROM user_surveys";
@@ -33,6 +53,7 @@
     <form id="emailForm" action="#" method="post">
         <label for="survey">Select Survey ID:</label><br>
         <select id="survey" name="survey">
+            <option value="">No Survey Selected</option>
             <?php
             // Populate survey select options from database
             foreach ($surveyOptions as $option) {
@@ -45,6 +66,8 @@
             <option value="all" id="selectAllOption">Select All</option>
             <!-- Additional static option for Select All -->
         </select><br><br>
+        <!-- Button for Select Incomplete -->
+        <button type="button" id="selectIncompleteBtn">Select Incomplete</button><br><br>
         <label for="subject">Subject:</label><br>
         <input type="text" id="subject" name="subject"><br><br>
         <label for="message">Message:</label><br>
@@ -89,24 +112,46 @@
 
             // Function to fetch and populate email options
             function populateEmailOptions(surveyId) {
-                $.ajax({
-                    url: "getEmails.php",
-                    method: "POST",
-                    data: {survey_id: surveyId},
-                    dataType: "json",
-                    success: function(data) {
-                        // Clear previous options
-                        $("#email").empty();
-                        // Add static option for "Select All"
-                        $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
-                        // Add fetched options
-                        $.each(data, function(index, email) {
-                            $("#email").append("<option value='" + email + "'>" + email + "</option>");
-                        });
-                        // Reattach event listener for "Select All" option
-                        $("#selectAllOption").click(handleSelectAll);
-                    }
-                });
+                if (surveyId === '') {
+                    // If "No Survey Selected" is chosen, populate with distinct emails from users
+                    $.ajax({
+                        url: "getEmailsFromUsers.php", // PHP script to fetch emails from users table
+                        method: "POST",
+                        dataType: "json",
+                        success: function(data) {
+                            // Clear previous options
+                            $("#email").empty();
+                            // Add static option for "Select All"
+                            $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
+                            // Add fetched options
+                            $.each(data, function(index, email) {
+                                $("#email").append("<option value='" + email + "'>" + email + "</option>");
+                            });
+                            // Reattach event listener for "Select All" option
+                            $("#selectAllOption").click(handleSelectAll);
+                        }
+                    });
+                } else {
+                    // Otherwise, fetch emails based on selected survey
+                    $.ajax({
+                        url: "getEmails.php", // PHP script to fetch emails based on survey
+                        method: "POST",
+                        data: {survey_id: surveyId},
+                        dataType: "json",
+                        success: function(data) {
+                            // Clear previous options
+                            $("#email").empty();
+                            // Add static option for "Select All"
+                            $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
+                            // Add fetched options
+                            $.each(data, function(index, email) {
+                                $("#email").append("<option value='" + email + "'>" + email + "</option>");
+                            });
+                            // Reattach event listener for "Select All" option
+                            $("#selectAllOption").click(handleSelectAll);
+                        }
+                    });
+                }
             }
 
             // Update email options based on selected survey
@@ -128,6 +173,31 @@
                 }).join(";");
                 var mailtoLink = "mailto:" + encodeURIComponent(selectedEmails) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(message);
                 window.location.href = mailtoLink;
+            });
+
+            // Functionality for Select Incomplete button
+            $("#selectIncompleteBtn").click(function() {
+                var surveyId = $("#survey").val();
+
+                // Call the PHP method to fetch incomplete emails
+                $.ajax({
+                    url: "getIncomplete.php", // Adjust the URL accordingly
+                    method: "POST",
+                    data: {surveyId: surveyId},
+                    dataType: "json",
+                    success: function(data) {
+                        // Clear previous options
+                        $("#email").empty();
+                        // Add static option for "Select All"
+                        $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
+                        // Add fetched options
+                        $.each(data, function(index, email) {
+                            $("#email").append("<option value='" + email + "'>" + email + "</option>");
+                        });
+                        // Reattach event listener for "Select All" option
+                        $("#selectAllOption").click(handleSelectAll);
+                    }
+                });
             });
         });
     </script>
