@@ -1,18 +1,14 @@
 <?php
-// Start session and include database connection
 ini_set('session.save_path', realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
-// Include database connection
 $mysqli = require __DIR__ . "/database.php";
 
-// Verify user info if logged in
 if(isset($_SESSION["user_id"])){
     $sql = "SELECT * FROM User_Information WHERE user_id = {$_SESSION["user_id"]}";
     $result = $mysqli->query($sql);
     $user = $result->fetch_assoc();
 
-    // Fetch previous surveys with completion status
     $sql = "SELECT s.id, s.title, COUNT(us.id) AS total_responses,
             SUM(IF(us.completed = 1, 1, 0)) AS completed_responses
             FROM surveys s
