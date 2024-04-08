@@ -24,16 +24,17 @@ if(isset($_SESSION["user_id"])){
     <title>New User Success</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
 </head>
 </head>
 <body>
+    
 <div class="header">
         <a href="#default" class="logo">USACE Dam Safety</a>
         <div class="header-right">
-          <a class="active" href="index.php">Home</a>
-      
+          <a class="active" href="index.php">Home</a>    
       <?php if(isset($_SESSION["user_id"])): ?>
           <a href="logout.php">Logout</a>
       <?php elseif(!isset($_SESSION["user_id"])): ?>
@@ -44,14 +45,18 @@ if(isset($_SESSION["user_id"])){
 
 <!--Verify User Info-->
 <h1>Welcome</h1>
-<?php if(isset($user)): ?>
-    <p> Hello <?= htmlspecialchars($user["username"]) ?></p>
-    <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
-    <p> ID Number: <?= htmlspecialchars($user["user_id"]) ?></p>    
-<?php else: ?>
-    <p><a href="login.php">Login</a> </p>
-<?php endif; 
-?>   
+    <div class="userInformation">
+    <?php if(isset($user)): ?>
+        
+        <p> <b> Hello <?= htmlspecialchars($user["username"]) ?>!</b></p>
+        <p> Email: <?= htmlspecialchars($user["email"]) ?></p>
+        <p> Role: <?= htmlspecialchars($user["role_name"]) ?></p> 
+         
+    <?php else: ?>
+        <p><a href="login.php">Login</a> </p>
+    <?php endif; ?>   
+    </div>
+
     <h1>Success!</h1>
 
  <p><a href="makeNewUser.php">
