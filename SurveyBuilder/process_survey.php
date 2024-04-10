@@ -2,10 +2,9 @@
 ini_set('session.save_path', realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/home1/missysme/sessions'));
 session_start();
 
-// Include database connection
+
 $mysqli = require __DIR__ . "/database.php";
 
-// Verify user info
 if(isset($_SESSION["user_id"])){
   $sql = "SELECT * FROM User_Information WHERE user_id = {$_SESSION["user_id"]}";
   $result = $mysqli->query($sql);
@@ -40,20 +39,14 @@ if ($stmt) {
     $stmt->close();
 } else {
     // Handle the error
-    echo "Error: " . $mysqli->error;
-}
 
+}
+$countmcquestions=0;
 // Loop through each question and insert data
 if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
     $questionTypes = $_POST['questionType'];
     $questionTexts = $_POST['questionText'];
-    foreach($questionTypes as $thing){
-        echo $thing,"<br>";
-    }
-        
-    foreach($questionTexts as $thing){
-         echo $thing,"<br>";
-    }
+ 
            
     //echo $questionTexts;
 
@@ -77,7 +70,7 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             }
        
 
-            // Insert question
+        
             $insertQuestionQuery = "INSERT INTO questions (question_type_id, question) VALUES (?, ?)";
             $stmt = $mysqli->prepare($insertQuestionQuery);
             $stmt->bind_param("ss", $currentQuestionType, $currentQuestionText);
@@ -85,17 +78,20 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             $questionId = $mysqli->insert_id;
             $stmt->close();
 
-            // Additional logic for specific question types (e.g., options for multiple choice)
-            if ($currentQuestionType === "1" && isset($_POST['options'])) {
+       
+            if ($currentQuestionType === 1 && isset($_POST['options'])) {
                 $options = $_POST['options'];
+                $options = explode(",",$options[$countmcquestions]);
+               
                 foreach ($options as $optionText) {
-                    echo $optionText;
                     $insertOptionQuery = "INSERT INTO multiplechoice_options (question_id, option_text) VALUES (?, ?)";
                     $stmt = $mysqli->prepare($insertOptionQuery);
                     $stmt->bind_param("ss", $questionId, $optionText);
                     $stmt->execute();
                     $stmt->close();
                 }
+                $countmcquestions=$countmcquestions+1;
+
             }
 
             // Insert into SURVEY_TEMPLATE_QUESTIONS table
@@ -106,11 +102,11 @@ if (isset($_POST['questionType']) && isset($_POST['questionText'])) {
             $stmt->close();
         }
     } else {
-        echo "Error: Number of question types and question texts do not match.";
+       
     }
 }
 
-// Redirect after form submission with success message
-header("Location: makeSurveySuccess.php");
+
+header("Location: makeSurvey_success.php");
 exit();
 ?>
