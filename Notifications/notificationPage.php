@@ -12,7 +12,7 @@
         
         $result = $mysqli->query($sql);
     
-        $user = $result-> fetch_assoc();
+        $user = $result->fetch_assoc();
     }
 ?>
 <!DOCTYPE html>
@@ -67,33 +67,20 @@
     <?php
     include('database.php');
 
-    function getIncomplete($surveyId) {
-        global $mysqli;
-        $incompleteEmails = array();
-
-        // SQL query to retrieve distinct email addresses from users where completed is 0
-        $sql = "SELECT DISTINCT email FROM users 
-                JOIN user_surveys ON users.id = user_surveys.user_id 
-                WHERE completed = 0 AND user_surveys.survey_id = '$surveyId'";
-
-        $result = $mysqli->query($sql);
-
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $incompleteEmails[] = $row['email'];
-            }
-        }
-
-        return $incompleteEmails;
-    }
-
-    // Retrieve distinct survey IDs from the database
+    // Retrieve survey IDs from the surveys table based on the provided query
     $surveyOptions = array();
-    $sql = "SELECT DISTINCT survey_id FROM user_surveys";
+    $sql = "SELECT surveys.id, surveys.start_date, surveys.end_date, organizations.name
+            FROM surveys
+            JOIN organizations ON surveys.organization_id = organizations.id
+            WHERE surveys.start_date IS NOT NULL
+              AND surveys.end_date IS NOT NULL
+              AND surveys.end_date > NOW()";
     $result = $mysqli->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $surveyOptions[] = $row['survey_id'];
+            // Format the option text with survey ID, start date, end date, and organization name
+            $optionText = "Survey ID: " . $row['id'] . " - Start Date: " . $row['start_date'] . " - End Date: " . $row['end_date'] . " - Organization: " . $row['name'];
+            $surveyOptions[$row['id']] = $optionText;
         }
     }
     ?>
