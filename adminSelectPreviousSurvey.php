@@ -76,13 +76,13 @@ $userID = $user["user_id"];
             <table>
                 <thead>
                     <tr>
-                        <th>Surveyor Email</th>
-                        <th>Type</th>
+                        <th>Select</th>                   
+                        <th>Survey Type</th>
                         <th>Organization</th>
                         <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
-                        <th>Select</th>
+                        <th >Surveyor Email</th>
                     </tr>
                 </thead>
    
@@ -118,15 +118,15 @@ $userID = $user["user_id"];
 
 
            echo "<tr>";
-           echo "<td>",$email["email"],"</td>"; 
+           echo "<td>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'></label>","</td>"; 
            echo "<td>",$surveyName["name"],"</td>";
            echo "<td>",$orgName["name"],"</td>";
            echo "<td>",$projectName["name"],"</td>";
            echo "<td>",$row["start_date"],"</td>";
            echo "<td>",$row["end_date"],"</td>";
+           echo "<td>",$email["email"],"</td>";
 
-
-           echo "<td>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label>","</td>";
+           
          
         echo "</tr>";
        
@@ -141,6 +141,7 @@ $userID = $user["user_id"];
         </section>
 </div>
     </section>
+</main>
             
     <button>Submit</button>
 </form>
