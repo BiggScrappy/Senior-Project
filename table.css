@@ -1,9 +1,14 @@
+.table_body{
+    display:block; 
+    max-height:400px; 
+    overflow:auto;
+}
 /*body*/
-.wrapper td{white-space: nowrap;
+.wrapper td{
+white-space: nowrap;
 width: 100%;
 overflow: hidden;
 text-align: center;
-
 }
 .wrapper td:hover{
     overflow: auto;
@@ -11,8 +16,15 @@ text-align: center;
 }
 /*head*/
 .wrapper th{white-space: nowrap;
+    background-color: white;
     width: 100%;
     overflow: hidden;
     max-height: 150px;
     max-width: 150px;
-text-align: center;}
+text-align: center;
+}
+
+.wrapper thead{
+position:sticky; top: 0;    
+}
+
