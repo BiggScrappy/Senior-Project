@@ -56,7 +56,7 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
     </div>
 <div class="container">
 <h1>Fill Out Survey</h1>
-    <form action="process-fillOutSurvey.php" method="post">
+    <form action="process-fillOutSurvey.php" method="post" id="surveyForm">
         <!-- Gather Surveys-->
         <?php
             $userID = $user["user_id"];
@@ -151,9 +151,20 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
 
             ?>
 
-<button>Submit Survey</button>
+
+<button id="submitSurveyBtn">Submit Survey</button>
     </form>
     </div>
+
+<script>
+  // Assuming submitSurveyBtn and surveyForm are defined elsewhere in your code
+  submitSurveyBtn.addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent default form submission action
+    if (confirm('Are you sure you want to submit the survey? (Answers cannot be changed after submitted)')) {
+      surveyForm.submit(); // Submit the form if confirmed
+    }
+  });
+</script>
 
 </body>
 </html> 
