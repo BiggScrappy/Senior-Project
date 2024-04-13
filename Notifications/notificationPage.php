@@ -137,114 +137,47 @@
     </form>
 
     <script>
-        $(document).ready(function() {
-            // Function to handle select all option
-            function handleSelectAll() {
-                // Check if the "Select All" option is selected
-                var selectAll = $(this).prop("selected");
-                // Set all options except the "Select All" option based on the state of "Select All"
-                $("#email option:not(#selectAllOption)").prop("selected", selectAll);
-            }
+    $(document).ready(function() {
+        // Function to handle select all option
+        function handleSelectAll() {
+            // Check if the "Select All" option is selected
+            var selectAll = $(this).prop("selected");
+            // Set all options except the "Select All" option based on the state of "Select All"
+            $("#email option:not(#selectAllOption)").prop("selected", selectAll);
+        }
 
-            // Event listener for "Select All" option
-            $("#selectAllOption").click(handleSelectAll);
+        // Event listener for "Select All" option
+        $("#selectAllOption").click(handleSelectAll);
 
-            // Enable multiple selection by clicking for the dropdown
-            $("#email").mousedown(function(e) {
-                e.preventDefault();
+        // Enable multiple selection by clicking for the dropdown
+        $("#email").mousedown(function(e) {
+            e.preventDefault();
 
-                var originalScrollTop = $(this).scrollTop();
+            var originalScrollTop = $(this).scrollTop();
 
-                $(this).focus().one("mouseup", function() {
-                    var $select = $(this);
+            $(this).focus().one("mouseup", function() {
+                var $select = $(this);
 
-                    $select.scrollTop(originalScrollTop);
+                $select.scrollTop(originalScrollTop);
 
-                    var $option = $(document.elementFromPoint(e.clientX, e.clientY));
-                    if ($option.prop("selected")) {
-                        $option.prop("selected", false);
-                    } else {
-                        $option.prop("selected", true);
-                    }
-
-                    $select.focus();
-                });
-            });
-
-            // Function to fetch and populate email options
-            function populateEmailOptions(surveyId) {
-                if (surveyId === '') {
-                    // If "No Survey Selected" is chosen, populate with distinct emails from users
-                    $.ajax({
-                        url: "getEmailsFromUsers.php", // PHP script to fetch emails from users table
-                        method: "POST",
-                        dataType: "json",
-                        success: function(data) {
-                            // Clear previous options
-                            $("#email").empty();
-                            // Add static option for "Select All"
-                            $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
-                            // Add fetched options
-                            $.each(data, function(index, email) {
-                                $("#email").append("<option value='" + email + "'>" + email + "</option>");
-                            });
-                            // Reattach event listener for "Select All" option
-                            $("#selectAllOption").click(handleSelectAll);
-                        }
-                    });
+                var $option = $(document.elementFromPoint(e.clientX, e.clientY));
+                if ($option.prop("selected")) {
+                    $option.prop("selected", false);
                 } else {
-                    // Otherwise, fetch emails based on selected survey
-                    $.ajax({
-                        url: "getEmails.php", // PHP script to fetch emails based on survey
-                        method: "POST",
-                        data: {survey_id: surveyId},
-                        dataType: "json",
-                        success: function(data) {
-                            // Clear previous options
-                            $("#email").empty();
-                            // Add static option for "Select All"
-                            $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
-                            // Add fetched options
-                            $.each(data, function(index, email) {
-                                $("#email").append("<option value='" + email + "'>" + email + "</option>");
-                            });
-                            // Reattach event listener for "Select All" option
-                            $("#selectAllOption").click(handleSelectAll);
-                        }
-                    });
+                    $option.prop("selected", true);
                 }
-            }
 
-            // Update email options based on selected survey
-            $("#survey").change(function() {
-                var surveyId = $(this).val();
-                populateEmailOptions(surveyId);
+                $select.focus();
             });
+        });
 
-            // Initial population of email options based on default selected survey
-            var initialSurveyId = $("#survey").val();
-            populateEmailOptions(initialSurveyId);
-
-            // Open Outlook draft when edit button is clicked
-            $("#editBtn").click(function() {
-                var message = $("#message").val();
-                var subject = $("#subject").val();
-                var selectedEmails = $("#email").val().filter(function(email) {
-                    return email !== "all"; // Exclude the "all" option
-                }).join(";");
-                var mailtoLink = "mailto:" + encodeURIComponent(selectedEmails) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(message);
-                window.location.href = mailtoLink;
-            });
-
-            // Functionality for Select Incomplete button
-            $("#selectIncompleteBtn").click(function() {
-                var surveyId = $("#survey").val();
-
-                // Call the PHP method to fetch incomplete emails
+        // Function to fetch and populate email options
+        function populateEmailOptions(surveyId) {
+            if (surveyId === '') {
+                // If "No Survey Selected" is chosen, populate with distinct emails from users
                 $.ajax({
-                    url: "getIncomplete.php", // Adjust the URL accordingly
+                    url: "getEmailsFromUsers.php", // PHP script to fetch emails from users table
                     method: "POST",
-                    data: {surveyId: surveyId},
                     dataType: "json",
                     success: function(data) {
                         // Clear previous options
@@ -259,48 +192,105 @@
                         $("#selectAllOption").click(handleSelectAll);
                     }
                 });
-            });
-
-            // Function to handle saving the template
-            $("#saveTemplateBtn").click(function() {
-                var message = $("#message").val();
-
-                // Send the message content to the PHP script for saving
+            } else {
+                // Otherwise, fetch emails based on selected survey
                 $.ajax({
-                    url: "saveTemplate.php", // PHP script to save the template
+                    url: "getEmails.php", // PHP script to fetch emails based on survey
                     method: "POST",
-                    data: {message: message},
-                    success: function(response) {
-                        // Optionally, handle the response from the server
-                        alert("Template saved successfully!");
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle errors if any
-                        console.error(xhr.responseText);
+                    data: {survey_id: surveyId},
+                    dataType: "json",
+                    success: function(data) {
+                        // Clear previous options
+                        $("#email").empty();
+                        // Add static option for "Select All"
+                        $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
+                        // Add fetched options
+                        $.each(data, function(index, email) {
+                            $("#email").append("<option value='" + email + "'>" + email + "</option>");
+                        });
+                        // Reattach event listener for "Select All" option
+                        $("#selectAllOption").click(handleSelectAll);
                     }
                 });
-            });
+            }
+        }
 
-            // Function to handle select template
-            $("#template").change(function() {
-                var selectedTemplate = $(this).val();
+        // Update email options based on selected survey
+        $("#survey").change(function() {
+            var surveyId = $(this).val();
+            populateEmailOptions(surveyId);
+        });
 
-                // Fetch the selected template message from the server
-                $.ajax({
-                    url: "getTemplateMessage.php", // PHP script to fetch the template message
-                    method: "POST",
-                    data: {template_id: selectedTemplate},
-                    success: function(message) {
-                        // Fill the message box with the selected template message
-                        $("#message").val(message);
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle errors if any
-                        console.error(xhr.responseText);
-                    }
-                });
+        // Initial population of email options based on default selected survey
+        var initialSurveyId = $("#survey").val();
+        populateEmailOptions(initialSurveyId);
+
+        // Open Outlook draft when edit button is clicked
+        $("#editBtn").click(function() {
+            var message = $("#message").val();
+            var subject = $("#subject").val();
+            var selectedEmails = $("#email").val().filter(function(email) {
+                return email !== "all"; // Exclude the "all" option
+            }).join(";");
+            var mailtoLink = "mailto:" + encodeURIComponent(selectedEmails) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(message);
+            window.location.href = mailtoLink;
+        });
+
+        // Functionality for Select Incomplete button
+        $("#selectIncompleteBtn").click(function() {
+            var surveyId = $("#survey").val();
+
+            // Call the PHP method to fetch incomplete emails
+            $.ajax({
+                url: "getIncomplete.php", // Adjust the URL accordingly
+                method: "POST",
+                data: {surveyId: surveyId},
+                dataType: "json",
+                success: function(data) {
+                    // Clear previous options
+                    $("#email").empty();
+                    // Add static option for "Select All"
+                    $("#email").append("<option value='all' id='selectAllOption'>Select All</option>");
+                    // Add fetched options
+                    $.each(data, function(index, email) {
+                        $("#email").append("<option value='" + email + "'>" + email + "</option>");
+                    });
+                    // Reattach event listener for "Select All" option
+                    $("#selectAllOption").click(handleSelectAll);
+                }
             });
         });
-    </script>
+
+        // Function to handle saving the template
+        $("#saveTemplateBtn").click(function() {
+            var message = $("#message").val();
+
+            // Send the message content to the PHP script for saving
+            $.ajax({
+                url: "saveTemplate.php", // PHP script to save the template
+                method: "POST",
+                data: {message: message},
+                success: function(response) {
+                    // Optionally, handle the response from the server
+                    alert("Template saved successfully!");
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors if any
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+
+        // Function to handle select template
+        $("#template").change(function() {
+            var selectedTemplate = $(this).val();
+            var templateMessage = $(this).find("option:selected").text();
+
+            // Fill the message box with the selected template message
+            $("#message").val(templateMessage);
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -6,7 +6,7 @@ if(isset($_POST["template_id"])) {
     $templateId = $_POST["template_id"];
 
     // Prepare and execute the SQL query to fetch the message for the given template ID
-    $sql = "SELECT message FROM email_template WHERE id = ?";
+    $sql = "select message FROM email_template WHERE id = ?";
     $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("i", $templateId);
     $stmt->execute();

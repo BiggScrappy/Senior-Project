@@ -5,7 +5,7 @@ $mysqli = require __DIR__ . "/database.php";
 $templateId = $_POST['template_id'];
 
 // Prepare and execute the SQL query to fetch the message from the email_templates table
-$sql = "select message from email_template WHERE id = ?";
+$sql = "SELECT message from email_template WHERE id = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $templateId);
 $stmt->execute();
