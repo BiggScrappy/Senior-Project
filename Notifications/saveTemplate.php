@@ -1,8 +1,9 @@
 <?php
 // Check if the request is made via POST method
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve the message from the POST data
+    // Retrieve the message and user ID from the POST data
     $message = $_POST["message"];
+    $userId = $_POST["user_id"];
 
     // Validate the message (you might want to add more validation)
     if (!empty($message)) {
@@ -10,11 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         include('database.php');
 
         // Prepare the SQL statement to insert the template into the database
-        $sql = "INSERT INTO email_template (message, created_at) VALUES (?, NOW())";
+        $sql = "INSERT INTO email_template (message, created_by, created_at) VALUES (?, ?, NOW())";
 
         // Prepare and bind parameters
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("s", $message);
+        $stmt->bind_param("si", $message, $userId);
 
         // Execute the statement
         if ($stmt->execute()) {

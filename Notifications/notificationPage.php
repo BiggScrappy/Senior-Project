@@ -261,9 +261,11 @@
             });
         });
 
+        $(document).ready(function() {
         // Function to handle saving the template
         $("#saveTemplateBtn").click(function() {
             var message = $("#message").val();
+            var userId = "<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>"; // Get the user ID from PHP session
 
             // Check if message box is empty
             if (!message.trim()) {
@@ -271,11 +273,11 @@
                 return; // Stop execution if message box is empty
             }
 
-            // Send the message content to the PHP script for saving
+            // Send the message content and user ID to the PHP script for saving
             $.ajax({
                 url: "saveTemplate.php", // PHP script to save the template
                 method: "POST",
-                data: {message: message},
+                data: {message: message, user_id: userId}, // Pass user ID to the server
                 success: function(response) {
                     // Optionally, handle the response from the server
                     alert("Template saved successfully!");
@@ -286,7 +288,7 @@
                 }
             });
         });
-
+    });
         // Function to handle select template
         $("#template").change(function() {
             var selectedTemplate = $(this).val();
