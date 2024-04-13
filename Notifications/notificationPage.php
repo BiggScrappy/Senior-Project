@@ -265,6 +265,12 @@
         $("#saveTemplateBtn").click(function() {
             var message = $("#message").val();
 
+            // Check if message box is empty
+            if (!message.trim()) {
+                alert("There must be a message to be saved.");
+                return; // Stop execution if message box is empty
+            }
+
             // Send the message content to the PHP script for saving
             $.ajax({
                 url: "saveTemplate.php", // PHP script to save the template
@@ -291,6 +297,5 @@
         });
     });
 </script>
-
 </body>
 </html>
