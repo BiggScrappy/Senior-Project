@@ -76,6 +76,7 @@ $userID = $user["user_id"];
             <table>
                 <thead>
                     <tr>
+                        <th>Select</th>
                         <th>Completed%</th>
                         <th>Survey ID</th>
                         <th>Survey Type</th>
@@ -83,7 +84,7 @@ $userID = $user["user_id"];
                         <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
-                        <th>Select</th>
+                       
                     </tr>
                 </thead>
                 <tbody id="body">
@@ -133,16 +134,16 @@ $userID = $user["user_id"];
 
                     
                     echo "<tr>";
+                    echo "<td> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'></label> </td>";  
                     echo "<td>", $users_completed, "/",$user_count, " (",$percentage,"%)", "</td>";
                     echo "<td> ", $survey_id,"</td>";
-
                     echo "<td>",$surveyName["name"],"</td>";
                     echo "<td>",$orgName["name"],"</td>";
                     echo "<td>",$projectName["name"],"</td>";
                     echo "<td>",$row["start_date"],"</td>";
                     echo "<td>",$row["end_date"],"</td>";
 
-                    echo "<td> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View</label> </td>";  
+                    
                     echo "</tr>";
                     }
                        
