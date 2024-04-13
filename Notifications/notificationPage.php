@@ -106,7 +106,14 @@
         <input type="text" id="subject" name="subject"><br><br>
         <label for="message">Message:</label><br>
         <textarea id="message" name="message" rows="4"></textarea><br><br>
+        <!-- Dropdown for selecting templates -->
+        <label for="template">Select Template:</label><br>
+        <select id="template" name="template">
+            <option value="">Select Template</option>
+            <!-- Options will be dynamically filled by JavaScript -->
+        </select><br><br>
         <button type="button" id="editBtn">Edit Email</button>
+        <button type="button" id="saveTemplateBtn">Save Template</button> <!-- New button to save the template -->
     </form>
 
     <script>
@@ -230,6 +237,46 @@
                         });
                         // Reattach event listener for "Select All" option
                         $("#selectAllOption").click(handleSelectAll);
+                    }
+                });
+            });
+
+            // Function to handle saving the template
+            $("#saveTemplateBtn").click(function() {
+                var message = $("#message").val();
+
+                // Send the message content to the PHP script for saving
+                $.ajax({
+                    url: "saveTemplate.php", // PHP script to save the template
+                    method: "POST",
+                    data: {message: message},
+                    success: function(response) {
+                        // Optionally, handle the response from the server
+                        alert("Template saved successfully!");
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors if any
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+
+            // Function to handle select template
+            $("#template").change(function() {
+                var selectedTemplate = $(this).val();
+
+                // Fetch the selected template message from the server
+                $.ajax({
+                    url: "getTemplateMessage.php", // PHP script to fetch the template message
+                    method: "POST",
+                    data: {template_id: selectedTemplate},
+                    success: function(message) {
+                        // Fill the message box with the selected template message
+                        $("#message").val(message);
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors if any
+                        console.error(xhr.responseText);
                     }
                 });
             });
