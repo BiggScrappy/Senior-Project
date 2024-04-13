@@ -22,8 +22,9 @@ if(isset($_SESSION["user_id"])){
     <title>Assign Survey</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">   
-   <link rel="stylesheet" href="userInformation.css"> 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="userInformation.css"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">   
+    <link rel="stylesheet" href="table.css">
     <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"> </script> 
     <script type="text/javascript" src="jquery.js"></script> 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -65,20 +66,21 @@ if(isset($_SESSION["user_id"])){
 <main class="table">
 <div class="wrapper">
     <section class="table_header">
-    <h1>Previous Surveys</h1>
+    <h1>Live Surveys to Edit</h1>
     </section>
     <input type="text" id="myInput"  placeholder="Search..">
         <section class="table_body">
             <table>
                 <thead>
                     <tr>
+                        <th>Select</th>
                         <th>Survey ID</th>
                         <th>Survey Type</th>
                         <th>Organization</th>
                         <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
-                        <th>Select</th>
+                        
                     </tr>
                 </thead>
                 <tbody id="body">
@@ -108,17 +110,14 @@ if(isset($_SESSION["user_id"])){
            $surveyName=mysqli_fetch_assoc($thing);
 
            echo "<tr>";
-           echo "<th>",$survey_id,"</th>";
-           echo "<th>",$surveyName["name"],"</th>";
-           echo "<th>",$orgName["name"],"</th>";
-           echo "<th>",$projectName["name"],"</th>";
-           echo "<th>",$row["start_date"],"</th>";
-           echo "<th>",$row["end_date"],"</th>";
-
-
-           echo "<th>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label>","</th>";
-         
-        echo "</tr>";
+           echo "<td>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'></label>","</td>";
+           echo "<td>",$survey_id,"</td>";
+           echo "<td>",$surveyName["name"],"</td>";
+           echo "<td>",$orgName["name"],"</td>";
+           echo "<td>",$projectName["name"],"</td>";
+           echo "<td>",$row["start_date"],"</td>";
+           echo "<td>",$row["end_date"],"</td>";
+           echo "</tr>";
 
         }
     }
