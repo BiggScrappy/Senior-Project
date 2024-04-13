@@ -136,19 +136,8 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
                     
                 <?php    
                     }
-
-
-
-
-
                  }
         }
-
-
-    
-
-
-
             ?>
 
 
@@ -157,7 +146,6 @@ $_SESSION["survey_id"]= $_POST["survey_id"];
     </div>
 
 <script>
-  // Assuming submitSurveyBtn and surveyForm are defined elsewhere in your code
   submitSurveyBtn.addEventListener('click', function(event) {
     event.preventDefault(); // Prevent default form submission action
     if (confirm('Are you sure you want to submit the survey? (Answers cannot be changed after submitted)')) {
