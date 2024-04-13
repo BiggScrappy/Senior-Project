@@ -29,6 +29,7 @@ $userRole=$user["role_name"];
     <link rel="stylesheet" href="style.css">  
     <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="table.css">  
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
    
@@ -71,6 +72,7 @@ $userRole=$user["role_name"];
     echo "Key: ", "completed: &#9745;","incomplete: &#9744; <br>";
 ?>
 <main class="table">
+<div class="wrapper">
     <section class="table_header">
     <h1>Respondents</h1>
     </section>
@@ -98,18 +100,18 @@ $userRole=$user["role_name"];
         $userInfo = $mysqli->query($sql);
         foreach($userInfo as $user){
             echo "<tr>";
-            echo "<th>",$user["id"],"</th>";
-            echo "<th>",$user["username"],"</th>";
-            echo "<th>", $user["email"],"</th>";
+            echo "<td>",$user["id"],"</td>";
+            echo "<td>",$user["username"],"</td>";
+            echo "<td>", $user["email"],"</td>";
 
             $sql="select completed from user_surveys where survey_id=".$survey_id." and user_id=".$user_id.";";
             $completed = $mysqli->query($sql);
             $row = mysqli_fetch_assoc($completed);
             if($row["completed"]==="1"){
-              echo "<th>"," &#9745;" ,"</th>";
+              echo "<td>"," &#9745;" ,"</td>";
             }
             else{
-              echo "<th>"," &#9744;" ,"</th>"; 
+              echo "<td>"," &#9744;" ,"</td>"; 
             }
         
             echo "</tr>";
@@ -122,6 +124,7 @@ $userRole=$user["role_name"];
   </tbody>
 </table>
         </section>
+        </div>
     </section>
 <?php if($userRole==="surveyor"):?>
     <p><a href="surveyorQuickViewCurrentSurveys.php">
