@@ -73,14 +73,14 @@ $userID = $user["user_id"];
             <table>
                 <thead>
                     <tr>
+                        <th>Select</th>
                         <th>Completed%</th>
                         <th>Survey ID</th>
                         <th>Survey Type</th>
                         <th>Organization</th>
                         <th>Project</th>
                         <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Select</th>
+                        <th>End Date</th>        
                     </tr>
                 </thead>
     <tbody id="body">
@@ -130,6 +130,7 @@ $userID = $user["user_id"];
             $percentage= number_format((float)$percentage,2,'.','');
 
             echo "<tr>";
+            echo "<td> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'></label> </td>";  
             echo "<td>", $users_completed, "/",$user_count, " (",$percentage,"%)", "</td>";
             echo "<td> ", $survey_id,"</td>";
 
@@ -139,7 +140,7 @@ $userID = $user["user_id"];
             echo "<td>",$row["start_date"],"</td>";
             echo "<td>",$row["end_date"],"</td>";
 
-            echo "<td> <label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>View</label> </td>";  
+            
             echo "</tr>"; }
            
          
