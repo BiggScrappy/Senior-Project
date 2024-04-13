@@ -25,11 +25,11 @@ $userID = $user["user_id"];
 <head>
     <title>Fill Out Survey</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="userInformation.css"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <link rel="stylesheet" href="table.css">
+    <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
@@ -75,12 +75,13 @@ $userID = $user["user_id"];
             <table>
                 <thead>
                     <tr>
+                        <th>Select</th>
                         <th>Survey Type</th>
                         <th>Organization</th>
                         <th>Project</th>
                         <th>Start Date</th>
                         <th>End Date</th>
-                        <th>Select</th>
+                       
                     </tr>
                 </thead>
                 <tbody id="body">
@@ -110,14 +111,15 @@ $userID = $user["user_id"];
            $surveyName=mysqli_fetch_assoc($thing);
 
            echo "<tr>";
-           echo "<th>",$surveyName["name"],"</th>";
-           echo "<th>",$orgName["name"],"</th>";
-           echo "<th>",$projectName["name"],"</th>";
-           echo "<th>",$row["start_date"],"</th>";
-           echo "<th>",$row["end_date"],"</th>";
+           echo "<td>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'></label>","</td>";
+           echo "<td>",$surveyName["name"],"</td>";
+           echo "<td>",$orgName["name"],"</td>";
+           echo "<td>",$projectName["name"],"</td>";
+           echo "<td>",$row["start_date"],"</td>";
+           echo "<td>",$row["end_date"],"</td>";
 
 
-           echo "<th>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label>","</th>";
+          
          
         echo "</tr>";
 
