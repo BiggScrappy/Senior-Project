@@ -86,6 +86,19 @@
     }
     ?>
 
+    <?php
+    // Retrieve email template options from the database
+    $templateOptions = array();
+    $sql = "SELECT id, message FROM email_template";
+    $result = $mysqli->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Add each template to the options array
+            $templateOptions[$row['id']] = $row['message'];
+        }
+    }
+    ?>
+
     <form id="emailForm" action="#" method="post">
         <label for="survey">Select Survey:</label><br>
         <select id="survey" name="survey">
@@ -112,7 +125,12 @@
         <label for="template">Select Template:</label><br>
         <select id="template" name="template">
             <option value="">Select Template</option>
-            <!-- Options will be dynamically filled by JavaScript -->
+            <?php
+            // Populate email template select options from database
+            foreach ($templateOptions as $templateId => $templateMessage) {
+                echo "<option value='" . $templateId . "'>" . $templateMessage . "</option>";
+            }
+            ?>
         </select><br><br>
         <button type="button" id="editBtn">Edit Email</button>
         <button type="button" id="saveTemplateBtn">Save Template</button> <!-- New button to save the template -->

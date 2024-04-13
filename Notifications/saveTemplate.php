@@ -1,26 +1,41 @@
 <?php
-$mysqli = require __DIR__ . "/database.php";
+// Check if the request is made via POST method
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve the message from the POST data
+    $message = $_POST["message"];
 
-// Retrieve the message from the POST request
-$message = $_POST['message'];
+    // Validate the message (you might want to add more validation)
+    if (!empty($message)) {
+        // Include the database connection
+        include('database.php');
 
-// Prepare and execute the SQL query to insert the message into the database
-$sql = "INSERT INTO email_template (message) VALUES (?)";
-$stmt = $mysqli->prepare($sql);
-$stmt->bind_param("s", $message);
-$result = $stmt->execute();
+        // Prepare the SQL statement to insert the template into the database
+        $sql = "INSERT INTO email_template (message, created_at) VALUES (?, NOW())";
 
-// Check if the query was successful
-if ($result) {
-    // Return a success response
-    echo "Template saved successfully!";
+        // Prepare and bind parameters
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $message);
+
+        // Execute the statement
+        if ($stmt->execute()) {
+            // Template saved successfully
+            echo "Template saved successfully!";
+        } else {
+            // Error occurred while saving the template
+            echo "Error: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
+
+        // Close the database connection
+        $mysqli->close();
+    } else {
+        // If message is empty, return an error message
+        echo "Error: Message cannot be empty!";
+    }
 } else {
-    // Return an error response
-    http_response_code(500);
-    echo "Error: Unable to save template.";
+    // If the request method is not POST, return an error message
+    echo "Error: Invalid request method!";
 }
-
-// Close the database connection
-$stmt->close();
-$mysqli->close();
 ?>
