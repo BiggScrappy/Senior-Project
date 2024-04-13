@@ -73,13 +73,13 @@ if(isset($_SESSION["user_id"])){
             <table>
                 <thead>
                     <tr>
+                        <th>Select</th>
                         <th>Survey ID</th>
                         <th>Survey Type</th>
                         <th>Organization</th>
                         <th>Project</th>
                         <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Select</th>
+                        <th>End Date</th>   
                     </tr>
                 </thead>
                 <tbody id="body">
@@ -116,18 +116,14 @@ if(isset($_SESSION["user_id"])){
                     $surveyName=mysqli_fetch_assoc($thing);
         
                     echo "<tr>";
-                    echo "<th>",$survey_id,"</th>";
-                    echo "<th>",$surveyName["name"],"</th>";
-                    echo "<th>",$orgName["name"],"</th>";
-                    echo "<th>",$projectName["name"],"</th>";
-                    echo "<th>",$new["start_date"],"</th>";
-                    echo "<th>",$new["end_date"],"</th>";
-        
-        
-                    echo "<th>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'>Select</label>","</th>";
-                
-            
-
+                    echo "<td>","<label> <input type='radio' id='".$survey_id."' name='survey_id' value='".$survey_id."'></label>","</td>";   
+                    echo "<td>",$survey_id,"</td>";
+                    echo "<td>",$surveyName["name"],"</td>";
+                    echo "<td>",$orgName["name"],"</td>";
+                    echo "<td>",$projectName["name"],"</td>";
+                    echo "<td>",$new["start_date"],"</td>";
+                    echo "<td>",$new["end_date"],"</td>";
+                    echo "</tr>";
         }
     }
 }}
@@ -137,7 +133,7 @@ if(isset($_SESSION["user_id"])){
         </section>
 </div>
     </section>
-            
+         
 <button>Submit</button>
 </form>
 <script>
