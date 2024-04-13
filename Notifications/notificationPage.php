@@ -62,30 +62,32 @@
     </div>
 
 
-    <h2>Send Email to Surveyors</h2>
+    <h2>Send Email to Respondents</h2>
     <?php
     include('database.php');
 
     // Retrieve survey IDs from the surveys table based on the provided query
     $surveyOptions = array();
-    $sql = "SELECT surveys.id, surveys.start_date, surveys.end_date, organizations.name
-            FROM surveys
-            JOIN organizations ON surveys.organization_id = organizations.id
-            WHERE surveys.start_date IS NOT NULL
-              AND surveys.end_date IS NOT NULL
-              AND surveys.end_date > NOW()";
+    $sql = "SELECT surveys.id,survey_templates.name, DATE(surveys.start_date) as start_date, DATE(surveys.end_date) as end_date, organizations.name as 'org_name', projects.name as 'project_name'
+    FROM surveys
+    JOIN organizations ON surveys.organization_id = organizations.id
+    JOIN projects on surveys.project_id = projects.id
+    JOIN survey_templates on surveys.survey_template_id=survey_templates.id
+    WHERE surveys.start_date IS NOT NULL
+      AND surveys.end_date IS NOT NULL
+      AND surveys.end_date > NOW();";
     $result = $mysqli->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             // Format the option text with survey ID, start date, end date, and organization name
-            $optionText = "Survey ID: " . $row['id'] . " - Start Date: " . $row['start_date'] . " - End Date: " . $row['end_date'] . " - Organization: " . $row['name'];
+            $optionText = "Survey Name: " . $row['name'] . " - Start Date: " . $row['start_date'] . " - End Date: " . $row['end_date'] . " - Organization: " . $row['org_name']." - Project: ".$row['project_name'];
             $surveyOptions[$row['id']] = $optionText;
         }
     }
     ?>
 
     <form id="emailForm" action="#" method="post">
-        <label for="survey">Select Survey ID:</label><br>
+        <label for="survey">Select Survey:</label><br>
         <select id="survey" name="survey">
             <option value="">No Survey Selected</option>
             <?php
