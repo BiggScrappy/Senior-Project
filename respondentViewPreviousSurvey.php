@@ -91,7 +91,7 @@ $userID = $user["user_id"];
                              $optionNum=$optionNum +1;                        
                             } 
                         }  
-                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." and created_by=".$userID." ; ";
                 $response = $mysqli->query($sql);
                 $responseUser = mysqli_fetch_assoc($response);
 
@@ -103,7 +103,7 @@ $userID = $user["user_id"];
                 echo" <b>  False </b>";
                 echo "<br>";
 
-               $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+               $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." and created_by=".$userID."  ; ";
                 $response = $mysqli->query($sql);
                 $responseUser = mysqli_fetch_assoc($response);
 
@@ -111,14 +111,14 @@ $userID = $user["user_id"];
             }
             elseif($question_type==3){
                echo" <b>disagree 1, 2, 3, 4, 5 agree </b><br>";
-               $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+               $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." and created_by=".$userID."  ; ";
                $response = $mysqli->query($sql);
                $responseUser = mysqli_fetch_assoc($response);
 
                echo "<b>","Your Response: ", $responseUser["response"], "</b><br>","<br>";
             }
             elseif($question_type==4){
-                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." ; ";
+                $sql="select response from responses where question_id =".$question_id." and survey_id=".$survey_id." and created_by=".$userID."  ; ";
                 $response = $mysqli->query($sql);
                 $responseUser = mysqli_fetch_assoc($response);
                 echo "<b> Your Response: ", $responseUser["response"], "</b><br>","<br>";
