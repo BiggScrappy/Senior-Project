@@ -28,7 +28,7 @@ $userRole=$user["role_name"];
     <title>Fill Out Survey</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
- <link rel="stylesheet" href="userInformation.css"> 
+    <link rel="stylesheet" href="userInformation.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <link rel="stylesheet" href="table.css">
     <script src="https://kit.fontawesome.com/c51fcdbfd4.js" crossorigin="anonymous"></script>
@@ -72,6 +72,7 @@ $userRole=$user["role_name"];
     $sql = "select * from Survey_Questions
     where survey_id=".$survey_id." order by question_id;";
     $result = $mysqli->query($sql);
+    $questionCounter=1;
 
     if (mysqli_num_rows($result) > 0) {
 
@@ -81,7 +82,7 @@ $userRole=$user["role_name"];
             $question_text = $row["question"];
             $question_type = $row["question_type_id"];
 
-            echo $question_id, ".) ", $question_text, "<br>";
+            echo $questionCounter , ".) ", $question_text, "<br>";
 
             if($question_type==1){
                 $sql="select option_text from multiplechoice_options where question_id=".$question_id.";";
@@ -266,7 +267,9 @@ $userRole=$user["role_name"];
                     }
                 }
                 echo "<br>";
+                $questionCounter = $questionCounter+1;
             }
+            
 
         }   
     
@@ -282,8 +285,6 @@ $userRole=$user["role_name"];
             <button class="btn"><i class="fa-regular fa-chart-bar"></i></i> View A Different Survey</button>
             </a></p>
 <?php endif; ?>
-<p><a href="index.php">
-                <button class="btn"><i class="fa-solid fa-house"></i></i> Go Home</button>
-           </a></p>
+
 </body>
 </html> 
