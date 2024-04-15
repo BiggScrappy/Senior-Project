@@ -132,7 +132,7 @@
             }
             ?>
         </select><br><br>
-        <button type="button" id="editBtn">Edit Email</button>
+        <button type="button" id="editBtn">Edit Email in Outlook</button>
         <button type="button" id="saveTemplateBtn">Save Template</button> <!-- New button to save the template -->
     </form>
 
